@@ -8,7 +8,7 @@ from fiberfit import computerVision_BP
 from fiberfit import fiberfit_pop
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
-
+from PyQt5.Qt import*
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def __init__(self, Parent = None):
@@ -18,9 +18,16 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def start(self):
         computerVision_BP.main()
-        pop = fiberfit_pop()
-        map = QPixmap
-        map.fromImage(computerVision_BP.figimage, Qt_ImageConversionFlags_flags=None)
+
+        #fiberfit_GUI.Ui_MainWindow(self).gridLayout.addWidget(matplot widget goes here)
+
+
+        #pop = fiberfit_pop
+        #map = QPixmap(computerVision_BP.figimage)
+        #pop.Ui_StackedWidget.
+        #pop.Ui_StackedWidget.setupUi(self)
+
+
 
 
 

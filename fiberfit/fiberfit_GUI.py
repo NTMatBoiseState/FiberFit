@@ -19,6 +19,9 @@ class Ui_MainWindow(object):
         self.gridLayoutWidget.setGeometry(QtCore.QRect(-10, 0, 641, 131))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
+
+
+
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
         self.startButton = QtWidgets.QPushButton(self.centralwidget)

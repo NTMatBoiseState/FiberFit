@@ -30,9 +30,6 @@ import matplotlib.pyplot as plt
 from fiberfit.EllipseDirectFit import * # XXX: Changed here
 from fiberfit.helpers import * # XXX: Changed here
 
-class computerVision_BP(object):
-    image = plt.figimage
-
 def process_histogram(PabsFlip, N1):
 
     # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -311,7 +308,7 @@ def main():
     df.to_csv('Test1.csv', index = False)
 
     plt.show()
-    computerVision_BP.image = plt.figimage
+
 if __name__ == '__main__':
 
     import timeit

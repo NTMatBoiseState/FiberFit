@@ -24,6 +24,7 @@ class Ui_StackedWidget(object):
         self.page.setObjectName("page")
         StackedWidget.addWidget(self.page)
 
+
         self.retranslateUi(StackedWidget)
         StackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(StackedWidget)
