@@ -24,8 +24,8 @@ from matplotlib.patches import Ellipse
 # except ImportError:
 #     from smop.runtime import *
 
-from EllipseDirectFit import *
-from helpers import *
+from fiberfit import EllipseDirectFit
+from fiberfit import helpers
 
 
 def process_histogram(PabsFlip, N1):

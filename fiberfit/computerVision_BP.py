@@ -17,6 +17,7 @@ import math
 import glob
 from pylab import *
 from pandas import DataFrame
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 
 # from matplotlib.patches import Ellipse
@@ -280,34 +281,44 @@ def orientation(A):
 
     return (t_New)
 
-def main():
 
-    # os.chdir('../test/')
-    import pathlib
-    from pathlib import Path
+class fiberfit_model(object):
 
-    testdir = Path("../test/")
-    print("Testdir:", testdir.resolve().absolute())
-    # Grab all of the images within the same folder as the code and initialize data arrays
-    files = list(testdir.glob("*.png"))
+    def main(self):
 
-    print("Files:", [ f.name for f in files ] )
+        # os.chdir('../test/')
+        import pathlib
+        from pathlib import Path
 
-    name = np.zeros(len(files), dtype = object)
-    th = np.zeros(len(files))
-    k = np.zeros(len(files))
+        testdir = Path("../test/")
+        print("Testdir:", testdir.resolve().absolute())
+        # Grab all of the images within the same folder as the code and initialize data arrays
+        files = list(testdir.glob("*.png"))
 
-    for ii in range(0,len(files)): # ii defines what image in the directory is being process
-        filename = files[ii] # Get file names
-        Data = process_image(filename, ii) # Sends image and image number to be processed through FFT
-        name[ii] = filename
-        th[ii] = Data[0] # Average Orientation of Fiber Network
-        k[ii] = Data[1] # Concentration parameter, k
+        print("Files:", [ f.name for f in files ] )
 
-    df = DataFrame({'Image Name': name, 'Theta_p': th, 'Kappa': k})
-    df.to_csv('Test1.csv', index = False)
+        name = np.zeros(len(files), dtype = object)
+        th = np.zeros(len(files))
+        k = np.zeros(len(files))
 
-    plt.show()
+        for ii in range(0,len(files)-3): # ii defines what image in the directory is being process
+            ##TODO: Note, -3 is hardcoded - bad
+            filename = files[ii] # Get file names
+            Data = process_image(filename, ii) # Sends image and image number to be processed through FFT
+            name[ii] = filename
+            th[ii] = Data[0] # Average Orientation of Fiber Network
+            k[ii] = Data[1] # Concentration parameter, k
+
+        df = DataFrame({'Image Name': name, 'Theta_p': th, 'Kappa': k})
+        df.to_csv('Test1.csv', index = False)
+
+        #fig = Figure((5.0,4.0), dpi = 100)
+        #canvas = FigureCanvas(fig)
+        #fiberfit_control.fft_mainWindow.add(plt)
+        #plt.show()
+        plt.savefig("image" + str(ii)) # saves image
+
+
 
 if __name__ == '__main__':
 
