@@ -22,26 +22,96 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def __init__(self, Parent = None):
         super(fft_mainWindow, self).__init__()
         self.setupUi(self)
+        self.indicator = 0
+        self.isStarted = False
         self.startButton.clicked.connect(self.start)
+        self.nextButton.clicked.connect(self.nextImage)
+        self.prevButton.clicked.connect(self.prevImage)
 
 
+    def processImages(self):
+        self.image = QPixmap("image0");
+        self.image1 = QPixmap("image1");
+        self.image2 = QPixmap("image2");
+        self.image3 = QPixmap("image3");
 
+        self.imageLabel = QtWidgets.QLabel()
+        self.imageLabel.setPixmap(self.image)
 
+        self.imageLabel1 = QtWidgets.QLabel()
+        self.imageLabel1.setPixmap(self.image1)
 
-    def start(self):
+        self.imageLabel2 = QtWidgets.QLabel()
+        self.imageLabel2.setPixmap(self.image2)
+
+        self.imageLabel3 = QtWidgets.QLabel()
+        self.imageLabel3.setPixmap(self.image3)
+
+        self.imageLabel.setScaledContents(True)
+        self.imageLabel1.setScaledContents(True)
+        self.imageLabel2.setScaledContents(True)
+        self.imageLabel3.setScaledContents(True)
+
+    def start(self): #fix the restart option
+        if (self.isStarted):
+            if (self.indicator == 0):
+                self.gridLayout.removeWidget(self.imageLabel)
+            elif self.indicator == 1:
+                self.gridLayout.removeWidget(self.imageLabel1)
+            elif self.indicator == 2:
+                self.gridLayout.removeWidget(self.imageLabel2)
+            elif self.indicator == 3:
+                self.gridLayout.addWidget(self.imageLabel3)
+
         computerVision_BP.fiberfit_model.main(self)
-        image = QPixmap("image0");
-        #image.scaledToHeight(10) NOT USEFUL
-        #image.scaledToWidth(10) NOT USEFUL
+        self.isStarted = True
+        self.processImages()
+        self.gridLayout.addWidget(self.imageLabel)
+        self.indicator = 0
 
-        imageLabel = QtWidgets.QLabel()
-        imageLabel.setPixmap(image)
-        imageLabel.setScaledContents(True) # pretty much
+    def nextImage(self):
+        self.indicator += 1
 
-        self.gridLayout.addWidget(imageLabel)
-        #img = Figure()
-        #fig = FigureCanvas.__init__(self, self.img)
-        #self.gridLayout.addItem(fig)
+        if (self.indicator > 3):
+            self.indicator = 0 # reset to zero
+            self.gridLayout.removeWidget(self.imageLabel3)
+            self.processImages()
+            self.gridLayout.addWidget(self.imageLabel)
+        if self.indicator == 1:
+            self.gridLayout.removeWidget(self.imageLabel)
+            self.processImages()
+            self.gridLayout.addWidget(self.imageLabel1)
+        elif self.indicator == 2:
+            self.gridLayout.removeWidget(self.imageLabel1)
+            self.processImages()
+            self.gridLayout.addWidget(self.imageLabel2)
+        elif self.indicator == 3:
+            self.gridLayout.removeWidget(self.imageLabel2)
+            self.processImages()
+            self.gridLayout.addWidget(self.imageLabel3)
+
+    def prevImage(self):
+        self.indicator -= 1
+
+        if self.indicator < 0:
+            self.indicator = 3 # resest from other end
+            self.gridLayout.removeWidget(self.imageLabel)
+            self.gridLayout.addWidget(self.imageLabel3)
+
+        if self.indicator == 0:
+            self.gridLayout.removeWidget(self.imageLabel1)
+            self.processImages()
+            self.gridLayout.addWidget(self.imageLabel)
+        elif self.indicator == 1:
+            self.gridLayout.removeWidget(self.imageLabel2)
+            self.processImages()
+            self.gridLayout.addWidget(self.imageLabel1)
+        elif self.indicator == 2:
+            self.gridLayout.removeWidget(self.imageLabel3)
+            self.processImages()
+            self.gridLayout.addWidget(self.imageLabel2)
+
+
 
 
 

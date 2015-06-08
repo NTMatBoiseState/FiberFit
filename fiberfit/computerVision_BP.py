@@ -301,13 +301,14 @@ class fiberfit_model(object):
         th = np.zeros(len(files))
         k = np.zeros(len(files))
 
-        for ii in range(0,len(files)-3): # ii defines what image in the directory is being process
+        for ii in range(0,len(files)): # ii defines what image in the directory is being process
             ##TODO: Note, -3 is hardcoded - bad
             filename = files[ii] # Get file names
             Data = process_image(filename, ii) # Sends image and image number to be processed through FFT
             name[ii] = filename
             th[ii] = Data[0] # Average Orientation of Fiber Network
             k[ii] = Data[1] # Concentration parameter, k
+            plt.savefig("image" + str(ii))
 
         df = DataFrame({'Image Name': name, 'Theta_p': th, 'Kappa': k})
         df.to_csv('Test1.csv', index = False)
@@ -316,7 +317,7 @@ class fiberfit_model(object):
         #canvas = FigureCanvas(fig)
         #fiberfit_control.fft_mainWindow.add(plt)
         #plt.show()
-        plt.savefig("image" + str(ii)) # saves image
+         # saves image
 
 
 
