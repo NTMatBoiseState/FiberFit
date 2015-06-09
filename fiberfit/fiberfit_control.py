@@ -10,6 +10,7 @@ from fiberfit import computerVision_BP
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.Qt import*
+from PyQt5.QtWidgets import QFileDialog
 from PyQt5 import QtCore
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -27,7 +28,16 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.startButton.clicked.connect(self.start)
         self.nextButton.clicked.connect(self.nextImage)
         self.prevButton.clicked.connect(self.prevImage)
+        self.loadButton.clicked.connect(self.launch)
 
+    def launch(self):
+        dialog = QFileDialog()
+        dialog.setWindowTitle("Select image")
+        dialog.setNameFilter("Images (*.png)")
+        dialog.setFileMode(QFileDialog.ExistingFile)
+        #if dialog.exec_() == QtWidgets.QDialog.Accepted:
+        #    self.filename = dialog.selectedFiles()[0]
+        self.filename = dialog.getOpenFileNames()
 
     def processImages(self):
         self.image = QPixmap("image0");
@@ -68,6 +78,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.processImages()
         self.gridLayout.addWidget(self.imageLabel)
         self.indicator = 0
+
 
     def nextImage(self):
         self.indicator += 1
