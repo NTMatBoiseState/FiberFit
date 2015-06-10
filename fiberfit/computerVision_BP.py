@@ -108,7 +108,7 @@ def process_ellipse(normPower, theta1RadFinal):
     plt.polar(Mirtheta1RadFinal1, MirnormPower, linewidth = 2)
     plt.polar(th*pi/180, r_line, color = 'r', linewidth = 3)
     plt.yticks(np.arange(.5, max(MirnormPower), .5))
-    plt.title('Angular Distribution')
+    #plt.title('Angular Distribution') upon Rici's request
 
     return t
 
@@ -188,7 +188,8 @@ def process_image(name, ii):
         im = np.delete(im, (0), axis = 1)
 
     #Plot Upper left - Original Image
-    fig = figure(ii, facecolor = 'white')
+    fig = figure(ii, figsize = (7.5,6), facecolor = 'white')
+
     plt.subplot(221)
     plt.imshow(im, cmap = 'gray')
     plt.axis('off')
@@ -225,8 +226,8 @@ def process_image(name, ii):
     krnd = math.trunc(krnd*100)/100
     thrnd = math.trunc(thrnd*100)/100
 
-    fig.suptitle('%s \n Predicted Values: k = %s and th = %s degrees' %(name.lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/'), krnd, thrnd))
-
+    fig.suptitle('%s \n' %(name.lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/')), fontsize = 14)
+    #fig.suptitle('%s \n\n k = %s   mu = %s degrees \n\n' %(name.lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/'), krnd, thrnd), fontsize = 14, fontstyle = 'italic')
     return k, t_final
 
 def pol2cart(theta, radius):
@@ -283,6 +284,23 @@ def orientation(A):
 
 class fiberfit_model(object):
 
+    def __init__(self):
+
+        self.th = 0
+        self.k = 0
+
+
+    def setTh(self, th):
+        self.th = th
+
+    def setK(self, k):
+        self.k = k
+
+    def getTh(self):
+        return self.th
+    def getK(self):
+        return self.k
+
     def main(self, files):
 
         # os.chdir('../test/')
@@ -297,17 +315,20 @@ class fiberfit_model(object):
 
         #print("Files:", [ f.name for f in files ] )
 
-        name = np.zeros(1, dtype = object)
-        th = np.zeros(1)
-        k = np.zeros(1)
+        #name = np.zeros(1, dtype = object)
+        #th = np.zeros(1)
+        #k = np.zeros(1)
 
         #for ii in range(0,len(files)): # ii defines what image in the directory is being process
             ##TODO: Note, -3 is hardcoded - bad
         filename = files # Get file names
         Data = process_image(filename, self.numImages) # Sends image and image number to be processed through FFT
-        name = filename
+        name = filename.lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/')
         th = Data[0] # Average Orientation of Fiber Network
         k = Data[1] # Concentration parameter, k
+        fiberfit_model.setK(self, round(k, 2))
+        fiberfit_model.setTh(self, round(th[0],2))
+        #plt.show()
         plt.savefig("image" + str(self.numImages))
 
         df = DataFrame({'Image Name': name, 'Theta_p': th, 'Kappa': k})
