@@ -189,7 +189,7 @@ def process_image(name):
 
     #Plot Upper left - Original Image
     #TODO: HERE
-    fig = figure(0, figsize = (7.5,6), facecolor = 'white')
+    fig = figure(figsize = (7.5,6), facecolor = 'white')
 
     plt.subplot(221)
     plt.imshow(im, cmap = 'gray')
@@ -229,7 +229,7 @@ def process_image(name):
 
     fig.suptitle('%s \n' %(name.lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/')), fontsize = 14)
     #fig.suptitle('%s \n\n k = %s   mu = %s degrees \n\n' %(name.lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/'), krnd, thrnd), fontsize = 14, fontstyle = 'italic')
-    return k, t_final
+    return k, t_final, fig
 
 def pol2cart(theta, radius):
 
@@ -289,7 +289,6 @@ class fiberfit_model(object):
 
         self.th = 0
         self.k = 0
-
 
     def setTh(self, th):
         self.th = th

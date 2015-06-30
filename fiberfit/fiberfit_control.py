@@ -5,10 +5,10 @@
 import sys
 import matplotlib
 matplotlib.use("Qt5Agg") ## forces to use Qt5Agg so that Backends work
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from fiberfit import fiberfit_GUI
 from fiberfit import computerVision_BP
 from PyQt5 import QtWidgets
-from PyQt5.QtGui import QPixmap
 from PyQt5.Qt import*
 from PyQt5.QtWidgets import QFileDialog
 from fiberfit import img_model
@@ -21,6 +21,9 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.setupUi(self)
         self.numImages = 0
         self.isStarted = False
+        self.canvasExists = False
+        self.filename = None
+        self.canvas = None
         self.startButton.clicked.connect(self.start)
         #self.nextButton.clicked.connect(self.nextImage)
         #self.prevButton.clicked.connect(self.prevImage)
@@ -28,44 +31,30 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.clearButton.clicked.connect(self.clear)
 
     def clear(self):
-        #self.gridLayout.removeWidget(self.imageLabel)
         self.figureFrame.hide()
-        #self.restartUi(self)
-        #self.__init__(None)
-        #self.isStarted = False
-
+        self.kLabel.setText(" ")
+        self.muLabel.setText(" ")
 
     def launch(self):
         dialog = QFileDialog()
-        #dialog.setWindowTitle("Select image")
-        #dialog.setNameFilter("Images (*.png)")
-        #dialog.setFileMode(QFileDialog.ExistingFile)
-        #if dialog.exec_() == QtWidgets.QDialog.Accepted:
-        #    self.filename = dialog.selectedFiles()[0]
-
-        #Didn't work this way --> fix it later...
         self.filename = dialog.getOpenFileName(self, 'Select Image', '', None) #creates a list of fileNames
-        #print (self.filename[0]) for debugging
 
     def processImages(self):
-        th, k = computerVision_BP.process_image(self.filename[0])
+        th, k, fig = computerVision_BP.process_image(self.filename[0])
+        if self.isStarted:
+            self.gridLayout.removeWidget(self.canvas)
         self.imgList.append(img_model.imgModel(th,k)) # works!;-)
+        self.canvas = FigureCanvas(fig) # works!;-)
+        self.gridLayout.addWidget(self.canvas)
+        self.isStarted = True
+        self.figureFrame.show()
+
 
     def start(self): #fix the restart option
-        #if (self.isStarted):
-          #  self.figureFrame.show()
-         #   self.gridLayout.removeWidget(self.imageLabel)
-        #computerVision_BP.fiberfit_model.main(self, self.filename[0])
-        #self.processImages()
-        #self.gridLayout.addWidget(self.imageLabel)
-        #self.isStarted = True
-        #self.kLabel.setText('k = ') #restarts k
-        #self.muLabel.setText('mu = ')  #restarts mu
         self.processImages()
-        self.kLabel.setText(self.kLabel.text() + str(self.imgList[0].getK()))
-        self.muLabel.setText(self.muLabel.text() + str(self.imgList[0].getTh()))
-
-
+        self.kLabel.setText("k = " + str(round(self.imgList[self.numImages].getK(),2)))
+        self.muLabel.setText("mu = " + str(round(self.imgList[self.numImages].getTh()[0],2)))
+        self.numImages += 1
 
 
  # Below this line is stuff not necessary to run the program. Though, it is useful for me as a developer for
