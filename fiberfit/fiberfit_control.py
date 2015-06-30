@@ -25,6 +25,15 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         #self.nextButton.clicked.connect(self.nextImage)
         #self.prevButton.clicked.connect(self.prevImage)
         self.loadButton.clicked.connect(self.launch)
+        self.clearButton.clicked.connect(self.clear)
+
+    def clear(self):
+        #self.gridLayout.removeWidget(self.imageLabel)
+        self.figureFrame.hide()
+        #self.restartUi(self)
+        #self.__init__(None)
+        #self.isStarted = False
+
 
     def launch(self):
         dialog = QFileDialog()
@@ -49,11 +58,17 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def start(self): #fix the restart option
         if (self.isStarted):
+            self.figureFrame.show()
             self.gridLayout.removeWidget(self.imageLabel)
         computerVision_BP.fiberfit_model.main(self, self.filename[0])
         self.processImages()
         self.gridLayout.addWidget(self.imageLabel)
         self.isStarted = True
+        self.kLabel.setText('k = ') #restarts k
+        self.muLabel.setText('mu = ')  #restarts mu
+        self.kLabel.setText(self.kLabel.text() + str(computerVision_BP.fiberfit_model.getK(self)))
+        self.muLabel.setText(self.muLabel.text() + str(computerVision_BP.fiberfit_model.getTh(self)))
+
 
  # Below this line is stuff not necessary to run the program. Though, it is useful for me as a developer for
  # future.

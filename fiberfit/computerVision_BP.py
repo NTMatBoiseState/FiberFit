@@ -214,7 +214,7 @@ def process_image(name, ii):
 
     normPower, theta1RadFinal = process_histogram(PabsFlip, N1)
 
-    t_final = process_ellipse(normPower, theta1RadFinal)
+    t_final = process_ellipse(normPower, theta1RadFinal)  #THAT"S WHERE ABOVE FUNCTIONS ARE USED.
     print("theta_p", t_final)
 
     k = process_kappa(t_final, theta1RadFinal, normPower)
