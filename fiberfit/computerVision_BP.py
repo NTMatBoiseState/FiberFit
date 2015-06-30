@@ -168,7 +168,7 @@ def process_kappa(t_final, theta1RadFinal, normPower):
 
     return kappa
 
-def process_image(name, ii):
+def process_image(name):
 
     # %
     #  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -188,7 +188,8 @@ def process_image(name, ii):
         im = np.delete(im, (0), axis = 1)
 
     #Plot Upper left - Original Image
-    fig = figure(ii, figsize = (7.5,6), facecolor = 'white')
+    #TODO: HERE
+    fig = figure(0, figsize = (7.5,6), facecolor = 'white')
 
     plt.subplot(221)
     plt.imshow(im, cmap = 'gray')

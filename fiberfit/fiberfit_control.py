@@ -11,14 +11,14 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.Qt import*
 from PyQt5.QtWidgets import QFileDialog
-from PyQt5 import QtCore
+from fiberfit import img_model
 
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def __init__(self, Parent = None):
         super(fft_mainWindow, self).__init__()
+        self.imgList = []
         self.setupUi(self)
-        #self.indicator = 0 #which image?
         self.numImages = 0
         self.isStarted = False
         self.startButton.clicked.connect(self.start)
@@ -48,26 +48,24 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         #print (self.filename[0]) for debugging
 
     def processImages(self):
-        self.image = QPixmap("image" + str(self.numImages));
-        #label = "image" + str(self.numImages) #for debug
-        #print(label)  for debugging
-        self.imageLabel = QtWidgets.QLabel()
-        self.imageLabel.setPixmap(self.image)
-        self.imageLabel.setScaledContents(True)
-        self.numImages += 1
+        th, k = computerVision_BP.process_image(self.filename[0])
+        self.imgList.append(img_model.imgModel(th,k)) # works!;-)
 
     def start(self): #fix the restart option
-        if (self.isStarted):
-            self.figureFrame.show()
-            self.gridLayout.removeWidget(self.imageLabel)
-        computerVision_BP.fiberfit_model.main(self, self.filename[0])
+        #if (self.isStarted):
+          #  self.figureFrame.show()
+         #   self.gridLayout.removeWidget(self.imageLabel)
+        #computerVision_BP.fiberfit_model.main(self, self.filename[0])
+        #self.processImages()
+        #self.gridLayout.addWidget(self.imageLabel)
+        #self.isStarted = True
+        #self.kLabel.setText('k = ') #restarts k
+        #self.muLabel.setText('mu = ')  #restarts mu
         self.processImages()
-        self.gridLayout.addWidget(self.imageLabel)
-        self.isStarted = True
-        self.kLabel.setText('k = ') #restarts k
-        self.muLabel.setText('mu = ')  #restarts mu
-        self.kLabel.setText(self.kLabel.text() + str(computerVision_BP.fiberfit_model.getK(self)))
-        self.muLabel.setText(self.muLabel.text() + str(computerVision_BP.fiberfit_model.getTh(self)))
+        self.kLabel.setText(self.kLabel.text() + str(self.imgList[0].getK()))
+        self.muLabel.setText(self.muLabel.text() + str(self.imgList[0].getTh()))
+
+
 
 
  # Below this line is stuff not necessary to run the program. Though, it is useful for me as a developer for
