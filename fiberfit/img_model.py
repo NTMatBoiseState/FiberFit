@@ -13,3 +13,5 @@ class imgModel:
         return self.th
     def getK(self):
         return self.k
+    def getFig(self):
+        return self.figure
