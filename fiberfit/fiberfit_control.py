@@ -40,15 +40,14 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def launch(self):
         dialog = QFileDialog()
         self.filename = dialog.getOpenFileNames(self, '', None) #creates a list of fileNames
-        #self.filename.replaceInStrings("/Users/azatulepbergenov/PycharmProjects/fiberfit/test/", "")
 
     def processImages(self):
-        print(self.filename)
         for i in range (0, len(self.filename[0])):
             # trick here is that getOpenFileNames creates a 2D list where the first element of first list is
             # a list of all the selected files. So, I am looping through this first element (0) and through each character
             # of this first element
             th, k, fig = computerVision_BP.process_image(self.filename[0][i])
+            #creates a class imgModel and appends to the list of all images
             self.imgList.append(img_model.imgModel(th,k, fig)) # works!;-)
         if self.isStarted:
             self.gridLayout.removeWidget(self.canvas)
@@ -58,7 +57,10 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.figureFrame.show()
 
 
-    def start(self): #fix the restart option
+    def start(self):
+        # sets the current index to the numImages before numImages get updated.
+        #Allows consistent use of numImages and the current index value used to
+        #access elements in a list.
         self.currentIndex = self.numImages
         self.processImages()
         self.setupLabels(self.currentIndex)
