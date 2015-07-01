@@ -176,7 +176,6 @@ def process_image(name):
     #  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #  SIMPLE FFT
     #  %%%%%%%%%%%%%%%%%%%%%E%%%%%%%%%%%%%%%%
-
     im = scipy.ndimage.imread(fname=str(name))
 
     m,n = im.shape

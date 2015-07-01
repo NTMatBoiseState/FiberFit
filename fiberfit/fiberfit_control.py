@@ -23,8 +23,9 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.currentIndex = 0
         self.isStarted = False
         self.canvasExists = False
-        self.filename = None
+        self.filename = []
         self.canvas = None
+        #All the events happen below
         self.startButton.clicked.connect(self.start)
         self.nextButton.clicked.connect(self.nextImage)
         self.prevButton.clicked.connect(self.prevImage)
@@ -38,23 +39,29 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def launch(self):
         dialog = QFileDialog()
-        self.filename = dialog.getOpenFileName(self, 'Select Image', '', None) #creates a list of fileNames
+        self.filename = dialog.getOpenFileNames(self, '', None) #creates a list of fileNames
+        #self.filename.replaceInStrings("/Users/azatulepbergenov/PycharmProjects/fiberfit/test/", "")
 
     def processImages(self):
-        th, k, fig = computerVision_BP.process_image(self.filename[0])
+        print(self.filename)
+        for i in range (0, len(self.filename[0])):
+            # trick here is that getOpenFileNames creates a 2D list where the first element of first list is
+            # a list of all the selected files. So, I am looping through this first element (0) and through each character
+            # of this first element
+            th, k, fig = computerVision_BP.process_image(self.filename[0][i])
+            self.imgList.append(img_model.imgModel(th,k, fig)) # works!;-)
         if self.isStarted:
             self.gridLayout.removeWidget(self.canvas)
-        self.imgList.append(img_model.imgModel(th,k, fig)) # works!;-)
-        self.canvas = FigureCanvas(fig) # works!;-)
+        self.canvas = FigureCanvas((self.imgList[self.currentIndex].getFig())) # works!;-)
         self.gridLayout.addWidget(self.canvas)
         self.isStarted = True
         self.figureFrame.show()
 
 
     def start(self): #fix the restart option
-        self.processImages()
-        self.setupLabels(self.numImages)
         self.currentIndex = self.numImages
+        self.processImages()
+        self.setupLabels(self.currentIndex)
         self.numImages += 1
 
     def setupLabels(self, num):
@@ -69,8 +76,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.gridLayout.addWidget(self.canvas)
             self.setupLabels((self.currentIndex + 1)%len(self.imgList))
             self.currentIndex += 1
-            print(self.numImages)
-            print(len(self.imgList))
 
     def prevImage(self):
         if (self.isStarted):
@@ -80,8 +85,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.gridLayout.addWidget(self.canvas)
             self.setupLabels((self.currentIndex + 1)%len(self.imgList))
             self.currentIndex -= 1
-            print(self.numImages)
-            print(len(self.imgList))
 
 app = QtWidgets.QApplication(sys.argv)
 fft_app = fft_mainWindow()
