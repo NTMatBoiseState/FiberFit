@@ -16,9 +16,14 @@ from fiberfit import img_model
 from pandas import DataFrame
 from pandas import *
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
+    results = open('Test.csv', 'a')
     def __init__(self, Parent = None):
         super(fft_mainWindow, self).__init__()
         self.imgList = []
+       # with open('Test.csv') as file:
+        #    wr = csv.writer(file)
+         #   wr.writerow('Filename, Th, K')
+        self.csvIndex = 0
         self.dataList = []
         self.setupUi(self)
         self.numImages = 0
@@ -48,16 +53,17 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             # trick here is that getOpenFileNames creates a 2D list where the first element of first list is
             # a list of all the selected files. So, I am looping through this first element (0) and through each character
             # of this first element
+            #TODO: Fix the filename so that it drops the path to the file.
             th, k, fig = computerVision_BP.process_image(self.filename[0][i])
             #creates a class imgModel and appends to the list of all images
             self.imgList.append(img_model.imgModel(self.filename[0][i],th,k, fig)) # works!;-)
+            self.numImages += 1
         if self.isStarted:
             self.gridLayout.removeWidget(self.canvas)
         self.canvas = FigureCanvas((self.imgList[self.currentIndex].getFig())) # works!;-)
         self.gridLayout.addWidget(self.canvas)
         self.isStarted = True
         self.figureFrame.show()
-        self.numImages += 1
 
     def start(self):
         # sets the current index to the numImages before numImages get updated.
@@ -66,11 +72,15 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.currentIndex = self.numImages
         self.processImages()
         self.setupLabels(self.currentIndex)
-        for i in range (0, self.numImages):
-            self.dataList.append([str(self.imgList[i].getName()), str(self.imgList[i].getTh()), str(self.imgList[i].getK())])
-        with open('test.csv', 'w', newline='') as fp:
-            a = csv.writer(fp, delimiter=',')
+        for i in range (self.csvIndex, self.numImages):
+            self.dataList.append([self.imgList[i].getName(), self.imgList[i].getTh(), self.imgList[i].getK()])
+            self.csvIndex += 1
+        print(str(self.dataList))
+        with open('test.csv', 'w') as fp:
+            a = csv.writer(fp)
             a.writerows(self.dataList)
+            #Thing works, but need to think of how to empty the dataList after one use, so that the file will not get overwritten with the same stuff
+            #multiple times...
         #self.numImages += 1
 
     def setupLabels(self, num):
