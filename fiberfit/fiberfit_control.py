@@ -28,6 +28,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.isStarted = False
         self.canvasExists = False
         self.filename = []
+        self.firstOne = True
         self.canvas = None
         #All the events happen below
         self.startButton.clicked.connect(self.start)
@@ -54,10 +55,24 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             th, k, fig = computerVision_BP.process_image(self.filename[0][i])
             name = self.filename[0][i].lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/')
             #creates a class imgModel and appends to the list of all images
-            self.imgList.append(img_model.imgModel(name,th[0],k, fig)) # works!;-)
-            self.numImages += 1
+            processedImage = img_model.imgModel(name,th[0],k, fig)
+            if (self.firstOne):
+                self.imgList.append(processedImage)
+                self.numImages += 1
+                self.firstOne = False
+            for index in range(0, len(self.imgList)): # O(n^2) Yikes!!!
+                if (processedImage.getName() == self.imgList[index].getName()):
+                    processedImage.setUsed(True)
+            if (processedImage.getUsed() != True):
+                self.imgList.append(processedImage)
+                self.numImages += 1
+            else:
+                #TODO: Hm, decrements current index on how much there are stuff in a filename array. Not good. Decrements
+                #TODO: current index down to 0.
+                self.currentIndex -= 1
         if self.isStarted:
             self.gridLayout.removeWidget(self.canvas)
+        print(str(self.currentIndex))
         self.canvas = FigureCanvas((self.imgList[self.currentIndex].getFig())) # works!;-)
         self.gridLayout.addWidget(self.canvas)
         self.isStarted = True
