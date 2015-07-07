@@ -3,12 +3,13 @@ Class representing a an imgage model, encapsulating th and k.
 """
 class imgModel:
     count = 0 # for all classes count starts from 0
-    def __init__(self, filename = None, th = None, k = None, figure = None, used = None):
+    def __init__(self, filename = None, th = None, k = None, figure = None, used = None, timeStamp = None):
         self.filename = filename
         self.th = th
         self.k = k
         self.figure = figure
         self.used = used
+        self.timeStamp = timeStamp
 
     def __repr__(self):
         return "image" + str(self.count)
@@ -30,3 +31,6 @@ class imgModel:
 
     def getUsed(self):
         return self.used
+
+    def getTimeStamp(self):
+        return self.timeStamp

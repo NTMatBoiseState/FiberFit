@@ -4,6 +4,7 @@
 
 import sys
 import csv
+import datetime
 import matplotlib
 matplotlib.use("Qt5Agg") ## forces to use Qt5Agg so that Backends work
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -55,21 +56,23 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             th, k, fig = computerVision_BP.process_image(self.filename[0][i])
             name = self.filename[0][i].lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/')
             #creates a class imgModel and appends to the list of all images
-            processedImage = img_model.imgModel(name,th[0],k, fig)
+            processedImage = img_model.imgModel(name,th[0],k, fig, None, datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
+            #Special case when the image is the first one in the list, then it is by now means a duplicate.
             if (self.firstOne):
                 self.imgList.append(processedImage)
                 self.numImages += 1
                 self.firstOne = False
+            #Searches and compares if the processed image is equivalent to any of already added images.
+            #If so, then, processedImage has been used.
             for index in range(0, len(self.imgList)): # O(n^2) Yikes!!!
                 if (processedImage.getName() == self.imgList[index].getName()):
                     processedImage.setUsed(True)
+            #If not used then, I can append processed images to an imgList.
             if (processedImage.getUsed() != True):
                 self.imgList.append(processedImage)
                 self.numImages += 1
-            else:
-                #TODO: Hm, decrements current index on how much there are stuff in a filename array. Not good. Decrements
-                #TODO: current index down to 0.
-                self.currentIndex -= 1
+        if (self.currentIndex == self.numImages):
+            self.currentIndex -= 1
         if self.isStarted:
             self.gridLayout.removeWidget(self.canvas)
         print(str(self.currentIndex))
@@ -87,8 +90,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.setupLabels(self.currentIndex)
 
     def setupLabels(self, num):
-        self.kLabel.setText("k = " + str(round(self.imgList[num].getK(),2)))
-        self.muLabel.setText("mu = " + str(round(self.imgList[num].getTh(),2)))
+        self.kLabel.setText("mu = " + str(round(self.imgList[num].getK(),2)))
+        self.muLabel.setText("k = " + str(round(self.imgList[num].getTh(),2)))
 
     def nextImage(self):
         if (self.isStarted):
@@ -110,14 +113,11 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def export(self):
         for i in range (self.csvIndex, self.numImages):
-            self.dataList.append([self.imgList[i].getName(), self.imgList[i].getTh(), self.imgList[i].getK()])
+            self.dataList.append([self.imgList[i].getName(), self.imgList[i].getTh(), self.imgList[i].getK(), self.imgList[i].getTimeStamp()])
             self.csvIndex += 1
         with open('test.csv', 'w') as fp:
             a = csv.writer(fp)
             a.writerows(self.dataList)
-      #Thing works, but need to think of how to empty the dataList after one use, so that the file will not get overwritten with the same stuff
-      #multiple times...
-
 
 app = QtWidgets.QApplication(sys.argv)
 fft_app = fft_mainWindow()
