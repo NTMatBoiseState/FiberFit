@@ -112,11 +112,13 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.currentIndex -= 1
 
     def export(self):
+        #self.dataList.append(['Name', 'Th', 'K', 'Time'])
         for i in range (self.csvIndex, self.numImages):
             self.dataList.append([self.imgList[i].getName(), self.imgList[i].getTh(), self.imgList[i].getK(), self.imgList[i].getTimeStamp()])
             self.csvIndex += 1
         with open('test.csv', 'w') as fp:
             a = csv.writer(fp)
+            a.writerow(['Name', 'K', 'Th', 'Time'])
             a.writerows(self.dataList)
 
 app = QtWidgets.QApplication(sys.argv)
