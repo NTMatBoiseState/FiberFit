@@ -38,6 +38,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.loadButton.clicked.connect(self.launch)
         self.clearButton.clicked.connect(self.clear)
         self.exportButton.clicked.connect(self.export)
+        self.selectImgBox.activated[str].connect(self.changeState)
 
     def clear(self):
         self.figureFrame.hide()
@@ -62,6 +63,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 self.imgList.append(processedImage)
                 self.numImages += 1
                 self.firstOne = False
+                self.selectImgBox.addItem(processedImage.getName())
             #Searches and compares if the processed image is equivalent to any of already added images.
             #If so, then, processedImage has been used.
             for index in range(0, len(self.imgList)): # O(n^2) Yikes!!!
@@ -71,14 +73,21 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             if (processedImage.getUsed() != True):
                 self.imgList.append(processedImage)
                 self.numImages += 1
+                self.selectImgBox.addItem(processedImage.getName())
         if (self.currentIndex == self.numImages):
             self.currentIndex -= 1
         if self.isStarted:
             self.gridLayout.removeWidget(self.canvas)
-        print(str(self.currentIndex))
         self.canvas = FigureCanvas((self.imgList[self.currentIndex].getFig())) # works!;-)
         self.gridLayout.addWidget(self.canvas)
         self.isStarted = True
+        self.figureFrame.show()
+
+    def processImagesFromComboBox(self, img):
+        if self.isStarted:
+            self.gridLayout.removeWidget(self.canvas)
+        self.canvas = FigureCanvas((img.getFig())) # works!;-)
+        self.gridLayout.addWidget(self.canvas)
         self.figureFrame.show()
 
     def start(self):
@@ -102,14 +111,18 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.setupLabels((self.currentIndex + 1)%len(self.imgList))
             self.currentIndex += 1
 
+            print(str(self.currentIndex))
+
     def prevImage(self):
         if (self.isStarted):
             image = self.imgList[(self.currentIndex - 1)%len(self.imgList)]
             self.gridLayout.removeWidget(self.canvas)
             self.canvas = FigureCanvas(image.getFig())
             self.gridLayout.addWidget(self.canvas)
-            self.setupLabels((self.currentIndex + 1)%len(self.imgList))
+            self.setupLabels((self.currentIndex - 1)%len(self.imgList))
             self.currentIndex -= 1
+
+            print(str(self.currentIndex))
 
     def export(self):
         #self.dataList.append(['Name', 'Th', 'K', 'Time'])
@@ -120,6 +133,17 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             a = csv.writer(fp)
             a.writerow(['Name', 'K', 'Th', 'Time'])
             a.writerows(self.dataList)
+
+    def changeState(self, filename):
+        #find img
+        for i in range (0, len(self.imgList)):
+            if (self.imgList[i].getName() == filename):
+                self.processImagesFromComboBox(self.imgList[i])
+                self.kLabel.setText("mu = " + str(round(self.imgList[i].getK(),2)))
+                self.muLabel.setText("k = " + str(round(self.imgList[i].getTh(),2)))
+                self.currentIndex = i
+
+                print(str(self.currentIndex))
 
 app = QtWidgets.QApplication(sys.argv)
 fft_app = fft_mainWindow()
