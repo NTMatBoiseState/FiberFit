@@ -318,6 +318,7 @@ class fiberfit_model(object):
         #th = np.zeros(1)
         #k = np.zeros(1)
 
+
         #for ii in range(0,len(files)): # ii defines what image in the directory is being process
             ##TODO: Note, -3 is hardcoded - bad
         filename = files # Get file names

@@ -12,12 +12,20 @@ from fiberfit import fiberfit_GUI
 from fiberfit import computerVision_BP
 from PyQt5 import QtWidgets
 from PyQt5.Qt import*
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog #In order to select a file
+from PyQt5.QtCore import QFileInfo #In order to get a pathname to a file.
 from fiberfit import img_model
+
+#TODO: 1) Eliminate dependency on having a path to file explicitly listed.  DONE.
+#TODO: 2) Deal with resizability and making GUI pretty. !!
+#TODO: 3) Look into dictionaries. !
 
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     results = open('test.csv', 'a') #All instances would have this as a starter. Initialized later in code.
 
+    """
+    Initializes all instance variables a.k.a attributes of a class.
+    """
     def __init__(self, Parent = None):
         super(fft_mainWindow, self).__init__()
         self.imgList = []
@@ -38,24 +46,39 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.loadButton.clicked.connect(self.launch)
         self.clearButton.clicked.connect(self.clear)
         self.exportButton.clicked.connect(self.export)
+        #sends off a signal containing string.
+        #Conveniently the string will be the name of the file.
         self.selectImgBox.activated[str].connect(self.changeState)
 
+    """
+    Clears out canvas.
+    """
     def clear(self):
         self.figureFrame.hide()
         self.kLabel.setText(" ")
         self.muLabel.setText(" ")
 
+    """
+    Allows user to select image to use.
+    """
     def launch(self):
         dialog = QFileDialog()
         self.filename = dialog.getOpenFileNames(self, '', None) #creates a list of fileNames
 
+    """
+    Processes selected images. Displays it onto a canvas.
+    Technical: Creates img_model objects that encapsulate all of the useful data.
+    """
     def processImages(self):
         for i in range (0, len(self.filename[0])):
             # trick here is that getOpenFileNames creates a 2D list where the first element of first list is
             # a list of all the selected files. So, I am looping through this first element (0) and through each character
             # of this first element
             th, k, fig = computerVision_BP.process_image(self.filename[0][i])
-            name = self.filename[0][i].lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/')
+            #Stores the pathName, so that it can be trimmed off the filename.
+            pathName = QFileInfo(self.filename[0][i]).absoluteDir().absolutePath()
+            #Trims the path ;-)
+            name = self.filename[0][i].lstrip(pathName)
             #creates a class imgModel and appends to the list of all images
             processedImage = img_model.imgModel(name,th[0],k, fig, None, datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
             #Special case when the image is the first one in the list, then it is by now means a duplicate.
@@ -83,13 +106,20 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.isStarted = True
         self.figureFrame.show()
 
+    """
+    Helps to process an image from using a Combo Box.
+    @param: img to be processed
+    """
     def processImagesFromComboBox(self, img):
         if self.isStarted:
             self.gridLayout.removeWidget(self.canvas)
-        self.canvas = FigureCanvas((img.getFig())) # works!;-)
+        self.canvas = FigureCanvas((img.getFig()))
         self.gridLayout.addWidget(self.canvas)
         self.figureFrame.show()
 
+    """
+    Starts the application.
+    """
     def start(self):
         # sets the current index to the numImages before numImages get updated.
         #Allows consistent use of numImages and the current index value used to
@@ -98,10 +128,18 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.processImages()
         self.setupLabels(self.currentIndex)
 
+    """
+    Sets up appropriate labels depending on which image is selected.
+    """
     def setupLabels(self, num):
         self.kLabel.setText("mu = " + str(round(self.imgList[num].getK(),2)))
         self.muLabel.setText("k = " + str(round(self.imgList[num].getTh(),2)))
 
+    """
+    Scrolls to next image.
+    Uses a circular array as an underlying data structure. Main advantage is
+    access by index; that is eliminate unnecessary search for item.
+    """
     def nextImage(self):
         if (self.isStarted):
             image = self.imgList[(self.currentIndex + 1)%len(self.imgList)]
@@ -110,9 +148,13 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.gridLayout.addWidget(self.canvas)
             self.setupLabels((self.currentIndex + 1)%len(self.imgList))
             self.currentIndex += 1
+            #XXX: For debugging: print(str(self.currentIndex))
 
-            print(str(self.currentIndex))
-
+    """
+    Scrolls to previous image.
+    Uses a circular array as an underlying data structure. Main advantage is
+    access by index; that is eliminate unnecessary search for item.
+    """
     def prevImage(self):
         if (self.isStarted):
             image = self.imgList[(self.currentIndex - 1)%len(self.imgList)]
@@ -121,19 +163,26 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.gridLayout.addWidget(self.canvas)
             self.setupLabels((self.currentIndex - 1)%len(self.imgList))
             self.currentIndex -= 1
+            #XXX: For Debugging: print(str(self.currentIndex))
 
-            print(str(self.currentIndex))
-
+    """
+    Exports results into a .csv file.
+    """
+    #TODO: Need to add saving of PDF option.
     def export(self):
-        #self.dataList.append(['Name', 'Th', 'K', 'Time'])
         for i in range (self.csvIndex, self.numImages):
             self.dataList.append([self.imgList[i].getName(), self.imgList[i].getTh(), self.imgList[i].getK(), self.imgList[i].getTimeStamp()])
             self.csvIndex += 1
-        with open('test.csv', 'w') as fp:
-            a = csv.writer(fp)
+        with open('test.csv', 'w') as csvfile:
+            a = csv.writer(csvfile)
             a.writerow(['Name', 'K', 'Th', 'Time'])
             a.writerows(self.dataList)
 
+    """
+    Slot for Combo Box's activated() signal. Searches for image and displays it onto
+    canvas.
+    Note, O(n) because of performing a search for image.
+    """
     def changeState(self, filename):
         #find img
         for i in range (0, len(self.imgList)):
@@ -142,9 +191,11 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 self.kLabel.setText("mu = " + str(round(self.imgList[i].getK(),2)))
                 self.muLabel.setText("k = " + str(round(self.imgList[i].getTh(),2)))
                 self.currentIndex = i
+               #XXX: For Debugging: print(str(self.currentIndex))
 
-                print(str(self.currentIndex))
-
+"""
+Enters an event-loop.
+"""
 app = QtWidgets.QApplication(sys.argv)
 fft_app = fft_mainWindow()
 fft_app.show()

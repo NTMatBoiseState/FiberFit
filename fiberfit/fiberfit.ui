@@ -376,6 +376,16 @@
      </size>
     </property>
    </widget>
+   <widget class="QComboBox" name="selectImgBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>630</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
