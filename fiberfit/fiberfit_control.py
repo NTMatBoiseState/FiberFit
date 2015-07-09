@@ -132,8 +132,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     Sets up appropriate labels depending on which image is selected.
     """
     def setupLabels(self, num):
-        self.kLabel.setText("mu = " + str(round(self.imgList[num].getK(),2)))
-        self.muLabel.setText("k = " + str(round(self.imgList[num].getTh(),2)))
+        self.kLabel.setText("k = " + str(round(self.imgList[num].getK(),2)))
+        self.muLabel.setText("mu = " + str(round(self.imgList[num].getTh(),2)))
 
     """
     Scrolls to next image.
@@ -188,8 +188,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         for i in range (0, len(self.imgList)):
             if (self.imgList[i].getName() == filename):
                 self.processImagesFromComboBox(self.imgList[i])
-                self.kLabel.setText("mu = " + str(round(self.imgList[i].getK(),2)))
-                self.muLabel.setText("k = " + str(round(self.imgList[i].getTh(),2)))
+                self.kLabel.setText("k = " + str(round(self.imgList[i].getK(),2)))
+                self.muLabel.setText("mu = " + str(round(self.imgList[i].getTh(),2)))
                 self.currentIndex = i
                #XXX: For Debugging: print(str(self.currentIndex))
 

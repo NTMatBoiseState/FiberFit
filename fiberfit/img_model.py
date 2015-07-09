@@ -3,7 +3,7 @@ Class representing a an imgage model, encapsulating th and k.
 """
 class imgModel:
     count = 0 # for all classes count starts from 0
-    def __init__(self, filename = None, th = None, k = None, figure = None, used = None, timeStamp = None):
+    def __init__(self, filename = None, k = None, th = None, figure = None, used = None, timeStamp = None):
         self.filename = filename
         self.th = th
         self.k = k
