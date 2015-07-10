@@ -29,7 +29,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def __init__(self, Parent = None):
         super(fft_mainWindow, self).__init__()
         self.imgList = []
-        self.imgDim = None
         self.csvIndex = 0
         self.dataList = []
         self.setupUi(self)
@@ -98,18 +97,12 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 self.imgList.append(processedImage)
                 self.numImages += 1
                 self.selectImgBox.addItem(processedImage.getName())
-
         if (self.currentIndex == self.numImages):
             self.currentIndex -= 1
         if self.isStarted:
             self.figureLayout.removeWidget(self.canvas)
             self.canvas.deleteLater()
-        else: #gets img's dimensions on the first try.
-            self.canvas = FigureCanvas((self.imgList[self.currentIndex].getFig()))
-            self.imgDim = self.canvas.get_width_height()
         self.canvas = FigureCanvas((self.imgList[self.currentIndex].getFig()))
-        print(self.canvas.get_width_height())
-        #self.figureWidget.setMinimumSize(self.imgDim[0], self.imgDim[1])
         self.figureLayout.addWidget(self.canvas)
         self.isStarted = True
     """
@@ -121,7 +114,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.figureLayout.removeWidget(self.canvas)
             self.canvas.deleteLater()
         self.canvas = FigureCanvas((img.getFig()))
-        self.figureWidget.setMinimumSize(self.imgDim[0], self.imgDim[1])
         self.figureLayout.addWidget(self.canvas)
 
     """
@@ -153,7 +145,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.figureLayout.removeWidget(self.canvas)
             self.canvas.deleteLater()
             self.canvas = FigureCanvas(image.getFig())
-            #self.figureWidget.setMinimumSize(self.imgDim[0], self.imgDim[1])
             self.figureLayout.addWidget(self.canvas)
             self.setupLabels((self.currentIndex + 1)%len(self.imgList))
             self.currentIndex += 1
@@ -170,7 +161,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.figureLayout.removeWidget(self.canvas)
             self.canvas.deleteLater()
             self.canvas = FigureCanvas(image.getFig())
-            #self.figureWidget.setMinimumSize(self.imgDim[0], self.imgDim[1])
             self.figureLayout.addWidget(self.canvas)
             self.setupLabels((self.currentIndex - 1)%len(self.imgList))
             self.currentIndex -= 1
