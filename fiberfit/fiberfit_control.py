@@ -29,6 +29,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def __init__(self, Parent = None):
         super(fft_mainWindow, self).__init__()
         self.imgList = []
+        self.imgDim = None
         self.csvIndex = 0
         self.dataList = []
         self.setupUi(self)
@@ -54,7 +55,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     Clears out canvas.
     """
     def clear(self):
-        self.figureFrame.hide()
+       # self.figureFrame.hide()
         self.kLabel.setText(" ")
         self.muLabel.setText(" ")
 
@@ -97,25 +98,31 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 self.imgList.append(processedImage)
                 self.numImages += 1
                 self.selectImgBox.addItem(processedImage.getName())
+
         if (self.currentIndex == self.numImages):
             self.currentIndex -= 1
         if self.isStarted:
-            self.gridLayout.removeWidget(self.canvas)
-        self.canvas = FigureCanvas((self.imgList[self.currentIndex].getFig())) # works!;-)
-        self.gridLayout.addWidget(self.canvas)
+            self.figureLayout.removeWidget(self.canvas)
+            self.canvas.deleteLater()
+        else: #gets img's dimensions on the first try.
+            self.canvas = FigureCanvas((self.imgList[self.currentIndex].getFig()))
+            self.imgDim = self.canvas.get_width_height()
+        self.canvas = FigureCanvas((self.imgList[self.currentIndex].getFig()))
+        print(self.canvas.get_width_height())
+        #self.figureWidget.setMinimumSize(self.imgDim[0], self.imgDim[1])
+        self.figureLayout.addWidget(self.canvas)
         self.isStarted = True
-        self.figureFrame.show()
-
     """
     Helps to process an image from using a Combo Box.
     @param: img to be processed
     """
     def processImagesFromComboBox(self, img):
         if self.isStarted:
-            self.gridLayout.removeWidget(self.canvas)
+            self.figureLayout.removeWidget(self.canvas)
+            self.canvas.deleteLater()
         self.canvas = FigureCanvas((img.getFig()))
-        self.gridLayout.addWidget(self.canvas)
-        self.figureFrame.show()
+        self.figureWidget.setMinimumSize(self.imgDim[0], self.imgDim[1])
+        self.figureLayout.addWidget(self.canvas)
 
     """
     Starts the application.
@@ -143,9 +150,11 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def nextImage(self):
         if (self.isStarted):
             image = self.imgList[(self.currentIndex + 1)%len(self.imgList)]
-            self.gridLayout.removeWidget(self.canvas)
+            self.figureLayout.removeWidget(self.canvas)
+            self.canvas.deleteLater()
             self.canvas = FigureCanvas(image.getFig())
-            self.gridLayout.addWidget(self.canvas)
+            #self.figureWidget.setMinimumSize(self.imgDim[0], self.imgDim[1])
+            self.figureLayout.addWidget(self.canvas)
             self.setupLabels((self.currentIndex + 1)%len(self.imgList))
             self.currentIndex += 1
             #XXX: For debugging: print(str(self.currentIndex))
@@ -158,9 +167,11 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def prevImage(self):
         if (self.isStarted):
             image = self.imgList[(self.currentIndex - 1)%len(self.imgList)]
-            self.gridLayout.removeWidget(self.canvas)
+            self.figureLayout.removeWidget(self.canvas)
+            self.canvas.deleteLater()
             self.canvas = FigureCanvas(image.getFig())
-            self.gridLayout.addWidget(self.canvas)
+            #self.figureWidget.setMinimumSize(self.imgDim[0], self.imgDim[1])
+            self.figureLayout.addWidget(self.canvas)
             self.setupLabels((self.currentIndex - 1)%len(self.imgList))
             self.currentIndex -= 1
             #XXX: For Debugging: print(str(self.currentIndex))
