@@ -176,7 +176,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.csvIndex += 1
         with open('test.csv', 'w') as csvfile:
             a = csv.writer(csvfile)
-            a.writerow(['Name', 'K', 'Th', 'Time'])
+            a.writerow(['Name', 'Th', 'K', 'Time'])
             a.writerows(self.dataList)
 
     """
