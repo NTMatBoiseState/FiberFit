@@ -96,21 +96,20 @@ def process_ellipse(normPower, theta1RadFinal):
     t = orientation(A)
 
     #Plot Lower Left - Polar plot of angular distribution
-    plt.subplot(223, polar = True)
-
+    angDist = plt.figure(figsize = (5,5))
     r_line = np.arange(0, max(MirnormPower)+.5, .5)
     th = np.zeros(len(r_line))
     for i in range (0, len(r_line)):
         th[i] = t
     th = np.concatenate([th, (th+180)])
     r_line = np.concatenate([r_line, r_line])
-
     plt.polar(Mirtheta1RadFinal1, MirnormPower, linewidth = 2)
     plt.polar(th*pi/180, r_line, color = 'r', linewidth = 3)
     plt.yticks(np.arange(.5, max(MirnormPower), .5))
+    plt.close()
     #plt.title('Angular Distribution') upon Rici's request
 
-    return t
+    return t, angDist
 
 def process_kappa(t_final, theta1RadFinal, normPower):
 
@@ -151,13 +150,11 @@ def process_kappa(t_final, theta1RadFinal, normPower):
 
     #Plot Lower Right - Distribution on a cartesian plane with appropriate shift
 
-    plt.subplot(224)
+    cartDist = plt.figure(figsize = (5,5))
     h2 = plt.bar((theta1RadFinal1*180/pi), normPower1)
     plt.xticks(np.arange(-180, 180, 45))
     plt.xlim([t-100, t+100])
-
     p_act = fitted_func(theta1RadFinal1, kappa)
-    subplot(224)
     h3, = plt.plot(theta1RadFinal1*180/pi, p_act, label = 'Pred VM Dist', linewidth = 3)
     plt.title('Angular Distribution')
     plt.xlabel('Angle (Degrees)')
@@ -165,8 +162,9 @@ def process_kappa(t_final, theta1RadFinal, normPower):
     plt.legend(handles = [h3], loc = 2)
     plt.yticks(np.arange(0, max(normPower1)+.3, .5))
     plt.ylim([0, max(normPower1)+.3])
+    plt.close()
 
-    return kappa
+    return kappa, cartDist
 
 def process_image(name):
 
@@ -189,10 +187,13 @@ def process_image(name):
     #Plot Upper left - Original Image
     #TODO: HERE
     fig = figure(figsize = (7.5,6), facecolor = 'white')
-
-    plt.subplot(221)
-    plt.imshow(im, cmap = 'gray')
+    originalImage = plt.figure(frameon = False, figsize = (5,5))
+    ax = plt.Axes(originalImage, [0.,0.,1.,1.])
+    ax.set_axis_off() #TODO: HERE WE GO! HERE IS THE SOLUTION :-)
+    originalImage.add_axes(ax)
+    plt.imshow(im, cmap = 'gray', aspect = 'auto')
     plt.axis('off')
+    plt.close()
 
     fft_result = np.fft.fft2(im)
     Fshift=np.fft.fftshift(fft_result)
@@ -206,19 +207,23 @@ def process_image(name):
     PabsFlip = np.delete(PabsFlip, (0), axis=1)
 
     #Plot Upper Right - Power Spectrum on logrithmic scale
-    plt.subplot(222)
+    logScale = plt.figure(frameon = False, figsize = (5,5))
+    ax = plt.Axes(logScale, [0.,0.,1.,1.])
+    ax.set_axis_off() #TODO: HERE WE GO! HERE IS THE SOLUTION :-)
+    logScale.add_axes(ax)
     plt.axis('off')
-    plt.imshow(log(PabsFlip), cmap = 'gray')
+    plt.imshow(log(PabsFlip), cmap = 'gray', aspect = 'auto')
+    plt.close()
 
     M,N1=im.shape
 
     normPower, theta1RadFinal = process_histogram(PabsFlip, N1)
 
-    t_final = process_ellipse(normPower, theta1RadFinal)  #THAT"S WHERE ABOVE FUNCTIONS ARE USED.
-    print("theta_p", t_final)
+    t_final, angDist = process_ellipse(normPower, theta1RadFinal)  #THAT"S WHERE ABOVE FUNCTIONS ARE USED.
+    #print("theta_p", t_final)
 
-    k = process_kappa(t_final, theta1RadFinal, normPower)
-    print("kappa:", k)
+    k, cartDist = process_kappa(t_final, theta1RadFinal, normPower)
+    #print("kappa:", k) TODO:For Debugging
 
     #Rounding results for Title of Figure
     krnd = math.ceil(k*1000)/1000
@@ -228,7 +233,7 @@ def process_image(name):
 
     fig.suptitle('%s \n' %(name.lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/')), fontsize = 14)
     #fig.suptitle('%s \n\n k = %s   mu = %s degrees \n\n' %(name.lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/'), krnd, thrnd), fontsize = 14, fontstyle = 'italic')
-    return k, t_final, fig
+    return k, t_final, fig, angDist, cartDist, logScale, originalImage
 
 def pol2cart(theta, radius):
 
@@ -280,63 +285,3 @@ def orientation(A):
     t_New = angle*180/np.pi
 
     return (t_New)
-
-
-class fiberfit_model(object):
-
-    def __init__(self):
-
-        self.th = 0
-        self.k = 0
-
-    def setTh(self, th):
-        self.th = th
-
-    def setK(self, k):
-        self.k = k
-
-    def getTh(self):
-        return self.th
-    def getK(self):
-        return self.k
-
-    def main(self, files):
-
-        # os.chdir('../test/')
-        import pathlib
-        from pathlib import Path
-
-
-        #testdir = Path("../test/")
-        #print("Testdir:", testdir.resolve().absolute())
-        # Grab all of the images within the same folder as the code and initialize data arrays
-        #files = list(testdir.glob("*.png"))
-
-        #print("Files:", [ f.name for f in files ] )
-
-        #name = np.zeros(1, dtype = object)
-        #th = np.zeros(1)
-        #k = np.zeros(1)
-
-
-        #for ii in range(0,len(files)): # ii defines what image in the directory is being process
-            ##TODO: Note, -3 is hardcoded - bad
-        filename = files # Get file names
-        Data = process_image(filename, self.numImages) # Sends image and image number to be processed through FFT
-        name = filename.lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/')
-        th = Data[0] # Average Orientation of Fiber Network
-        k = Data[1] # Concentration parameter, k
-        fiberfit_model.setK(self, round(k, 2))
-        fiberfit_model.setTh(self, round(th[0],2))
-        #plt.show()
-        plt.savefig("image" + str(self.numImages))
-
-        df = DataFrame({'Image Name': name, 'Theta_p': th, 'Kappa': k})
-        df.to_csv('Test1.csv', index = False)
-
-if __name__ == '__main__':
-
-    import timeit
-
-    runtime = timeit.timeit(main, number=1)
-    print("Ran in: %.3f s "%runtime)

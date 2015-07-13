@@ -38,7 +38,11 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.canvasExists = False
         self.filename = []
         self.firstOne = True
-        self.canvas = None
+        #self.canvas = None
+        self.imgCanvas = None
+        self.logSclCanvas = None
+        self.angDistCanvas = None
+        self.cartDistCanvas = None
         #All the events happen below
         self.startButton.clicked.connect(self.start)
         self.nextButton.clicked.connect(self.nextImage)
@@ -74,13 +78,13 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             # trick here is that getOpenFileNames creates a 2D list where the first element of first list is
             # a list of all the selected files. So, I am looping through this first element (0) and through each character
             # of this first element
-            th, k, fig = computerVision_BP.process_image(self.filename[0][i])
+            th, k, fig, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(self.filename[0][i])
             #Stores the pathName, so that it can be trimmed off the filename.
             pathName = QFileInfo(self.filename[0][i]).absoluteDir().absolutePath()
             #Trims the path ;-)
             name = self.filename[0][i].lstrip(pathName)
             #creates a class imgModel and appends to the list of all images
-            processedImage = img_model.imgModel(name,th[0],k, fig, None, datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
+            processedImage = img_model.imgModel(name,th[0],k, fig, orgImg, logScl, angDist, cartDist, None, datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
             #Special case when the image is the first one in the list, then it is by now means a duplicate.
             if (self.firstOne):
                 self.imgList.append(processedImage)
@@ -100,21 +104,44 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         if (self.currentIndex == self.numImages):
             self.currentIndex -= 1
         if self.isStarted:
-            self.figureLayout.removeWidget(self.canvas)
-            self.canvas.deleteLater()
-        self.canvas = FigureCanvas((self.imgList[self.currentIndex].getFig()))
-        self.figureLayout.addWidget(self.canvas)
+            #removes/deletes all canvases
+            self.cleanCanvas()
+        #fills canvas
+        self.fillCanvas(self.imgList[self.currentIndex])
+        #started
         self.isStarted = True
+
+
+    def cleanCanvas(self):
+        self.figureLayout.removeWidget(self.angDistCanvas)
+        self.figureLayout.removeWidget(self.cartDistCanvas)
+        self.figureLayout.removeWidget(self.logSclCanvas)
+        self.figureLayout.removeWidget(self.imgCanvas)
+        self.angDistCanvas.deleteLater()
+        self.cartDistCanvas.deleteLater()
+        self.imgCanvas.deleteLater()
+        self.logSclCanvas.deleteLater()
+
+    def fillCanvas(self, img):
+        #updates canvases
+        self.imgCanvas = FigureCanvas(img.getOriginalImg())
+        self.logSclCanvas = FigureCanvas(img.getLogScl())
+        self.angDistCanvas = FigureCanvas(img.getAngDist())
+        self.cartDistCanvas = FigureCanvas(img.getCartDist())
+        #adds them to layout
+        self.figureLayout.addWidget(self.imgCanvas, 0, 0)
+        self.figureLayout.addWidget(self.logSclCanvas, 0, 1)
+        self.figureLayout.addWidget(self.angDistCanvas, 1, 0)
+        self.figureLayout.addWidget(self.cartDistCanvas, 1, 1)
+
     """
     Helps to process an image from using a Combo Box.
     @param: img to be processed
     """
     def processImagesFromComboBox(self, img):
         if self.isStarted:
-            self.figureLayout.removeWidget(self.canvas)
-            self.canvas.deleteLater()
-        self.canvas = FigureCanvas((img.getFig()))
-        self.figureLayout.addWidget(self.canvas)
+            self.cleanCanvas()
+        self.fillCanvas(img)
 
     """
     Starts the application.
@@ -142,10 +169,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def nextImage(self):
         if (self.isStarted):
             image = self.imgList[(self.currentIndex + 1)%len(self.imgList)]
-            self.figureLayout.removeWidget(self.canvas)
-            self.canvas.deleteLater()
-            self.canvas = FigureCanvas(image.getFig())
-            self.figureLayout.addWidget(self.canvas)
+            self.cleanCanvas()
+            self.fillCanvas(image)
             self.setupLabels((self.currentIndex + 1)%len(self.imgList))
             self.currentIndex += 1
             #XXX: For debugging: print(str(self.currentIndex))
@@ -158,10 +183,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def prevImage(self):
         if (self.isStarted):
             image = self.imgList[(self.currentIndex - 1)%len(self.imgList)]
-            self.figureLayout.removeWidget(self.canvas)
-            self.canvas.deleteLater()
-            self.canvas = FigureCanvas(image.getFig())
-            self.figureLayout.addWidget(self.canvas)
+            self.cleanCanvas()
+            self.fillCanvas(image)
             self.setupLabels((self.currentIndex - 1)%len(self.imgList))
             self.currentIndex -= 1
             #XXX: For Debugging: print(str(self.currentIndex))

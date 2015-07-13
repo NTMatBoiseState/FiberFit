@@ -3,11 +3,15 @@ Class representing a an imgage model, encapsulating th and k.
 """
 class imgModel:
     count = 0 # for all classes count starts from 0
-    def __init__(self, filename = None, k = None, th = None, figure = None, used = None, timeStamp = None):
+    def __init__(self, filename = None, k = None, th = None, figure = None, orgImg = None, logScl = None, angDist = None, cartDist = None, used = None, timeStamp = None):
         self.filename = filename
         self.th = th
         self.k = k
         self.figure = figure
+        self.orgImg = orgImg
+        self.logScl = logScl
+        self.angDist = angDist
+        self.cartDist = cartDist
         self.used = used
         self.timeStamp = timeStamp
 
@@ -34,3 +38,15 @@ class imgModel:
 
     def getTimeStamp(self):
         return self.timeStamp
+
+    def getOriginalImg(self):
+        return self.orgImg
+
+    def getLogScl(self):
+        return self.logScl
+
+    def getAngDist(self):
+        return self.angDist
+
+    def getCartDist(self):
+        return self.cartDist
