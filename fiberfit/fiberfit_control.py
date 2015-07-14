@@ -16,10 +16,6 @@ from PyQt5.QtWidgets import QFileDialog #In order to select a file
 from PyQt5.QtCore import QFileInfo #In order to get a pathname to a file.
 from fiberfit import img_model
 
-#TODO: 1) Eliminate dependency on having a path to file explicitly listed.  DONE.
-#TODO: 2) Deal with resizability and making GUI pretty. !!
-#TODO: 3) Look into dictionaries. !
-
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     results = open('test.csv', 'a') #All instances would have this as a starter. Initialized later in code.
 
@@ -36,9 +32,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.currentIndex = 0
         self.isStarted = False
         self.canvasExists = False
-        self.filename = []
+        self.filenames = []
         self.firstOne = True
-        #self.canvas = None
         self.imgCanvas = None
         self.logSclCanvas = None
         self.angDistCanvas = None
@@ -67,47 +62,82 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """
     def launch(self):
         dialog = QFileDialog()
-        self.filename = dialog.getOpenFileNames(self, '', None) #creates a list of fileNames
+        filenames = dialog.getOpenFileNames(self, '', None) #creates a list of fileNames
+
+        self.filenames = []
+        for file in filenames[0]:
+            if file.is_dir():
+                # TODO: find all files in dir
+                self.filenames.append(  )
+            else:
+                self.filenames.append( pathlib.Path(file) )
 
     """
     Processes selected images. Displays it onto a canvas.
     Technical: Creates img_model objects that encapsulate all of the useful data.
     """
-    def processImages(self):
-        for i in range (0, len(self.filename[0])):
-            # trick here is that getOpenFileNames creates a 2D list where the first element of first list is
-            # a list of all the selected files. So, I am looping through this first element (0) and through each character
-            # of this first element
-            th, k, fig, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(self.filename[0][i])
-            #Stores the pathName, so that it can be trimmed off the filename.
-            pathName = QFileInfo(self.filename[0][i]).absoluteDir().absolutePath()
-            #Trims the path ;-)
-            name = self.filename[0][i].lstrip(pathName)
-            #creates a class imgModel and appends to the list of all images
-            processedImage = img_model.imgModel(name,th[0],k, fig, orgImg, logScl, angDist, cartDist, None, datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
-            #Special case when the image is the first one in the list, then it is by now means a duplicate.
+    @PyQt.Slot(List)
+    def processImages(self, filenames):
+
+        for filename in filenames:
+
+            # Retrieve Figures from data analysis code
+            th, k, fig, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename)
+
+            # Stores the PathName, so that it can be trimmed off the filename.
+            name = filename.name
+
+            # Creates a class imgModel and appends to the list of all images
+            processedImage = img_model.ImgModel(
+                filename = name,
+                k = k,
+                th = th,
+                figure = fig,
+                orgImg = None,
+                logScl = None,
+                angDist = None,
+                cartDist = None,
+                used = None,
+                timeStamp =
+                # name,th[0],k, fig, orgImg, logScl,
+                # angDist, cartDist, None,
+                datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
+
+            # Special case when the image is the first one in the list, then it is by now means a duplicate.
             if (self.firstOne):
                 self.imgList.append(processedImage)
                 self.numImages += 1
                 self.firstOne = False
                 self.selectImgBox.addItem(processedImage.getName())
-            #Searches and compares if the processed image is equivalent to any of already added images.
-            #If so, then, processedImage has been used.
+
+            # Searches and compares if the processed image is equivalent to any of already added images.
+            # If so, then, processedImage has been used.
+            # TODO: use OrderedSet (need to implement __eq__ and/or __hashcode__, see SO)
+
             for index in range(0, len(self.imgList)): # O(n^2) Yikes!!!
                 if (processedImage.getName() == self.imgList[index].getName()):
                     processedImage.setUsed(True)
+
             #If not used then, I can append processed images to an imgList.
             if (processedImage.getUsed() != True):
                 self.imgList.append(processedImage)
                 self.numImages += 1
                 self.selectImgBox.addItem(processedImage.getName())
+
+
         if (self.currentIndex == self.numImages):
             self.currentIndex -= 1
+
         if self.isStarted:
             #removes/deletes all canvases
             self.cleanCanvas()
+
         #fills canvas
+        # TODO: send as signal!
+        # example:
+        #     self.updateCanvasSignal.emit(self.currentIndex)
         self.fillCanvas(self.imgList[self.currentIndex])
+
         #started
         self.isStarted = True
 
