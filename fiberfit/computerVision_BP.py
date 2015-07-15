@@ -27,33 +27,35 @@ import matplotlib.pyplot as plt
 # except ImportError:
 #     from smop.runtime import *
 
-from fiberfit.EllipseDirectFit import * # XXX: Changed here
-from fiberfit.helpers import * # XXX: Changed here
+from fiberfit.EllipseDirectFit import *  # XXX: Changed here
+from fiberfit.helpers import *  # XXX: Changed here
+
+figSize = 5
+
 
 def process_histogram(PabsFlip, N1):
-
     # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #           Create orientation Histogram         %
     #    Sum pixel intensity along different angles  %
     # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    n1 = np.round(N1 / 2)-1
-    freq = np.arange(-n1,n1+1,1)
-    x,y = freq, freq
+    n1 = np.round(N1 / 2) - 1
+    freq = np.arange(-n1, n1 + 1, 1)
+    x, y = freq, freq
 
     #  Set up polar coordinates prior to summing the spectrum
-    theta1Rad=np.linspace(0.0, 2*math.pi , num = 360)
-    f1 = np.round_(N1/(2*32.0))
-    f2 = np.round_(N1/(2*2))
+    theta1Rad = np.linspace(0.0, 2 * math.pi, num=360)
+    f1 = np.round_(N1 / (2 * 32.0))
+    f2 = np.round_(N1 / (2 * 2))
 
-    rho1=np.linspace(f1, f2, num = (f2-f1)*2) # frequency band
-    PowerX=np.zeros((theta1Rad.size,theta1Rad.size))
-    PowerY=np.zeros((theta1Rad.size))
+    rho1 = np.linspace(f1, f2, num=(f2 - f1) * 2)  # frequency band
+    PowerX = np.zeros((theta1Rad.size, theta1Rad.size))
+    PowerY = np.zeros((theta1Rad.size))
 
     # Interpolate using a Spine
-    PowerSpline = scipy.interpolate.RectBivariateSpline(y=y, x=x,z=PabsFlip)
+    PowerSpline = scipy.interpolate.RectBivariateSpline(y=y, x=x, z=PabsFlip)
     n_dx = 0.001
 
-    for p in range(0,theta1Rad.size):
+    for p in range(0, theta1Rad.size):
         # converting theta1Rad and rho1 to cartesian coordinates
         xfinal = rho1 * math.cos(theta1Rad[p])
         yfinal = rho1 * math.sin(theta1Rad[p])
@@ -63,12 +65,12 @@ def process_histogram(PabsFlip, N1):
         PowerY[p] = np.sum(px)
 
     # Only use the data in the first two quadrants (Spectrum is symmetric)
-    num=len(theta1Rad)
-    PowerYFinal = PowerY[0:num//2]
-    theta1RadFinal = theta1Rad[0:num//2]
+    num = len(theta1Rad)
+    PowerYFinal = PowerY[0:num // 2]
+    theta1RadFinal = theta1Rad[0:num // 2]
     # theta1DegFinal = theta1Deg[0:num/2]
 
-    power_area = np.trapz( PowerYFinal, theta1RadFinal )
+    power_area = np.trapz(PowerYFinal, theta1RadFinal)
     normPower = PowerYFinal / power_area
 
     # % Elliptical Method to find orientation (EllipseDirectFit.m)
@@ -79,95 +81,87 @@ def process_histogram(PabsFlip, N1):
 
 
 def process_ellipse(normPower, theta1RadFinal):
-
     # Combine data into [XY] to fit to an ellipse
-    Mirtheta1RadFinal1=np.concatenate([theta1RadFinal.T,(theta1RadFinal + np.pi).T])
-    MirnormPower=np.concatenate([normPower.T,normPower.T])
+    Mirtheta1RadFinal1 = np.concatenate([theta1RadFinal.T, (theta1RadFinal + np.pi).T])
+    MirnormPower = np.concatenate([normPower.T, normPower.T])
 
     # Convert mirrored polar coords to cartesian coords
-    xdata,ydata=pol2cart(Mirtheta1RadFinal1,MirnormPower)
-
-    ell_data = np.vstack([xdata,ydata])
+    xdata, ydata = pol2cart(Mirtheta1RadFinal1, MirnormPower)
+    ell_data = np.vstack([xdata, ydata])
     ell_data = ell_data.T
 
     # Python fitting function, see EllipseDirectFit
-    A, centroid=EllipseDirectFit(ell_data)
-
+    A, centroid = EllipseDirectFit(ell_data)
     t = orientation(A)
 
-    #Plot Lower Left - Polar plot of angular distribution
-    angDist = plt.figure(figsize = (5,5))
-    r_line = np.arange(0, max(MirnormPower)+.5, .5)
+    # Plot Lower Left - Polar plot of angular distribution
+    angDist = plt.figure(figsize=(figSize, figSize))  # Creates a figure containing angular distribution.
+    r_line = np.arange(0, max(MirnormPower) + .5, .5)
     th = np.zeros(len(r_line))
-    for i in range (0, len(r_line)):
+    for i in range(0, len(r_line)):
         th[i] = t
-    th = np.concatenate([th, (th+180)])
+    th = np.concatenate([th, (th + 180)])
     r_line = np.concatenate([r_line, r_line])
-    plt.polar(Mirtheta1RadFinal1, MirnormPower, linewidth = 2)
-    plt.polar(th*pi/180, r_line, color = 'r', linewidth = 3)
+    plt.polar(Mirtheta1RadFinal1, MirnormPower, linewidth=2)
+    plt.polar(th * pi / 180, r_line, color='r', linewidth=3)
     plt.yticks(np.arange(.5, max(MirnormPower), .5))
     plt.close()
-    #plt.title('Angular Distribution') upon Rici's request
 
     return t, angDist
 
-def process_kappa(t_final, theta1RadFinal, normPower):
 
-    t_final_rad=t_final * pi / 180
+def process_kappa(t_final, theta1RadFinal, normPower):
+    t_final_rad = t_final * pi / 180
 
     def fitted_func(thetas, c):
-
         int_value, int_err = scipy.integrate.quadrature(func=lambda x: exp(c * cos(x)), a=0.0, b=np.pi)
+        return ((np.pi * (1.0 / np.pi * (int_value))) ** - 1) * \
+               np.exp(c * np.cos(2 * (thetas - t_final_rad)))
 
-        return ((np.pi * ( 1.0/np.pi * ( int_value ))) ** - 1) * \
-            np.exp(c * np.cos(2 * (thetas - t_final_rad)))
+    c0 = 15
+    kappa, kappa_pcov = scipy.optimize.curve_fit(f=fitted_func, p0=(c0,), xdata=theta1RadFinal, ydata=normPower)
 
-    c0=15
-    kappa, kappa_pcov = scipy.optimize.curve_fit(f=fitted_func,p0=(c0,), xdata=theta1RadFinal, ydata=normPower)
-
-    #Shift data for plotting purposes
-
+    # Shift data for plotting purposes
     t = t_final
 
-    Diff = abs(theta1RadFinal-(t*pi/180))
-    centerLoc = find(Diff==min(Diff))
+    diff = abs(theta1RadFinal - (t * pi / 180))
+    centerLoc = find(diff == min(diff))
 
     num_angles = len(theta1RadFinal)
-    shift = (round(num_angles/2)-(num_angles-centerLoc))
+    shift = (round(num_angles / 2) - (num_angles - centerLoc))
 
     normPower1 = np.roll(normPower, -shift)
     theta1RadFinal1 = np.roll(theta1RadFinal, -shift)
 
-    s = (num_angles-shift)+1
+    s = (num_angles - shift) + 1
 
     if (shift > 0):
-        s=num_angles-shift+1
+        s = num_angles - shift + 1
         for k in range(s, num_angles):
-            theta1RadFinal1[k]=pi+theta1RadFinal1[k]
+            theta1RadFinal1[k] = pi + theta1RadFinal1[k]
     elif (shift < 0):
-        for k in range(0,-shift):
-            theta1RadFinal1[k]=-pi+theta1RadFinal1[k]
+        for k in range(0, -shift):
+            theta1RadFinal1[k] = -pi + theta1RadFinal1[k]
 
-    #Plot Lower Right - Distribution on a cartesian plane with appropriate shift
-
-    cartDist = plt.figure(figsize = (5,5))
-    h2 = plt.bar((theta1RadFinal1*180/pi), normPower1)
+    # Plot Lower Right - Distribution on a cartesian plane with appropriate shift
+    cartDist = plt.figure(figsize=(figSize, figSize))  # Creates a figure containing cartesian distribution.
+    h2 = plt.bar((theta1RadFinal1 * 180 / pi), normPower1)
     plt.xticks(np.arange(-180, 180, 45))
-    plt.xlim([t-100, t+100])
+    plt.xlim([t - 100, t + 100])
     p_act = fitted_func(theta1RadFinal1, kappa)
-    h3, = plt.plot(theta1RadFinal1*180/pi, p_act, label = 'Pred VM Dist', linewidth = 3)
+    h3, = plt.plot(theta1RadFinal1 * 180 / pi, p_act, label='Pred VM Dist', linewidth=3)
     plt.title('Angular Distribution')
     plt.xlabel('Angle (Degrees)')
     plt.ylabel('Normalized Intensity')
-    plt.legend(handles = [h3], loc = 2)
-    plt.yticks(np.arange(0, max(normPower1)+.3, .5))
-    plt.ylim([0, max(normPower1)+.3])
+    plt.legend(handles=[h3], loc=2)
+    plt.yticks(np.arange(0, max(normPower1) + .3, .5))
+    plt.ylim([0, max(normPower1) + .3])
     plt.close()
 
     return kappa, cartDist
 
-def process_image(name):
 
+def process_image(name):
     # %
     #  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #  FFT // POWER SPECTRUM // ANGULAR DISTRIBUTION
@@ -176,112 +170,110 @@ def process_image(name):
     #  %%%%%%%%%%%%%%%%%%%%%E%%%%%%%%%%%%%%%%
     im = scipy.ndimage.imread(fname=str(name))
 
-    m,n = im.shape
+    m, n = im.shape
 
     # Remove a row and column if the dimension of the image is odd
-    if (m%2 == 1):
-        im = np.delete(im, (0), axis = 0)
-    if (n%2 == 1):
-        im = np.delete(im, (0), axis = 1)
+    if (m % 2 == 1):
+        im = np.delete(im, (0), axis=0)
+    if (n % 2 == 1):
+        im = np.delete(im, (0), axis=1)
 
-    #Plot Upper left - Original Image
-    #TODO: HERE
-    fig = figure(figsize = (7.5,6), facecolor = 'white')
-    originalImage = plt.figure(frameon = False, figsize = (5,5))
-    ax = plt.Axes(originalImage, [0.,0.,1.,1.])
-    ax.set_axis_off() #TODO: HERE WE GO! HERE IS THE SOLUTION :-)
+    # Plot Upper left - Original Image
+    originalImage = plt.figure(frameon=False, figsize=(figSize, figSize))
+    # Makes it so the image fits entire dedicated space.
+    ax = plt.Axes(originalImage, [0., 0., 1., 1.])
+    ax.set_axis_off()
     originalImage.add_axes(ax)
-    plt.imshow(im, cmap = 'gray', aspect = 'auto')
+    plt.imshow(im, cmap='gray', aspect='auto')
     plt.axis('off')
     plt.close()
 
     fft_result = np.fft.fft2(im)
-    Fshift=np.fft.fftshift(fft_result)
-    Pabs=np.abs(Fshift) ** 2
-    #  shift in terms of image because power specrum is the mirroR of lines so
-    #  misrroring back in terms of image would give right allignment
-    PabsFlip1=np.rot90(Pabs)
-    PabsFlip=np.flipud(PabsFlip1)
+    Fshift = np.fft.fftshift(fft_result)
+    Pabs = np.abs(Fshift) ** 2
 
+    # shift in terms of image because power specrum is the mirroR of lines so
+    # misrroring back in terms of image would give right allignment
+    PabsFlip1 = np.rot90(Pabs)
+    PabsFlip = np.flipud(PabsFlip1)
     PabsFlip = np.delete(PabsFlip, (0), axis=0)
     PabsFlip = np.delete(PabsFlip, (0), axis=1)
 
-    #Plot Upper Right - Power Spectrum on logrithmic scale
-    logScale = plt.figure(frameon = False, figsize = (5,5))
-    ax = plt.Axes(logScale, [0.,0.,1.,1.])
-    ax.set_axis_off() #TODO: HERE WE GO! HERE IS THE SOLUTION :-)
+    # Plot Upper Right - Power Spectrum on logrithmic scale
+    logScale = plt.figure(frameon=False, figsize=(figSize, figSize))
+    # Makes it so the image fits entire dedicated space.
+    ax = plt.Axes(logScale, [0., 0., 1., 1.])
+    ax.set_axis_off()
     logScale.add_axes(ax)
     plt.axis('off')
-    plt.imshow(log(PabsFlip), cmap = 'gray', aspect = 'auto')
+    plt.imshow(log(PabsFlip), cmap='gray', aspect='auto')
     plt.close()
 
-    M,N1=im.shape
+    M, N1 = im.shape
 
     normPower, theta1RadFinal = process_histogram(PabsFlip, N1)
 
-    t_final, angDist = process_ellipse(normPower, theta1RadFinal)  #THAT"S WHERE ABOVE FUNCTIONS ARE USED.
-    #print("theta_p", t_final)
+    # theta and angular distribution are getting retrieved.
+    t_final, angDist = process_ellipse(normPower, theta1RadFinal)
 
+    # k and cartesian distrubution are getting retrieved.
     k, cartDist = process_kappa(t_final, theta1RadFinal, normPower)
-    #print("kappa:", k) TODO:For Debugging
 
-    #Rounding results for Title of Figure
-    krnd = math.ceil(k*1000)/1000
-    thrnd = math.ceil(t_final*1000)/1000
-    krnd = math.trunc(krnd*100)/100
-    thrnd = math.trunc(thrnd*100)/100
+    # Rounding results for Title of Figure
+    krnd = math.ceil(k * 1000) / 1000
+    thrnd = math.ceil(t_final * 1000) / 1000
+    krnd = math.trunc(krnd * 100) / 100
+    thrnd = math.trunc(thrnd * 100) / 100
 
-    fig.suptitle('%s \n' %(name.lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/')), fontsize = 14)
-    #fig.suptitle('%s \n\n k = %s   mu = %s degrees \n\n' %(name.lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/'), krnd, thrnd), fontsize = 14, fontstyle = 'italic')
-    return k, t_final, fig, angDist, cartDist, logScale, originalImage
+    return k[0], t_final, angDist, cartDist, logScale, originalImage
+
 
 def pol2cart(theta, radius):
+    xx = radius * np.cos(theta)
+    yy = radius * np.sin(theta)
 
-     xx = radius*np.cos(theta)
-     yy = radius*np.sin(theta)
+    return (xx, yy)
 
-     return (xx,yy)
 
 def orientation(A):
-
-    if(abs(A[1]) < (1*10^(-15))):
-        if(A[0] <= A[2]):
+    if (abs(A[1]) < (1 * 10 ^ (-15))):
+        if (A[0] <= A[2]):
             # Ellipse is horizontal
             angle = 0;
-            major = sqrt(1/A[0])
-            minor = sqrt(1/A[2])
-        else :
-            angle = np.pi/2;
-            major = sqrt(1/A[2])
-            minor = sqrt(1/A[0])
+            major = sqrt(1 / A[0])
+            minor = sqrt(1 / A[2])
+        else:
+            angle = np.pi / 2;
+            major = sqrt(1 / A[2])
+            minor = sqrt(1 / A[0])
     else:
-        R = ((A[2]-A[0])/A[1])
-        tg = R-sqrt((R*R)+1)
+        R = ((A[2] - A[0]) / A[1])
+        tg = R - sqrt((R * R) + 1)
         angle = math.atan(tg)
-        P = (2*tg)/(1+(tg*tg))
+        P = (2 * tg) / (1 + (tg * tg))
 
-        if((A[0]>0 and A[1] >0 and A[2] >0)):
-            if(angle < (-pi/4)):
+        if ((A[0] > 0 and A[1] > 0 and A[2] > 0)):
+            if (angle < (-pi / 4)):
                 angle = angle + np.pi
             else:
                 angle = angle
-        elif((A[1]/P <= (-A[1]/P))):
-            if(angle < 0):
-                angle = angle + np.pi/2
+        elif ((A[1] / P <= (-A[1] / P))):
+            if (angle < 0):
+                angle = angle + np.pi / 2
             else:
-                angle = angle - np.pi/2
-        elif (A[0]<0 and A[1] <0 and A[2] <0):
-            if(angle < 0):
+                angle = angle - np.pi / 2
+        elif (A[0] < 0 and A[1] < 0 and A[2] < 0):
+            if (angle < 0):
                 angle = angle + np.pi
             else:
                 angle = angle - np.pi
         else:
-            #Switch
-            if(angle < 0):
-                angle = angle + np.pi/2
+            # Switch
+            if (angle < 0):
+                angle = angle + np.pi / 2
             else:
-                angle = angle - np.pi/2
+                angle = angle - np.pi / 2
 
-    t_New = angle*180/np.pi
+    t_New = angle * 180 / np.pi
 
     return (t_New)

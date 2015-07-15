@@ -1,13 +1,16 @@
 """
 Class representing a an imgage model, encapsulating th and k.
 """
-class imgModel:
-    count = 0 # for all classes count starts from 0
-    def __init__(self, filename = None, k = None, th = None, figure = None, orgImg = None, logScl = None, angDist = None, cartDist = None, used = None, timeStamp = None):
+
+
+class ImgModel:
+    count = 0  # for all classes count starts from 0
+
+    def __init__(self, filename=None, k=None, th=None, orgImg=None, logScl=None, angDist=None,
+                 cartDist=None, used=None, timeStamp=None):
         self.filename = filename
         self.th = th
         self.k = k
-        self.figure = figure
         self.orgImg = orgImg
         self.logScl = logScl
         self.angDist = angDist
@@ -15,17 +18,11 @@ class imgModel:
         self.used = used
         self.timeStamp = timeStamp
 
-    def __repr__(self):
-        return "image" + str(self.count)
-
     def getTh(self):
         return self.th
 
     def getK(self):
         return self.k
-
-    def getFig(self):
-        return self.figure
 
     def getName(self):
         return self.filename

@@ -10,16 +10,15 @@ import inspect
 
 import numpy as np
 
-
 config = {
-    'end'  : '\n',
-    'fmt'  : '%s ',
-    'sep'  : '->',
-    'file' : None,
+    'end': '\n',
+    'fmt': '%s ',
+    'sep': '->',
+    'file': None,
 }
 
 
-def debug( *args ):
+def debug(*args):
     try:
         st = inspect.stack()[1]
         funcName = st[3]
@@ -32,13 +31,12 @@ def debug( *args ):
         # print(varnames, args)
         for n, v in zip(varnames, args):
             v_str = str(v)
-            v_str = "`%s`"%v_str if v_str.count('\n') == 0 else v_str
-            print(config['fmt']%(n.strip())+config['sep'], v_str, end=config['end'], file=config['file'])
+            v_str = "`%s`" % v_str if v_str.count('\n') == 0 else v_str
+            print(config['fmt'] % (n.strip()) + config['sep'], v_str, end=config['end'], file=config['file'])
 
     except Exception as err:
         # print('debug(...error...)')
         raise err
-
 
 
 def pol2cart(theta, radius, units='deg'):
@@ -48,8 +46,8 @@ def pol2cart(theta, radius, units='deg'):
         x,y = pol2cart(theta, radius, units='deg')
     """
     if units in ['deg', 'degs']:
-        theta = theta*np.pi/180.0
-    xx = radius*np.cos(theta)
-    yy = radius*np.sin(theta)
+        theta = theta * np.pi / 180.0
+    xx = radius * np.cos(theta)
+    yy = radius * np.sin(theta)
 
     return xx, yy
