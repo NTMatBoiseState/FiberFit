@@ -3,7 +3,7 @@ Class representing a an imgage model, encapsulating th and k.
 """
 class ImgModel:
     count = 0 # for all classes count starts from 0
-    def __init__(self, filename, k, th, figure, orgImg, logScl, angDist, cartDist, timeStamp, used=False ):
+    def __init__(self, filename, k= None, th = None, figure = None, orgImg = None, logScl = None, angDist = None, cartDist = None, timeStamp = None):
         self.filename = filename
         self.th = th
         self.k = k
@@ -12,12 +12,16 @@ class ImgModel:
         self.logScl = logScl
         self.angDist = angDist
         self.cartDist = cartDist
-        self.used = used
         self.timeStamp = timeStamp
 
-    def __repr__(self):
-        return "image" + str(self.count)
+    def _key(self):
+        return (self.filename)
 
+    def __eq__(self, other):
+        return self._key() == other._key()
+
+    def __hash__(self):
+        return hash(self._key())
 
     #
     # def getTh(self):

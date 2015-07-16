@@ -1,7 +1,9 @@
 #!/usr/local/bin/python3
 
 """This is a control part of the GUI application"""
-
+import os
+import pathlib
+import glob
 import sys
 import csv
 import datetime
@@ -15,6 +17,8 @@ from PyQt5.Qt import*
 from PyQt5.QtWidgets import QFileDialog #In order to select a file
 from PyQt5.QtCore import QFileInfo #In order to get a pathname to a file.
 from fiberfit import img_model
+from orderedset import OrderedSet
+from PyQt5.QtWidgets import QFileSystemModel
 
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     results = open('test.csv', 'a') #All instances would have this as a starter. Initialized later in code.
@@ -24,12 +28,13 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """
     def __init__(self, Parent = None):
         super(fft_mainWindow, self).__init__()
-        self.imgList = []
+        self.imgList = OrderedSet()
         self.csvIndex = 0
         self.dataList = []
         self.setupUi(self)
         self.numImages = 0
         self.currentIndex = 0
+        self.dialog = QFileDialog()
         self.isStarted = False
         self.canvasExists = False
         self.filenames = []
@@ -49,6 +54,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         #Conveniently the string will be the name of the file.
         self.selectImgBox.activated[str].connect(self.changeState)
 
+
     """
     Clears out canvas.
     """
@@ -61,75 +67,96 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     Allows user to select image to use.
     """
     def launch(self):
-        dialog = QFileDialog()
-        filenames = dialog.getOpenFileNames(self, '', None) #creates a list of fileNames
+        fileMod = QFileSystemModel()
+        fileMod.setRootPath('~')
+        view = QtWidgets.QTreeView()
+        view.setModel(fileMod)
+        #view.show()
+        dialog = QtWidgets.QDialog()
 
-        self.filenames = []
-        for file in filenames[0]:
-            if file.is_dir():
-                # TODO: find all files in dir
-                self.filenames.append(  )
-            else:
-                self.filenames.append( pathlib.Path(file) )
+        dialog.exec()
+
+        self.gridLayout2 = QtWidgets.QGridLayout(dialog)
+        self.gridLayout2.addWidget(view)
+        self.filenames = fileMod.fileName()
+        print(self.filenames)
+
+
+
+
+
+        #self.dialog.
+        #self.dialog.setFileMode(self.dialog.ExistingFiles)-
+        #self.dialog.directoryEntered.connect(self.getFromDir)
+        #self.dialog.filesSelected.connect(self.getFromFile)
+        print(self.filenames)
+
+
+
+
+        #if ():
+        #    filenames = dialog.getOpenFileNames(self, '', None) #creates a list of fileNames
+        #else:
+        #    filenamesDir = dialog.getExistingDirectory()
+        #    flag = False
+        #print(filenames)
+        #print(filenamesDir)
+
+
+        #self.filenames = []
+        #for file in filenames[0]:
+        #    if file.is_dir():
+        #        # TODO: find all files in dir
+        #        self.filenames.append(  )
+        #    else:
+        #        self.filenames.append( pathlib.Path(file) )
+
+
+    def getFromFile(self):
+        filenames = self.dialog.getOpenFileNames(self, '', None)
+        for i in range (0, len(filenames[0])):
+            self.filenames.append(filenames[i])
+
+    def getFromDir(self):
+        filenamesDir = self.dialog.getExistingDirectory()
+        os.chdir(filenamesDir)
+        self.filenames = glob.glob('*.png')
 
     """
     Processes selected images. Displays it onto a canvas.
     Technical: Creates img_model objects that encapsulate all of the useful data.
     """
-    @PyQt.Slot(List)
+    #@PyQt.Slot(List)
     def processImages(self, filenames):
 
         for filename in filenames:
-
             # Retrieve Figures from data analysis code
-            th, k, fig, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename)
+            k, th, fig, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename)
 
             # Stores the PathName, so that it can be trimmed off the filename.
             name = filename.name
 
             # Creates a class imgModel and appends to the list of all images
             processedImage = img_model.ImgModel(
-                filename = name,
-                k = k,
-                th = th,
-                figure = fig,
-                orgImg = None,
-                logScl = None,
-                angDist = None,
-                cartDist = None,
-                used = None,
-                timeStamp =
-                # name,th[0],k, fig, orgImg, logScl,
-                # angDist, cartDist, None,
-                datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
+                filename=name,
+                k=k[0],
+                th=th,
+                figure=fig,
+                orgImg=orgImg,
+                logScl=logScl,
+                angDist=angDist,
+                cartDist=cartDist,
+                timeStamp=datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
 
-            # Special case when the image is the first one in the list, then it is by now means a duplicate.
-            if (self.firstOne):
-                self.imgList.append(processedImage)
-                self.numImages += 1
-                self.firstOne = False
-                self.selectImgBox.addItem(processedImage.getName())
-
-            # Searches and compares if the processed image is equivalent to any of already added images.
-            # If so, then, processedImage has been used.
+            self.imgList.add(processedImage)
+            self.selectImgBox.addItem(processedImage.getName())
             # TODO: use OrderedSet (need to implement __eq__ and/or __hashcode__, see SO)
 
-            for index in range(0, len(self.imgList)): # O(n^2) Yikes!!!
-                if (processedImage.getName() == self.imgList[index].getName()):
-                    processedImage.setUsed(True)
-
-            #If not used then, I can append processed images to an imgList.
-            if (processedImage.getUsed() != True):
-                self.imgList.append(processedImage)
-                self.numImages += 1
-                self.selectImgBox.addItem(processedImage.getName())
-
-
-        if (self.currentIndex == self.numImages):
+        if (self.currentIndex == len(self.imgList)):
             self.currentIndex -= 1
 
         if self.isStarted:
-            #removes/deletes all canvases
+            # removes/deletes all canvases
             self.cleanCanvas()
 
         #fills canvas
@@ -180,7 +207,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         # sets the current index to the numImages before numImages get updated.
         #Allows consistent use of numImages and the current index value used to
         #access elements in a list.
-        self.currentIndex = self.numImages
+        self.currentIndex = len(self.imgList)
         self.processImages()
         self.setupLabels(self.currentIndex)
 
