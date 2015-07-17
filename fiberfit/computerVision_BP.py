@@ -231,7 +231,7 @@ def process_image(name):
     krnd = math.trunc(krnd*100)/100
     thrnd = math.trunc(thrnd*100)/100
 
-    fig.suptitle('%s \n' %(name.lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/')), fontsize = 14)
+    #fig.suptitle('%s \n' %(name.lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/')), fontsize = 14)
     #fig.suptitle('%s \n\n k = %s   mu = %s degrees \n\n' %(name.lstrip('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/'), krnd, thrnd), fontsize = 14, fontstyle = 'italic')
     return k, t_final, fig, angDist, cartDist, logScale, originalImage
 
