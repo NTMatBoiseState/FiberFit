@@ -90,13 +90,12 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def processImages(self):
         for filename in self.filenames:
             # Retrieve Figures from data analysis code
-            k, th, fig, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename)
+            k, th, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename)
             #Creates an object
             processedImage = img_model.ImgModel(
                 filename=filename,
-                k=k[0],
+                k=k,
                 th=th,
-                figure=fig,
                 orgImg=orgImg,
                 logScl=logScl,
                 angDist=angDist,
@@ -113,7 +112,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         # TODO: send as signal!
         # example:
         #     self.updateCanvasSignal.emit(self.currentIndex)
-        self.fillCanvas(self.imgList.__getitem__(self.currentIndex))
+        self.fillCanvas(self.imgList.__getitem__(self.currentIndex % len(self.imgList)))
         # started
         self.isStarted = True
 
@@ -125,6 +124,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.selectImgBox.clear()
         for element in self.imgList:
             self.selectImgBox.addItem(element.filename.stem)
+        self.selectImgBox.setCurrentIndex(self.currentIndex % len(self.imgList))
 
     def cleanCanvas(self):
         self.figureLayout.removeWidget(self.angDistCanvas)
@@ -167,9 +167,9 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         # Allows consistent use of the current index value used to
         # access elements in a list.
         #TODO: Make an exception to catch IndexError, and pop the window with appropriate message.
-        self.currentIndex = len(self.imgList)
+        #self.currentIndex = len(self.imgList)
         self.processImages()
-        self.setupLabels(self.currentIndex)
+        self.setupLabels(self.currentIndex % len(self.imgList))
         self.populateComboBox()
 
     """
