@@ -38,6 +38,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.isStarted = False
         self.filenames = []
         self.firstOne = True
+        #Canvases to display the figures.
         self.imgCanvas = None
         self.logSclCanvas = None
         self.angDistCanvas = None
@@ -59,8 +60,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def clear(self):
         if (self.isStarted):
-            self.kLabel.setText(" ")
-            self.muLabel.setText(" ")
+            self.kLabel.setText("k = ")
+            self.muLabel.setText("mu =  ")
             # clears canvas
             self.cleanCanvas()
             # clears combo-box
@@ -103,8 +104,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 timeStamp=datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
             # Ordered Set
             self.imgList.add(processedImage)
-        # if (self.currentIndex == len(self.imgList)):
-        #    self.currentIndex -= 1
         if self.isStarted:
             # removes/deletes all canvases
             self.cleanCanvas()
@@ -112,7 +111,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         # TODO: send as signal!
         # example:
         #     self.updateCanvasSignal.emit(self.currentIndex)
-        self.fillCanvas(self.imgList.__getitem__(self.currentIndex % len(self.imgList)))
+        self.fillCanvas(self.imgList.__getitem__(self.currentIndex))
         # started
         self.isStarted = True
 
@@ -124,7 +123,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.selectImgBox.clear()
         for element in self.imgList:
             self.selectImgBox.addItem(element.filename.stem)
-        self.selectImgBox.setCurrentIndex(self.currentIndex % len(self.imgList))
+        self.selectImgBox.setCurrentIndex(self.currentIndex)
 
     def cleanCanvas(self):
         self.figureLayout.removeWidget(self.angDistCanvas)
@@ -163,13 +162,10 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """
 
     def start(self):
-        # sets the current index to the number of images before it gets updated.
-        # Allows consistent use of the current index value used to
-        # access elements in a list.
+        # Processes selected images; sets up the labels and fills selectImgBox with references to images.
         #TODO: Make an exception to catch IndexError, and pop the window with appropriate message.
-        #self.currentIndex = len(self.imgList)
         self.processImages()
-        self.setupLabels(self.currentIndex % len(self.imgList))
+        self.setupLabels(self.currentIndex)
         self.populateComboBox()
 
     """
@@ -188,11 +184,13 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def nextImage(self):
         if (self.isStarted):
-            image = self.imgList.__getitem__((self.currentIndex + 1) % len(self.imgList))
+            # updates current index
+            self.currentIndex = (self.currentIndex + 1) % len(self.imgList)
+            image = self.imgList.__getitem__(self.currentIndex)
             self.cleanCanvas()
             self.fillCanvas(image)
-            self.setupLabels((self.currentIndex + 1) % len(self.imgList))
-            self.currentIndex += 1
+            self.setupLabels((self.currentIndex))
+            self.selectImgBox.setCurrentIndex(self.currentIndex)
 
     """
     Scrolls to previous image.
@@ -202,11 +200,13 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def prevImage(self):
         if (self.isStarted):
-            image = self.imgList.__getitem__((self.currentIndex - 1) % len(self.imgList))
+            # updates current index
+            self.currentIndex = (self.currentIndex - 1) % len(self.imgList)
+            image = self.imgList.__getitem__(self.currentIndex)
             self.cleanCanvas()
             self.fillCanvas(image)
-            self.setupLabels((self.currentIndex - 1) % len(self.imgList))
-            self.currentIndex -= 1
+            self.setupLabels(self.currentIndex)
+            self.selectImgBox.setCurrentIndex(self.currentIndex)
 
     """
     Exports results into a .csv file.
@@ -236,6 +236,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 self.processImagesFromComboBox(image)
                 self.kLabel.setText("k = " + str(round(image.k, 2)))
                 self.muLabel.setText("mu = " + str(round(image.th, 2)))
+                # sets current index to the index of the found image.
                 self.currentIndex = self.imgList.index(image)
 
 """
