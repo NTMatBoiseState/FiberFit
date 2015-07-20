@@ -64,6 +64,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.muLabel.setText("mu =  ")
             # clears canvas
             self.cleanCanvas()
+            self.filenames.clear()
             # clears combo-box
             self.selectImgBox.clear()
             # resets isStarted
@@ -104,6 +105,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 timeStamp=datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
             # Ordered Set
             self.imgList.add(processedImage)
+            #TODO: Don't compute the ones that are already in.
         if self.isStarted:
             # removes/deletes all canvases
             self.cleanCanvas()
