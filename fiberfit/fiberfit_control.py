@@ -38,10 +38,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.isStarted = False
         self.filenames = []
         self.firstOne = True
-<<<<<<< HEAD
-=======
         #Canvases to display the figures.
->>>>>>> CodeReview
         self.imgCanvas = None
         self.logSclCanvas = None
         self.angDistCanvas = None
@@ -63,32 +60,19 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def clear(self):
         if (self.isStarted):
-<<<<<<< HEAD
-            self.kLabel.setText(" ")
-            self.muLabel.setText(" ")
-            # clears canvas
-            self.cleanCanvas()
-=======
             self.kLabel.setText("k = ")
             self.muLabel.setText("mu =  ")
             # clears canvas
             self.cleanCanvas()
             self.filenames.clear()
->>>>>>> CodeReview
             # clears combo-box
             self.selectImgBox.clear()
             # resets isStarted
             self.isStarted = False
             # empties all images
-<<<<<<< HEAD
-            del self.imgList[:]
-            # resets number of images
-            self.numImages = 0
-=======
             self.imgList.clear()
             # resets current index
             self.currentIndex = 0
->>>>>>> CodeReview
 
     """
     Allows user to select image to use.
@@ -96,52 +80,14 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def launch(self):
         dialog = QFileDialog()
-<<<<<<< HEAD
-        self.filename = dialog.getOpenFileNames(self, '', None)  # creates a list of fileNames
-=======
         filenames = dialog.getOpenFileNames(self, '', None)  # creates a list of fileNames
         for name in filenames[0]:
             self.filenames.append(pathlib.Path(name))
->>>>>>> CodeReview
 
     """
     Processes selected images. Displays it onto a canvas.
     Technical: Creates img_model objects that encapsulate all of the useful data.
     """
-<<<<<<< HEAD
-
-    def processImages(self):
-        for i in range(0, len(self.filename[0])):
-            # trick here is that getOpenFileNames creates a 2D list where the first element of first list is
-            # a list of all the selected files. So, I am looping through this first element (0) and through each character
-            # of this first element
-            k, th, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(self.filename[0][i])
-            # Stores the pathName, so that it can be trimmed off the filename.
-            pathName = QFileInfo(self.filename[0][i]).absoluteDir().absolutePath()
-            # Trims the path ;-)
-            name = self.filename[0][i].lstrip(pathName)
-            # creates a class imgModel and appends to the list of all images
-            processedImage = img_model.ImgModel(name, k, th, orgImg, logScl, angDist, cartDist, None,
-                                                datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
-            # Special case when the image is the first one in the list, then it is by now means a duplicate.
-            if (self.firstOne):
-                self.imgList.append(processedImage)
-                self.numImages += 1
-                self.firstOne = False
-                self.selectImgBox.addItem(processedImage.getName())
-            # Searches and compares if the processed image is equivalent to any of already added images.
-            # If so, then, processedImage has been used.
-            for index in range(0, len(self.imgList)):  # O(n^2) Yikes!!!
-                if (processedImage.getName() == self.imgList[index].getName()):
-                    processedImage.setUsed(True)
-            # If not used then, I can append processed images to an imgList.
-            if (processedImage.getUsed() != True):
-                self.imgList.append(processedImage)
-                self.numImages += 1
-                self.selectImgBox.addItem(processedImage.getName())
-        if (self.currentIndex == self.numImages):
-            self.currentIndex -= 1
-=======
     # @PyQt.Slot(List)
     def processImages(self):
         for filename in self.filenames:
@@ -160,17 +106,10 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             # Ordered Set
             self.imgList.add(processedImage)
             #TODO: Don't compute the ones that are already in.
->>>>>>> CodeReview
         if self.isStarted:
             # removes/deletes all canvases
             self.cleanCanvas()
         # fills canvas
-<<<<<<< HEAD
-        self.fillCanvas(self.imgList[self.currentIndex])
-        # started
-        self.isStarted = True
-
-=======
         # TODO: send as signal!
         # example:
         #     self.updateCanvasSignal.emit(self.currentIndex)
@@ -188,7 +127,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.selectImgBox.addItem(element.filename.stem)
         self.selectImgBox.setCurrentIndex(self.currentIndex)
 
->>>>>>> CodeReview
     def cleanCanvas(self):
         self.figureLayout.removeWidget(self.angDistCanvas)
         self.figureLayout.removeWidget(self.cartDistCanvas)
@@ -201,17 +139,10 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def fillCanvas(self, img):
         # updates canvases
-<<<<<<< HEAD
-        self.imgCanvas = FigureCanvas(img.getOriginalImg())
-        self.logSclCanvas = FigureCanvas(img.getLogScl())
-        self.angDistCanvas = FigureCanvas(img.getAngDist())
-        self.cartDistCanvas = FigureCanvas(img.getCartDist())
-=======
         self.imgCanvas = FigureCanvas(img.orgImg)
         self.logSclCanvas = FigureCanvas(img.logScl)
         self.angDistCanvas = FigureCanvas(img.angDist)
         self.cartDistCanvas = FigureCanvas(img.cartDist)
->>>>>>> CodeReview
         # adds them to layout
         self.figureLayout.addWidget(self.imgCanvas, 0, 0)
         self.figureLayout.addWidget(self.logSclCanvas, 0, 1)
@@ -233,15 +164,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """
 
     def start(self):
-<<<<<<< HEAD
-        # sets the current index to the numImages before numImages get updated.
-        # Allows consistent use of numImages and the current index value used to
-        # access elements in a list.
-        self.currentIndex = self.numImages
-=======
         # Processes selected images; sets up the labels and fills selectImgBox with references to images.
         #TODO: Make an exception to catch IndexError, and pop the window with appropriate message.
->>>>>>> CodeReview
         self.processImages()
         self.setupLabels(self.currentIndex)
         self.populateComboBox()
@@ -251,13 +175,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """
 
     def setupLabels(self, num):
-<<<<<<< HEAD
-        self.kLabel.setText("k = " + str(round(self.imgList[num].getK(), 2)))
-        self.muLabel.setText("mu = " + str(round(self.imgList[num].getTh(), 2)))
-=======
         self.kLabel.setText("k = " + str(round(self.imgList.__getitem__(num).k, 2)))
         self.muLabel.setText("mu = " + str(round(self.imgList.__getitem__(num).th, 2)))
->>>>>>> CodeReview
 
     """
     Scrolls to next image.
@@ -267,13 +186,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def nextImage(self):
         if (self.isStarted):
-<<<<<<< HEAD
-            image = self.imgList[(self.currentIndex + 1) % len(self.imgList)]
-            self.cleanCanvas()
-            self.fillCanvas(image)
-            self.setupLabels((self.currentIndex + 1) % len(self.imgList))
-            self.currentIndex += 1
-=======
             # updates current index
             self.currentIndex = (self.currentIndex + 1) % len(self.imgList)
             image = self.imgList.__getitem__(self.currentIndex)
@@ -281,7 +193,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.fillCanvas(image)
             self.setupLabels((self.currentIndex))
             self.selectImgBox.setCurrentIndex(self.currentIndex)
->>>>>>> CodeReview
 
     """
     Scrolls to previous image.
@@ -291,13 +202,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def prevImage(self):
         if (self.isStarted):
-<<<<<<< HEAD
-            image = self.imgList[(self.currentIndex - 1) % len(self.imgList)]
-            self.cleanCanvas()
-            self.fillCanvas(image)
-            self.setupLabels((self.currentIndex - 1) % len(self.imgList))
-            self.currentIndex -= 1
-=======
             # updates current index
             self.currentIndex = (self.currentIndex - 1) % len(self.imgList)
             image = self.imgList.__getitem__(self.currentIndex)
@@ -305,23 +209,16 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.fillCanvas(image)
             self.setupLabels(self.currentIndex)
             self.selectImgBox.setCurrentIndex(self.currentIndex)
->>>>>>> CodeReview
 
     """
     Exports results into a .csv file.
     """
     # TODO: Need to add saving of PDF option.
     def export(self):
-<<<<<<< HEAD
-        for i in range(self.csvIndex, self.numImages):
-            self.dataList.append([self.imgList[i].getName(), self.imgList[i].getTh(), self.imgList[i].getK(),
-                                  self.imgList[i].getTimeStamp()])
-=======
         for i in range(self.csvIndex, len(self.imgList)):
             self.dataList.append(
                 [self.imgList.__getitem__(i).filename.stem, self.imgList.__getitem__(i).th, self.imgList.__getitem__(i).k,
                  self.imgList.__getitem__(i).timeStamp])
->>>>>>> CodeReview
             self.csvIndex += 1
         with open('test.csv', 'w') as csvfile:
             a = csv.writer(csvfile)
@@ -336,14 +233,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def changeState(self, filename):
         # find img
-<<<<<<< HEAD
-        for i in range(0, len(self.imgList)):
-            if (self.imgList[i].getName() == filename):
-                self.processImagesFromComboBox(self.imgList[i])
-                self.kLabel.setText("k = " + str(round(self.imgList[i].getK(), 2)))
-                self.muLabel.setText("mu = " + str(round(self.imgList[i].getTh(), 2)))
-                self.currentIndex = i
-=======
         for image in self.imgList:
             if image.filename.stem == filename:
                 self.processImagesFromComboBox(image)
@@ -351,7 +240,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 self.muLabel.setText("mu = " + str(round(image.th, 2)))
                 # sets current index to the index of the found image.
                 self.currentIndex = self.imgList.index(image)
->>>>>>> CodeReview
 
 """
 Enters an event-loop.
