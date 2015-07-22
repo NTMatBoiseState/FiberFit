@@ -19,7 +19,7 @@ from PyQt5.QtWidgets import QFileDialog  # In order to select a file
 from PyQt5.QtCore import QFileInfo  # In order to get a pathname to a file.
 from fiberfit import img_model
 from orderedset import OrderedSet
-
+from PyQt5.QtGui import QPixmap
 
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     results = open('test.csv', 'a')  # All instances would have this as a starter. Initialized later in code.

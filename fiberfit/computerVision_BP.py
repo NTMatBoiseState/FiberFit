@@ -105,6 +105,7 @@ def process_ellipse(normPower, theta1RadFinal):
     plt.polar(Mirtheta1RadFinal1, MirnormPower, linewidth=2)
     plt.polar(th * pi / 180, r_line, color='r', linewidth=3)
     plt.yticks(np.arange(.5, max(MirnormPower), .5))
+    angDist.savefig('angDist')
     plt.close()
 
     return t, angDist
@@ -145,6 +146,7 @@ def process_kappa(t_final, theta1RadFinal, normPower):
 
     # Plot Lower Right - Distribution on a cartesian plane with appropriate shift
     cartDist = plt.figure(figsize=(figSize, figSize))  # Creates a figure containing cartesian distribution.
+
     h2 = plt.bar((theta1RadFinal1 * 180 / pi), normPower1)
     plt.xticks(np.arange(-180, 180, 45))
     plt.xlim([t - 100, t + 100])
@@ -156,6 +158,7 @@ def process_kappa(t_final, theta1RadFinal, normPower):
     plt.legend(handles=[h3], loc=2)
     plt.yticks(np.arange(0, max(normPower1) + .3, .5))
     plt.ylim([0, max(normPower1) + .3])
+    cartDist.savefig('cartDist')
     plt.close()
 
     return kappa, cartDist
@@ -186,6 +189,7 @@ def process_image(name):
     originalImage.add_axes(ax)
     plt.imshow(im, cmap='gray', aspect='auto')
     plt.axis('off')
+    originalImage.savefig('orgImg')
     plt.close()
 
     fft_result = np.fft.fft2(im)
@@ -207,6 +211,7 @@ def process_image(name):
     logScale.add_axes(ax)
     plt.axis('off')
     plt.imshow(log(PabsFlip), cmap='gray', aspect='auto')
+    logScale.savefig('logScale')
     plt.close()
 
     M, N1 = im.shape
