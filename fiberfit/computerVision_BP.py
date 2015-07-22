@@ -7,6 +7,7 @@ import matplotlib
 # matplotlib.use('Agg')
 
 import numpy as np
+
 import scipy
 import scipy.ndimage
 import scipy.interpolate
@@ -31,7 +32,6 @@ from fiberfit.EllipseDirectFit import *  # XXX: Changed here
 from fiberfit.helpers import *  # XXX: Changed here
 
 figSize = 5
-
 
 def process_histogram(PabsFlip, N1):
     # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -211,7 +211,7 @@ def process_image(name):
     logScale.add_axes(ax)
     plt.axis('off')
     plt.imshow(log(PabsFlip), cmap='gray', aspect='auto')
-    logScale.savefig('logScale')
+    logScale.savefig('logScl')
     plt.close()
 
     M, N1 = im.shape

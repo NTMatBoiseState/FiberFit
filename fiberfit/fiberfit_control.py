@@ -19,7 +19,7 @@ from PyQt5.QtWidgets import QFileDialog  # In order to select a file
 from PyQt5.QtCore import QFileInfo  # In order to get a pathname to a file.
 from fiberfit import img_model
 from orderedset import OrderedSet
-from PyQt5.QtGui import QPixmap
+import base64
 
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     results = open('test.csv', 'a')  # All instances would have this as a starter. Initialized later in code.
@@ -93,16 +93,26 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         for filename in self.filenames:
             # Retrieve Figures from data analysis code
             k, th, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename)
+            angDistEncoded = base64.encodestring(open('angDist.png', 'rb').read())
+            cartDistEncoded = base64.encodestring(open('cartDist.png', 'rb').read())
+            logSclEncoded = base64.encodestring(open('logScl.png', 'rb').read())
+            orgImgEncoded = base64.encodestring(open('orgImg.png', 'rb').read())
+
             #Creates an object
             processedImage = img_model.ImgModel(
                 filename=filename,
                 k=k,
                 th=th,
                 orgImg=orgImg,
+                orgImgEncoded = orgImgEncoded,
                 logScl=logScl,
+                logSclEncoded = logSclEncoded,
                 angDist=angDist,
+                angDistEncoded = angDistEncoded,
                 cartDist=cartDist,
+                cartDistEncoded = cartDistEncoded,
                 timeStamp=datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
+
             # Ordered Set
             self.imgList.add(processedImage)
             #TODO: Don't compute the ones that are already in.
@@ -216,6 +226,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     # TODO: Need to add saving of PDF option.
     def export(self):
         for i in range(self.csvIndex, len(self.imgList)):
+            self.decodeFigures(i)
+
             self.dataList.append(
                 [self.imgList.__getitem__(i).filename.stem, self.imgList.__getitem__(i).th, self.imgList.__getitem__(i).k,
                  self.imgList.__getitem__(i).timeStamp])
@@ -231,6 +243,10 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     Note, O(n) because of performing a search for image.
     """
 
+    def printOutput(self):
+        html = u""
+        html += 
+
     def changeState(self, filename):
         # find img
         for image in self.imgList:
@@ -240,6 +256,19 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 self.muLabel.setText("mu = " + str(round(image.th, 2)))
                 # sets current index to the index of the found image.
                 self.currentIndex = self.imgList.index(image)
+
+    def decodeFigures(self, i):
+        orgImgDecoded = open("orgImg.png", "wb")
+        orgImgDecoded.write(base64.b64decode(self.imgList.__getitem__(i).orgImgEncoded))
+        orgImgDecoded.close()
+        logSclDecoded = open("logScl.png", "wb")
+        logSclDecoded.write(base64.b64decode(self.imgList.__getitem__(i).logSclEncoded))
+        logSclDecoded.close()
+        cartDistDecoded = open("cartDist.png", "wb")
+        cartDistDecoded.write(base64.b64decode(self.imgList.__getitem__(i).cartDistEncoded))
+        cartDistDecoded.close()
+        angDistDecoded = open("angDist.png", "wb")
+        angDistDecoded.write(base64.b64decode(self.imgList.__getitem__(i).angDistEncoded))
 
 """
 Enters an event-loop.
