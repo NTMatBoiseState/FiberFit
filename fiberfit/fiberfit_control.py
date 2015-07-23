@@ -29,9 +29,10 @@ from PyQt5.QtWebKit import QWebSettings
 
 
 class ReportDialog(QDialog):
+    printerRequest = pyqtSignal()
     def __init__(self, parent=None):
         super(ReportDialog, self).__init__(parent)
-        self.printer = QPrinter()
+        self.printer = QPrinter(QPrinter.PrinterResolution)
         self.buttonBox = QDialogButtonBox(self)
         self.buttonBox.setOrientation(Qt.Horizontal)
         self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Save)
@@ -40,18 +41,34 @@ class ReportDialog(QDialog):
         self.verticalLayout = QVBoxLayout(self)
         self.verticalLayout.addWidget(self.textBrowser)
         self.verticalLayout.addWidget(self.buttonBox)
+        self.document = None
         #Signals and slots:
         self.buttonBox.button(QDialogButtonBox.Save).clicked.connect(self.print)
+        self.printerRequest.connect(self.printerSetup)
 
     def print(self):
-        self.printer.setPageSize(QPrinter.Letter)
+        self.printerRequest.emit()
+        #self.textBrowser.print(self.printer)
+        self.document.print_(self.printer)
+
+    @pyqtSlot(img_model.ImgModel)
+    def do_test_with_textDoc(self, model):
+        self.document = QTextDocument()
+        self.document.setHtml(self.createHtml(model))
+        self.show()
+
+    @pyqtSlot()
+    def printerSetup(self):
+        self.printer.setPageSize(QPrinter.A4)
         self.printer.setOutputFormat(QPrinter.PdfFormat)
-        self.printer.setOutputFileName('~/Desktop/ResultTable.pdf')
-        self.textBrowser.print(self.printer)
+        #self.printer.setPageMargins(10, 10 , 10 , 10 , QPrinter.Inch)
+        self.printer.setFullPage(True)
+        self.printer.setOutputFileName('ResultTable.pdf')
+
 
     def createHtml(self, model):
         html = """
-        <html> <head> <link type="text/css" rel="stylesheet" href="ntm_style.css"> </head> <body>
+        <html> <head> </head> <body>
         <p> Image Name: {name} </p> <p> mu: {th} </p>
         <p>k: {k} </p>
         <table>
@@ -114,7 +131,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.exportButton.clicked.connect(lambda i: self.show_report.emit(self.currentIndex))
 
         self.show_report.connect(self.do_show_report)
-        self.make_report.connect(self.dialogTextBrowser.do_test)
+        #self.make_report.connect(self.dialogTextBrowser.do_test)
+        self.make_report.connect(self.dialogTextBrowser.do_test_with_textDoc)
 
         # sends off a signal containing string.
         # Conveniently the string will be the name of the file.
