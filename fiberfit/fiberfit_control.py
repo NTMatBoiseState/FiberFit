@@ -41,21 +41,13 @@ class ReportDialog(QDialog):
         self.verticalLayout = QVBoxLayout(self)
         self.verticalLayout.addWidget(self.textBrowser)
         self.verticalLayout.addWidget(self.buttonBox)
-        self.document = None
         #Signals and slots:
         self.buttonBox.button(QDialogButtonBox.Save).clicked.connect(self.print)
         self.printerRequest.connect(self.printerSetup)
 
     def print(self):
         self.printerRequest.emit()
-        #self.textBrowser.print(self.printer)
-        self.document.print_(self.printer)
-
-    @pyqtSlot(img_model.ImgModel)
-    def do_test_with_textDoc(self, model):
-        self.document = QTextDocument()
-        self.document.setHtml(self.createHtml(model))
-        self.show()
+        self.textBrowser.print(self.printer)
 
     @pyqtSlot()
     def printerSetup(self):
@@ -68,13 +60,13 @@ class ReportDialog(QDialog):
 
     def createHtml(self, model):
         html = """
-        <html> <head> </head> <body>
+        <html> <head> <</head> <body>
         <p> Image Name: {name} </p> <p> mu: {th} </p>
         <p>k: {k} </p>
         <table>
             <tr>
                 <td> <img src = "data:image/png;base64,{encodedOrgImg}"/></td>
-                <td> <img src ="data:image/jpeg;base64,{encodedLogScl}"/></td>
+                <td> <img src ="data:image/png;base64,{encodedLogScl}"/></td>
             </tr>
             <tr>
                 <td> <img src = "data:image/png;base64,{encodedAngDist}"/></td>
@@ -131,8 +123,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.exportButton.clicked.connect(lambda i: self.show_report.emit(self.currentIndex))
 
         self.show_report.connect(self.do_show_report)
-        #self.make_report.connect(self.dialogTextBrowser.do_test)
-        self.make_report.connect(self.dialogTextBrowser.do_test_with_textDoc)
+        self.make_report.connect(self.dialogTextBrowser.do_test)
 
         # sends off a signal containing string.
         # Conveniently the string will be the name of the file.

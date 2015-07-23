@@ -31,7 +31,7 @@ import matplotlib.pyplot as plt
 from fiberfit.EllipseDirectFit import *  # XXX: Changed here
 from fiberfit.helpers import *  # XXX: Changed here
 
-figSize = 5
+figSize = 4.5
 
 def process_histogram(PabsFlip, N1):
     # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
