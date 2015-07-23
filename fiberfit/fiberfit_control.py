@@ -28,24 +28,26 @@ from PyQt5.QtWidgets import QPushButton, QDialogButtonBox, QVBoxLayout, QDialog
 from PyQt5.QtWebKit import QWebSettings
 
 
-class MyDialog(QDialog):
+class ReportDialog(QDialog):
     def __init__(self, parent=None):
-        super(MyDialog, self).__init__(parent)
-
+        super(ReportDialog, self).__init__(parent)
+        self.printer = QPrinter()
         self.buttonBox = QDialogButtonBox(self)
         self.buttonBox.setOrientation(Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
-
+        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Save)
         self.textBrowser = QWebView(self)
         self.textBrowser.setHtml("This is a QTextBrowser!")
-        self.textBrowser.settings().setAttribute(QWebSettings.LocalContentCanAccessFileUrls, True)
-        self.textBrowser.settings().setAttribute(QWebSettings.LocalContentCanAccessRemoteUrls, True)
-        self.textBrowser.settings().setAttribute(QWebSettings.AutoLoadImages, True)
-        self.textBrowser.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
-
         self.verticalLayout = QVBoxLayout(self)
         self.verticalLayout.addWidget(self.textBrowser)
         self.verticalLayout.addWidget(self.buttonBox)
+        #Signals and slots:
+        self.buttonBox.button(QDialogButtonBox.Save).clicked.connect(self.print)
+
+    def print(self):
+        self.printer.setPageSize(QPrinter.Letter)
+        self.printer.setOutputFormat(QPrinter.PdfFormat)
+        self.printer.setOutputFileName('~/Desktop/ResultTable.pdf')
+        self.textBrowser.print(self.printer)
 
     def createHtml(self, model):
         html = """
@@ -69,12 +71,11 @@ class MyDialog(QDialog):
                    encodedLogScl = model.logSclEncoded.translate('bn\''),
                    encodedAngDist = model.angDistEncoded.translate('bn\''),
                    encodedCartDist = model.cartDistEncoded.translate('bn\''))
-        print(html)
+        #print(html)
         return html
 
     @pyqtSlot(img_model.ImgModel)
     def do_test(self, model):
-        print("Test?")
         self.textBrowser.setHtml(self.createHtml(model))
         self.show()
 
@@ -102,40 +103,33 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.logSclCanvas = None
         self.angDistCanvas = None
         self.cartDistCanvas = None
+        #Pops up a dialog with
+        self.dialogTextBrowser = ReportDialog(self)
         # All the events happen below
         self.startButton.clicked.connect(self.start)
         self.nextButton.clicked.connect(self.nextImage)
         self.prevButton.clicked.connect(self.prevImage)
         self.loadButton.clicked.connect(self.launch)
         self.clearButton.clicked.connect(self.clear)
-        self.exportButton.clicked.connect(self.export)
+        self.exportButton.clicked.connect(lambda i: self.show_report.emit(self.currentIndex))
+
+        self.show_report.connect(self.do_show_report)
+        self.make_report.connect(self.dialogTextBrowser.do_test)
+
         # sends off a signal containing string.
         # Conveniently the string will be the name of the file.
         self.selectImgBox.activated[str].connect(self.changeState)
 
-        #New button
-        self.pushButtonWindow = QPushButton(self)
-        self.pushButtonWindow.setText("Click Me!")
-        self.pushButtonWindow.clicked.connect(lambda i: self.show_report.emit(self.currentIndex))
 
-        self.gridLayout.addWidget(self.pushButtonWindow)
-
+        """This is to gain better insight into Slots and Signals.
         def userLog(int):
             print("User requested reported for image: {}".format(int))
-
         self.show_report.connect(userLog)
+        """
 
-        #self.layout = QtGui.QHBoxLayout(self)
-        #self.layout.addWidget(self.pushButtonWindow)
-        self.dialogTextBrowser = MyDialog(self)
-
-        def do_show_report(index):
-            print('Shows report')
-            self.make_report.emit(self.imgList[self.currentIndex])
-            #self.dialogTextB3rowser.show()
-
-        self.show_report.connect(do_show_report)
-        self.make_report.connect(self.dialogTextBrowser.do_test)
+    def do_show_report(self, index):
+        print('Shows report')
+        self.make_report.emit(self.imgList[self.currentIndex])
 
     """
     Clears out canvas.
@@ -313,8 +307,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     # TODO: Need to add saving of PDF option.
     def export(self):
         for i in range(self.csvIndex, len(self.imgList)):
-            self.decodeFigures(1)
-            #self.printOutput(1)
             self.dataList.append(
                 [self.imgList.__getitem__(i).filename.stem, self.imgList.__getitem__(i).th, self.imgList.__getitem__(i).k,
                  self.imgList.__getitem__(i).timeStamp])
@@ -330,21 +322,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     Note, O(n) because of performing a search for image.
     """
 
-    def printOutput(self, i):
-        html = ""
-        html += ("<html> <link type = \"text/css\" rel = \"stylesheet\" href = \"ntm_style.css\"> <body>")
-        html += ("<p> Image Name: %s </p> <p> mu: %s </p> <p>k: %s </p> <table> <tr> <td> <img src = \"orgImg.png\"/> </td> <td> <img src =\"logScl.png\"/> </td> </tr> </table>" % (self.imgList.__getitem__(i).filename.stem, self.imgList.__getitem__(i).th, self.imgList.__getitem__(i).k ))
-        html += ("</body> </html>")
-
-    def printerSetup(self):
-        printer = QPrinter()
-        printer.setPageSize(QPrinter.Letter)
-        printer.setOutputFormat(QPrinter.PdfFormat)
-        printer.setOutputFileName('ResultTable.pdf')
-        document = QTextDocument()
-        document.setHtml(html)
-        document.print_(printer)
-
     def changeState(self, filename):
         # find img
         for image in self.imgList:
@@ -354,20 +331,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 self.muLabel.setText("mu = " + str(round(image.th, 2)))
                 # sets current index to the index of the found image.
                 self.currentIndex = self.imgList.index(image)
-
-    def decodeFigures(self, i):
-        orgImgDecoded = open("orgImg.png", "wb")
-        orgImgDecoded.write(base64.b64decode(self.imgList.__getitem__(i).orgImgEncoded))
-        orgImgDecoded.close()
-        logSclDecoded = open("logScl.png", "wb")
-        logSclDecoded.write(base64.b64decode(self.imgList.__getitem__(i).logSclEncoded))
-        logSclDecoded.close()
-        cartDistDecoded = open("cartDist.png", "wb")
-        cartDistDecoded.write(base64.b64decode(self.imgList.__getitem__(i).cartDistEncoded))
-        cartDistDecoded.close()
-        angDistDecoded = open("angDist.png", "wb")
-        angDistDecoded.write(base64.b64decode(self.imgList.__getitem__(i).angDistEncoded))
-
 
 def main():
     """
