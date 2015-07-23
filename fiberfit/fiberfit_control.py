@@ -25,6 +25,7 @@ from PyQt5.QtGui import QTextDocument
 from PyQt5.QtWebKitWidgets import QWebView
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, Qt
 from PyQt5.QtWidgets import QPushButton, QDialogButtonBox, QVBoxLayout, QDialog
+from PyQt5.QtWebKit import QWebSettings
 
 
 class MyDialog(QDialog):
@@ -37,29 +38,37 @@ class MyDialog(QDialog):
 
         self.textBrowser = QWebView(self)
         self.textBrowser.setHtml("This is a QTextBrowser!")
+        self.textBrowser.settings().setAttribute(QWebSettings.LocalContentCanAccessFileUrls, True)
+        self.textBrowser.settings().setAttribute(QWebSettings.LocalContentCanAccessRemoteUrls, True)
+        self.textBrowser.settings().setAttribute(QWebSettings.AutoLoadImages, True)
+        self.textBrowser.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
 
         self.verticalLayout = QVBoxLayout(self)
         self.verticalLayout.addWidget(self.textBrowser)
         self.verticalLayout.addWidget(self.buttonBox)
 
-
     def createHtml(self, model):
         html = """
-        <html> <link type="text/css" rel="stylesheet" href="ntm_style.css"> <body>
-        <p> Image Name: {name} </p> <p> mu: %s </p>
+        <html> <head> <link type="text/css" rel="stylesheet" href="ntm_style.css"> </head> <body>
+        <p> Image Name: {name} </p> <p> mu: {th} </p>
         <p>k: {k} </p>
         <table>
             <tr>
-                <td> <img src = \"orgImg.png\"/> </td>
-                <td> <img src =\"logScl.png\"/> </td>
+                <td> <img src = "data:image/png;base64,{encodedOrgImg}"/></td>
+                <td> <img src ="data:image/jpeg;base64,{encodedLogScl}"/></td>
+            </tr>
+            <tr>
+                <td> <img src = "data:image/png;base64,{encodedAngDist}"/></td>
+                <td> <img src = "data:image/png;base64,{encodedCartDist}"/></td>
             </tr>
         </table>
-
-        """.format(name = model.filename.stem, k = model.k)
-        html += ("<html> <link type = \"text/css\" rel = \"stylesheet\" href = \"ntm_style.css\"> <body>")
-        html += ("<p> Image Name: %s </p> <p> mu: %s </p> <p>k: %s </p> <table> <tr> <td> <img src = \"orgImg.png\"/> </td> <td> <img src =\"logScl.png\"/> </td> </tr> </table>" %
-                 (model.filename.stem, model.th, model.k ))
-        html += ("</body> </html>")
+        </body>
+        </html>
+        """.format(name = model.filename.stem,th = model.th, k = model.k,
+                   encodedOrgImg = model.orgImgEncoded.translate('bn\''),
+                   encodedLogScl = model.logSclEncoded.translate('bn\''),
+                   encodedAngDist = model.angDistEncoded.translate('bn\''),
+                   encodedCartDist = model.cartDistEncoded.translate('bn\''))
         print(html)
         return html
 
@@ -167,10 +176,14 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         for filename in self.filenames:
             # Retrieve Figures from data analysis code
             k, th, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename)
-            angDistEncoded = base64.encodestring(open('angDist.png', 'rb').read())
-            cartDistEncoded = base64.encodestring(open('cartDist.png', 'rb').read())
-            logSclEncoded = base64.encodestring(open('logScl.png', 'rb').read())
-            orgImgEncoded = base64.encodestring(open('orgImg.png', 'rb').read())
+            # Starting from Python3, there is a distinctin between bytes and str. Thus, I can't use
+            # methods of str on bytes. However I need to do that in order to properly encode the image
+            # into b64. The main thing is that bytes-way produces some improper characters that mess up
+            # the decoding process. Hence, decode(utf-8) translates bytes into str.
+            angDistEncoded = base64.encodebytes(open('angDist.png', 'rb').read()).decode('utf-8')
+            cartDistEncoded = base64.encodebytes(open('cartDist.png', 'rb').read()).decode('utf-8')
+            logSclEncoded = base64.encodebytes(open('logScl.png', 'rb').read()).decode('utf-8')
+            orgImgEncoded = base64.encodebytes(open('orgImg.png', 'rb').read()).decode('utf-8')
 
             #Creates an object
             processedImage = img_model.ImgModel(
@@ -301,7 +314,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def export(self):
         for i in range(self.csvIndex, len(self.imgList)):
             self.decodeFigures(1)
-            self.printOutput(1)
+            #self.printOutput(1)
             self.dataList.append(
                 [self.imgList.__getitem__(i).filename.stem, self.imgList.__getitem__(i).th, self.imgList.__getitem__(i).k,
                  self.imgList.__getitem__(i).timeStamp])
