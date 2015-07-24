@@ -743,3 +743,15 @@ sub {
 .type-csharp .highlight .s,.type-csharp .highlight .sc {
 	color: #a31515
 }
+
+.footer {
+   position:fixed;
+bottom:0;
+text-align: center ;
+font-size: 16px ;
+font-family: verdana ;
+width: 600px ;
+height: 50px ;
+background-color: #f6f6f6 ;
+}
+

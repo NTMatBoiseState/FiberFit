@@ -1,9 +1,7 @@
 #!/usr/local/bin/python3
 
 """This is a control part of the GUI application"""
-import os
 import pathlib
-import glob
 import sys
 import csv
 import datetime
@@ -16,16 +14,19 @@ from fiberfit import computerVision_BP
 from PyQt5 import QtWidgets
 from PyQt5.Qt import *
 from PyQt5.QtWidgets import QFileDialog  # In order to select a file
-from PyQt5.QtCore import QFileInfo  # In order to get a pathname to a file.
 from fiberfit import img_model
 from orderedset import OrderedSet
 import base64
 from PyQt5.QtPrintSupport import QPrinter
-from PyQt5.QtGui import QTextDocument
 from PyQt5.QtWebKitWidgets import QWebView
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, Qt
-from PyQt5.QtWidgets import QPushButton, QDialogButtonBox, QVBoxLayout, QDialog
-from PyQt5.QtWebKit import QWebSettings
+from PyQt5.QtWidgets import QDialogButtonBox, QVBoxLayout, QDialog
+from fiberfit import SettingsDialog
+
+class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
+    def __init__(self, parent = None):
+        super(SettingsWindow, self).__init__(parent)
+
 
 
 class ReportDialog(QDialog):
@@ -60,26 +61,34 @@ class ReportDialog(QDialog):
 
     def createHtml(self, model):
         html = """
-        <html> <head> <</head> <body>
-        <p> Image Name: {name} </p> <p> mu: {th} </p>
-        <p>k: {k} </p>
-        <table>
-            <tr>
-                <td> <img src = "data:image/png;base64,{encodedOrgImg}"/></td>
-                <td> <img src ="data:image/png;base64,{encodedLogScl}"/></td>
-            </tr>
-            <tr>
-                <td> <img src = "data:image/png;base64,{encodedAngDist}"/></td>
-                <td> <img src = "data:image/png;base64,{encodedCartDist}"/></td>
-            </tr>
-        </table>
-        </body>
+        <html>
+            <head>
+                <link type="text/css" rel="stylesheet" href="ntm_style.css"/>
+            </head>
+            <body>
+                <p> Image Name: {name} </p> <p> mu: {th} </p>
+                <p>k: {k} </p>
+                <table>
+                    <tr>
+                        <td> <img src = "data:image/png;base64,{encodedOrgImg}"/></td>
+                        <td> <img src ="data:image/png;base64,{encodedLogScl}"/></td>
+                    </tr>
+                    <tr>
+                        <td> <img src = "data:image/png;base64,{encodedAngDist}"/></td>
+                        <td> <img src = "data:image/png;base64,{encodedCartDist}"/></td>
+                    </tr>
+                </table>
+                <div class="footer">
+                    {date}
+                </div>
+            </body>
         </html>
         """.format(name = model.filename.stem,th = model.th, k = model.k,
                    encodedOrgImg = model.orgImgEncoded.translate('bn\''),
                    encodedLogScl = model.logSclEncoded.translate('bn\''),
                    encodedAngDist = model.angDistEncoded.translate('bn\''),
-                   encodedCartDist = model.cartDistEncoded.translate('bn\''))
+                   encodedCartDist = model.cartDistEncoded.translate('bn\''),
+                   date = model.timeStamp)
         #print(html)
         return html
 
@@ -92,7 +101,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     results = open('test.csv', 'a')  # All instances would have this as a starter. Initialized later in code.
     show_report = pyqtSignal(int)
     make_report = pyqtSignal(img_model.ImgModel)
-
+    change_settings = pyqtSignal()
     """
     Initializes all instance variables a.k.a attributes of a class.
     """

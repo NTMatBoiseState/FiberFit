@@ -2,14 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fe67e533-72c4-4f24-9e39-6843b21bbe24" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/fiberfit/SettingsDialog.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/fiberfit/angDist.b64" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/fiberfit/logScale.png" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/ResultTable.pdf" afterPath="$PROJECT_DIR$/fiberfit/ResultTable.pdf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/angDist.png" afterPath="$PROJECT_DIR$/fiberfit/angDist.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/cartDist.png" afterPath="$PROJECT_DIR$/fiberfit/cartDist.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/fiberfit.ui" afterPath="$PROJECT_DIR$/fiberfit/fiberfit.ui" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/logScl.png" afterPath="$PROJECT_DIR$/fiberfit/logScl.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/orgImg.png" afterPath="$PROJECT_DIR$/fiberfit/orgImg.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/computerVision_BP.py" afterPath="$PROJECT_DIR$/fiberfit/computerVision_BP.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/fiberfit_GUI.py" afterPath="$PROJECT_DIR$/fiberfit/fiberfit_GUI.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/fiberfit_control.py" afterPath="$PROJECT_DIR$/fiberfit/fiberfit_control.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/img_model.py" afterPath="$PROJECT_DIR$/fiberfit/img_model.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/test.csv" afterPath="$PROJECT_DIR$/fiberfit/test.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/ntm_style.css" afterPath="$PROJECT_DIR$/fiberfit/ntm_style.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/simpleHtmlReport.html" afterPath="$PROJECT_DIR$/fiberfit/simpleHtmlReport.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="fiberfit.iws" />
@@ -35,7 +40,7 @@
         <entry file="file://$PROJECT_DIR$/fiberfit/computerVision_BP.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="213" column="28" selection-start-line="213" selection-start-column="28" selection-end-line="213" selection-end-column="28" />
+              <caret line="33" column="13" selection-start-line="33" selection-start-column="13" selection-end-line="33" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -44,8 +49,30 @@
       <file leaf-file-name="fiberfit_control.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/fiberfit/fiberfit_control.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5132743">
-              <caret line="247" column="16" selection-start-line="247" selection-start-column="16" selection-end-line="247" selection-end-column="16" />
+            <state vertical-scroll-proportion="0.34848484">
+              <caret line="103" column="34" selection-start-line="103" selection-start-column="34" selection-end-line="103" selection-end-column="34" />
+              <folding>
+                <element signature="e#78#92#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="fiberfit_GUI.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/fiberfit/fiberfit_GUI.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="178" column="52" selection-start-line="178" selection-start-column="52" selection-end-line="178" selection-end-column="52" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SettingsDialog.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/fiberfit/SettingsDialog.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="95" column="40" selection-start-line="95" selection-start-column="40" selection-end-line="95" selection-end-column="40" />
               <folding />
             </state>
           </provider>
@@ -65,7 +92,7 @@
         <entry file="file://$PROJECT_DIR$/fiberfit/img_model.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="16" column="46" selection-start-line="16" selection-start-column="46" selection-end-line="16" selection-end-column="46" />
+              <caret line="3" column="14" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="14" />
               <folding />
             </state>
           </provider>
@@ -96,9 +123,10 @@
         <option value="$PROJECT_DIR$/fiberfit/fiberfit_pop.py" />
         <option value="$PROJECT_DIR$/fiberfit/computerVision_BP_nographs.py" />
         <option value="$PROJECT_DIR$/fiberfit/Test.csv" />
-        <option value="$PROJECT_DIR$/fiberfit/fiberfit_GUI.py" />
         <option value="$PROJECT_DIR$/fiberfit/img_model.py" />
         <option value="$PROJECT_DIR$/fiberfit/computerVision_BP.py" />
+        <option value="$PROJECT_DIR$/fiberfit/SettingsDialog.py" />
+        <option value="$PROJECT_DIR$/fiberfit/fiberfit_GUI.py" />
         <option value="$PROJECT_DIR$/fiberfit/fiberfit_control.py" />
       </list>
     </option>
@@ -107,9 +135,9 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="962" />
-    <option name="y" value="47" />
-    <option name="width" value="1764" />
+    <option name="x" value="192" />
+    <option name="y" value="74" />
+    <option name="width" value="1883" />
     <option name="height" value="1336" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -445,14 +473,14 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="962" y="47" width="1764" height="1336" extended-state="0" />
+    <frame x="192" y="74" width="1883" height="1336" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24945454" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.102122776" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.10204082" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32956383" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15996784" sideWeight="0.7476562" order="2" side_tool="false" content_ui="tabs" />
@@ -514,19 +542,23 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="8" />
+      <breakpoints>
+        <line-breakpoint enabled="true" type="python-line">
+          <url>file://$PROJECT_DIR$/fiberfit/fiberfit_control.py</url>
+          <line>114</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="python-line">
+          <url>file://$PROJECT_DIR$/fiberfit/fiberfit_control.py</url>
+          <line>41</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="10" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/fiberfit/img_model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/fiberfit/fiberfit_GUI.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -547,7 +579,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#78#92#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -579,7 +613,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#78#92#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -619,7 +655,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="41" column="26" selection-start-line="41" selection-start-column="26" selection-end-line="41" selection-end-column="26" />
-          <folding />
+          <folding>
+            <element signature="e#78#92#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -651,7 +689,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#78#92#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -682,7 +722,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#78#92#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -713,7 +755,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="49" column="18" selection-start-line="49" selection-start-column="18" selection-end-line="49" selection-end-column="18" />
-          <folding />
+          <folding>
+            <element signature="e#78#92#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -744,7 +788,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#78#92#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -867,14 +913,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/fiberfit/fiberfit_GUI.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334">
-          <caret line="26" column="32" selection-start-line="26" selection-start-column="32" selection-end-line="26" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/fiberfit/ntm_style.css">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -886,7 +924,7 @@
     <entry file="file://$PROJECT_DIR$/fiberfit/computerVision_BP.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="213" column="28" selection-start-line="213" selection-start-column="28" selection-end-line="213" selection-end-column="28" />
+          <caret line="33" column="13" selection-start-line="33" selection-start-column="13" selection-end-line="33" selection-end-column="13" />
           <folding />
         </state>
       </provider>
@@ -894,16 +932,34 @@
     <entry file="file://$PROJECT_DIR$/fiberfit/img_model.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="16" column="46" selection-start-line="16" selection-start-column="46" selection-end-line="16" selection-end-column="46" />
+          <caret line="3" column="14" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fiberfit/fiberfit_GUI.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="178" column="52" selection-start-line="178" selection-start-column="52" selection-end-line="178" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fiberfit/SettingsDialog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="95" column="40" selection-start-line="95" selection-start-column="40" selection-end-line="95" selection-end-column="40" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/fiberfit/fiberfit_control.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5132743">
-          <caret line="247" column="16" selection-start-line="247" selection-start-column="16" selection-end-line="247" selection-end-column="16" />
-          <folding />
+        <state vertical-scroll-proportion="0.34848484">
+          <caret line="103" column="34" selection-start-line="103" selection-start-column="34" selection-end-line="103" selection-end-column="34" />
+          <folding>
+            <element signature="e#78#92#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
