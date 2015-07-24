@@ -29,16 +29,19 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
         super(SettingsWindow, self).__init__(parent)
         self.setupUi(self)
         self.sendValues.connect(fft_mainWindow.processImages)
+        self.buttonBox.button(QDialogButtonBox.Ok).clicked.connect(self.acceptValues)
 
     @pyqtSlot()
     def makeChanges(self):
         self.show()
-        uCut = self.ttopField.text
-        lCut = self.tbottomField.text
-        angleInc = self.btopField.text
-        radStep = self.bbottomField.text
-        if (self.buttonBox.button(QDialogButtonBox.Ok).clicked()):
-            self.sendValues.emit(uCut, lCut, angleInc, radStep)
+
+    def acceptValues(self):
+        uCut = self.ttopField.text()
+        lCut = self.tbottomField.text()
+        angleInc = self.btopField.text()
+        radStep = self.bbottomField.text()
+        print(uCut, lCut, angleInc, radStep)
+        self.sendValues.emit(uCut, lCut, angleInc, radStep)
 
 class ReportDialog(QDialog):
     printerRequest = pyqtSignal()
@@ -199,10 +202,19 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     Technical: Creates img_model objects that encapsulate all of the useful data.
     """
     @pyqtSlot(float, float, float, float)
-    def processImages(self, uCut, lCut, angleInc, radialStep):
+    def processImages(self, uCut = None, lCut = None, angleInc = None, radialStep = None):
+        if uCut == None:
+            uCut = 2
+        if lCut == None:
+            lCut = 32
+        if angleInc == None:
+            angleInc = 1
+        if radialStep == None:
+            radialStep = 0.5
         for filename in self.filenames:
             # Retrieve Figures from data analysis code
-            k, th, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename, uCut, lCut, angleInc, radialStep)
+            print(uCut, lCut, radialStep, angleInc)
+            k, th, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename, uCut, lCut, radialStep, angleInc)
             # Starting from Python3, there is a distinctin between bytes and str. Thus, I can't use
             # methods of str on bytes. However I need to do that in order to properly encode the image
             # into b64. The main thing is that bytes-way produces some improper characters that mess up

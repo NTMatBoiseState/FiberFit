@@ -33,7 +33,7 @@ from fiberfit.helpers import *  # XXX: Changed here
 
 figSize = 4.5
 
-def process_histogram(PabsFlip, N1, lCut, uCut, angleInc, radialStep):
+def process_histogram(PabsFlip, N1, uCut, lCut, radialStep, angleInc):
     # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #           Create orientation Histogram         %
     #    Sum pixel intensity along different angles  %
@@ -41,7 +41,7 @@ def process_histogram(PabsFlip, N1, lCut, uCut, angleInc, radialStep):
     n1 = np.round(N1 / 2) - 1
     freq = np.arange(-n1, n1 + 1, 1)
     x, y = freq, freq
-
+    print(uCut, lCut, radialStep, angleInc)
     #Variables to be used in settings
     CO_lower = lCut
     CO_upper = uCut
@@ -49,11 +49,11 @@ def process_histogram(PabsFlip, N1, lCut, uCut, angleInc, radialStep):
     radialStep = radialStep
 
     #  Set up polar coordinates prior to summing the spectrum
-    theta1Rad = np.linspace(0.0, 2 * math.pi, num=360/)
-    f1 = np.round_(N1 / (2 * 32.0))
-    f2 = np.round_(N1 / (2 * 2))
+    theta1Rad = np.linspace(0.0, 2 * math.pi, num=360/ang_inc)
+    f1 = np.round_(N1 / (2 * CO_lower))
+    f2 = np.round_(N1 / (2 * CO_upper))
 
-    rho1 = np.linspace(f1, f2, num=(f2 - f1) * 2)  # frequency band
+    rho1 = np.linspace(f1, f2, num=(f2 - f1)/radialStep)  # frequency band
     PowerX = np.zeros((theta1Rad.size, theta1Rad.size))
     PowerY = np.zeros((theta1Rad.size))
 
@@ -170,7 +170,7 @@ def process_kappa(t_final, theta1RadFinal, normPower):
     return kappa, cartDist
 
 
-def process_image(name, lCut, uCut, angleInc, radialStep):
+def process_image(name, uCut, lCut, angleInc, radialStep):
     # %
     #  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #  FFT // POWER SPECTRUM // ANGULAR DISTRIBUTION
@@ -221,9 +221,9 @@ def process_image(name, lCut, uCut, angleInc, radialStep):
     plt.close()
 
     M, N1 = im.shape
-
-    normPower, theta1RadFinal = process_histogram(PabsFlip, N1, lCut, uCut, angleInc, radialStep)
-
+    print(uCut, lCut, radialStep, angleInc)
+    normPower, theta1RadFinal = process_histogram(PabsFlip, N1, uCut, lCut, radialStep, angleInc)
+    print(normPower, theta1RadFinal)
     # theta and angular distribution are getting retrieved.
     t_final, angDist = process_ellipse(normPower, theta1RadFinal)
 
