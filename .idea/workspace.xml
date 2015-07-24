@@ -2,20 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fe67e533-72c4-4f24-9e39-6843b21bbe24" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/fiberfit/SettingsDialog.py" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/fiberfit/angDist.b64" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/fiberfit/logScale.png" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/ResultTable.pdf" afterPath="$PROJECT_DIR$/fiberfit/ResultTable.pdf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/angDist.png" afterPath="$PROJECT_DIR$/fiberfit/angDist.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/cartDist.png" afterPath="$PROJECT_DIR$/fiberfit/cartDist.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/fiberfit.ui" afterPath="$PROJECT_DIR$/fiberfit/fiberfit.ui" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/logScl.png" afterPath="$PROJECT_DIR$/fiberfit/logScl.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/orgImg.png" afterPath="$PROJECT_DIR$/fiberfit/orgImg.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/fiberfit_GUI.py" afterPath="$PROJECT_DIR$/fiberfit/fiberfit_GUI.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/computerVision_BP.py" afterPath="$PROJECT_DIR$/fiberfit/computerVision_BP.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/fiberfit_control.py" afterPath="$PROJECT_DIR$/fiberfit/fiberfit_control.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/ntm_style.css" afterPath="$PROJECT_DIR$/fiberfit/ntm_style.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/simpleHtmlReport.html" afterPath="$PROJECT_DIR$/fiberfit/simpleHtmlReport.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="fiberfit.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -36,21 +30,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="computerVision_BP.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="computerVision_BP.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/fiberfit/computerVision_BP.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="33" column="13" selection-start-line="33" selection-start-column="13" selection-end-line="33" selection-end-column="13" />
+            <state vertical-scroll-proportion="0.48672566">
+              <caret line="51" column="54" selection-start-line="51" selection-start-column="54" selection-end-line="51" selection-end-column="54" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="fiberfit_control.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="fiberfit_control.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fiberfit/fiberfit_control.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.34848484">
-              <caret line="103" column="34" selection-start-line="103" selection-start-column="34" selection-end-line="103" selection-end-column="34" />
+            <state vertical-scroll-proportion="85.0">
+              <caret line="30" column="60" selection-start-line="30" selection-start-column="60" selection-end-line="30" selection-end-column="60" />
               <folding>
                 <element signature="e#78#92#0" expanded="true" />
               </folding>
@@ -72,7 +66,7 @@
         <entry file="file://$PROJECT_DIR$/fiberfit/SettingsDialog.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="95" column="40" selection-start-line="95" selection-start-column="40" selection-end-line="95" selection-end-column="40" />
+              <caret line="41" column="43" selection-start-line="41" selection-start-column="43" selection-end-line="41" selection-end-column="43" />
               <folding />
             </state>
           </provider>
@@ -124,10 +118,10 @@
         <option value="$PROJECT_DIR$/fiberfit/computerVision_BP_nographs.py" />
         <option value="$PROJECT_DIR$/fiberfit/Test.csv" />
         <option value="$PROJECT_DIR$/fiberfit/img_model.py" />
-        <option value="$PROJECT_DIR$/fiberfit/computerVision_BP.py" />
         <option value="$PROJECT_DIR$/fiberfit/SettingsDialog.py" />
         <option value="$PROJECT_DIR$/fiberfit/fiberfit_GUI.py" />
         <option value="$PROJECT_DIR$/fiberfit/fiberfit_control.py" />
+        <option value="$PROJECT_DIR$/fiberfit/computerVision_BP.py" />
       </list>
     </option>
   </component>
@@ -135,8 +129,8 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="192" />
-    <option name="y" value="74" />
+    <option name="x" value="452" />
+    <option name="y" value="124" />
     <option name="width" value="1883" />
     <option name="height" value="1336" />
   </component>
@@ -473,7 +467,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="192" y="74" width="1883" height="1336" extended-state="0" />
+    <frame x="452" y="124" width="1883" height="1336" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -545,12 +539,12 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/fiberfit/fiberfit_control.py</url>
-          <line>114</line>
+          <line>125</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/fiberfit/fiberfit_control.py</url>
-          <line>41</line>
+          <line>52</line>
           <option name="timeStamp" value="9" />
         </line-breakpoint>
       </breakpoints>
@@ -921,14 +915,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/fiberfit/computerVision_BP.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="33" column="13" selection-start-line="33" selection-start-column="13" selection-end-line="33" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/fiberfit/img_model.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -948,18 +934,26 @@
     <entry file="file://$PROJECT_DIR$/fiberfit/SettingsDialog.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="95" column="40" selection-start-line="95" selection-start-column="40" selection-end-line="95" selection-end-column="40" />
+          <caret line="41" column="43" selection-start-line="41" selection-start-column="43" selection-end-line="41" selection-end-column="43" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/fiberfit/fiberfit_control.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.34848484">
-          <caret line="103" column="34" selection-start-line="103" selection-start-column="34" selection-end-line="103" selection-end-column="34" />
+        <state vertical-scroll-proportion="85.0">
+          <caret line="30" column="60" selection-start-line="30" selection-start-column="60" selection-end-line="30" selection-end-column="60" />
           <folding>
             <element signature="e#78#92#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fiberfit/computerVision_BP.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.48672566">
+          <caret line="51" column="54" selection-start-line="51" selection-start-column="54" selection-end-line="51" selection-end-column="54" />
+          <folding />
         </state>
       </provider>
     </entry>

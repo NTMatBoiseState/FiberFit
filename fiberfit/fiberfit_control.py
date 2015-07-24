@@ -24,10 +24,21 @@ from PyQt5.QtWidgets import QDialogButtonBox, QVBoxLayout, QDialog
 from fiberfit import SettingsDialog
 
 class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
+    sendValues = pyqtSignal(float, float, float, float)
     def __init__(self, parent = None):
         super(SettingsWindow, self).__init__(parent)
+        self.setupUi(self)
+        self.sendValues.connect(fft_mainWindow.processImages)
 
-
+    @pyqtSlot()
+    def makeChanges(self):
+        self.show()
+        uCut = self.ttopField.text
+        lCut = self.tbottomField.text
+        angleInc = self.btopField.text
+        radStep = self.bbottomField.text
+        if (self.buttonBox.button(QDialogButtonBox.Ok).clicked()):
+            self.sendValues.emit(uCut, lCut, angleInc, radStep)
 
 class ReportDialog(QDialog):
     printerRequest = pyqtSignal()
@@ -123,6 +134,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.cartDistCanvas = None
         #Pops up a dialog with
         self.dialogTextBrowser = ReportDialog(self)
+        self.settingsBrowser = SettingsWindow(self)
         # All the events happen below
         self.startButton.clicked.connect(self.start)
         self.nextButton.clicked.connect(self.nextImage)
@@ -130,20 +142,23 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.loadButton.clicked.connect(self.launch)
         self.clearButton.clicked.connect(self.clear)
         self.exportButton.clicked.connect(lambda i: self.show_report.emit(self.currentIndex))
-
         self.show_report.connect(self.do_show_report)
         self.make_report.connect(self.dialogTextBrowser.do_test)
 
+        self.settingsButton.clicked.connect(self.do_change_settings)
+        self.change_settings.connect(self.settingsBrowser.makeChanges)
         # sends off a signal containing string.
         # Conveniently the string will be the name of the file.
         self.selectImgBox.activated[str].connect(self.changeState)
-
 
         """This is to gain better insight into Slots and Signals.
         def userLog(int):
             print("User requested reported for image: {}".format(int))
         self.show_report.connect(userLog)
         """
+
+    def do_change_settings(self):
+        self.change_settings.emit()
 
     def do_show_report(self, index):
         print('Shows report')
@@ -183,11 +198,11 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     Processes selected images. Displays it onto a canvas.
     Technical: Creates img_model objects that encapsulate all of the useful data.
     """
-    # @PyQt.Slot(List)
-    def processImages(self):
+    @pyqtSlot(float, float, float, float)
+    def processImages(self, uCut, lCut, angleInc, radialStep):
         for filename in self.filenames:
             # Retrieve Figures from data analysis code
-            k, th, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename)
+            k, th, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename, uCut, lCut, angleInc, radialStep)
             # Starting from Python3, there is a distinctin between bytes and str. Thus, I can't use
             # methods of str on bytes. However I need to do that in order to properly encode the image
             # into b64. The main thing is that bytes-way produces some improper characters that mess up
