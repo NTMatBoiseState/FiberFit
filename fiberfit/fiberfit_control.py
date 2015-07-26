@@ -36,10 +36,10 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
         self.show()
 
     def acceptValues(self):
-        uCut = self.ttopField.text()
-        lCut = self.tbottomField.text()
-        angleInc = self.btopField.text()
-        radStep = self.bbottomField.text()
+        uCut = float(self.ttopField.text())
+        lCut = float(self.tbottomField.text())
+        angleInc = float(self.btopField.text())
+        radStep = float(self.bbottomField.text())
         print(uCut, lCut, angleInc, radStep)
         self.sendValues.emit(uCut, lCut, angleInc, radStep)
 
@@ -70,7 +70,7 @@ class ReportDialog(QDialog):
         self.printer.setOutputFormat(QPrinter.PdfFormat)
         #self.printer.setPageMargins(10, 10 , 10 , 10 , QPrinter.Inch)
         self.printer.setFullPage(True)
-        self.printer.setOutputFileName('ResultTable.pdf')
+        self.printer.setOutputFileName('ResultTable')
 
 
     def createHtml(self, model):
@@ -147,9 +147,9 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.exportButton.clicked.connect(lambda i: self.show_report.emit(self.currentIndex))
         self.show_report.connect(self.do_show_report)
         self.make_report.connect(self.dialogTextBrowser.do_test)
-
         self.settingsButton.clicked.connect(self.do_change_settings)
         self.change_settings.connect(self.settingsBrowser.makeChanges)
+
         # sends off a signal containing string.
         # Conveniently the string will be the name of the file.
         self.selectImgBox.activated[str].connect(self.changeState)
@@ -202,7 +202,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     Technical: Creates img_model objects that encapsulate all of the useful data.
     """
     @pyqtSlot(float, float, float, float)
-    def processImages(self, uCut = None, lCut = None, angleInc = None, radialStep = None):
+    def processImages(self, uCut = float, lCut = float, angleInc = float, radialStep = float):
         if uCut == None:
             uCut = 2
         if lCut == None:
