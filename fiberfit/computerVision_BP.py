@@ -112,7 +112,7 @@ def process_ellipse(normPower, theta1RadFinal):
     plt.polar(Mirtheta1RadFinal1, MirnormPower, linewidth=2)
     plt.polar(th * pi / 180, r_line, color='r', linewidth=3)
     plt.yticks(np.arange(.5, max(MirnormPower), .5))
-    angDist.savefig('angDist')
+    angDist.savefig('temp/angDist')
     plt.close()
 
     return t, angDist
@@ -165,7 +165,7 @@ def process_kappa(t_final, theta1RadFinal, normPower):
     plt.legend(handles=[h3], loc=2)
     plt.yticks(np.arange(0, max(normPower1) + .3, .5))
     plt.ylim([0, max(normPower1) + .3])
-    cartDist.savefig('cartDist')
+    cartDist.savefig('temp/cartDist')
     plt.close()
 
     return kappa, cartDist
@@ -196,7 +196,7 @@ def process_image(name, uCut, lCut, angleInc, radStep):
     originalImage.add_axes(ax)
     plt.imshow(im, cmap='gray', aspect='auto')
     plt.axis('off')
-    originalImage.savefig('orgImg')
+    originalImage.savefig('temp/orgImg')
     plt.close()
 
     fft_result = np.fft.fft2(im)
@@ -218,7 +218,7 @@ def process_image(name, uCut, lCut, angleInc, radStep):
     logScale.add_axes(ax)
     plt.axis('off')
     plt.imshow(log(PabsFlip), cmap='gray', aspect='auto')
-    logScale.savefig('logScl')
+    logScale.savefig('temp/logScl')
     plt.close()
 
     M, N1 = im.shape

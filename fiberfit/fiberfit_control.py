@@ -22,7 +22,8 @@ from PyQt5.QtWebKitWidgets import QWebView
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, Qt
 from PyQt5.QtWidgets import QDialogButtonBox, QVBoxLayout, QDialog
 from fiberfit import SettingsDialog
-
+import os
+import glob
 
 class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
 
@@ -179,7 +180,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.radStep = radStep
         print(self.uCut, self.lCut, self.angleInc, self.radStep)
 
-    def do_show_report(self, index):
+    def do_show_report(self):
         if (self.isStarted):
             self.make_report.emit(self.imgList[self.currentIndex])
 
@@ -226,10 +227,10 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             # methods of str on bytes. However I need to do that in order to properly encode the image
             # into b64. The main thing is that bytes-way produces some improper characters that mess up
             # the decoding process. Hence, decode(utf-8) translates bytes into str.
-            angDistEncoded = base64.encodebytes(open('angDist.png', 'rb').read()).decode('utf-8')
-            cartDistEncoded = base64.encodebytes(open('cartDist.png', 'rb').read()).decode('utf-8')
-            logSclEncoded = base64.encodebytes(open('logScl.png', 'rb').read()).decode('utf-8')
-            orgImgEncoded = base64.encodebytes(open('orgImg.png', 'rb').read()).decode('utf-8')
+            angDistEncoded = base64.encodebytes(open('temp/angDist.png', 'rb').read()).decode('utf-8')
+            cartDistEncoded = base64.encodebytes(open('temp/cartDist.png', 'rb').read()).decode('utf-8')
+            logSclEncoded = base64.encodebytes(open('temp/logScl.png', 'rb').read()).decode('utf-8')
+            orgImgEncoded = base64.encodebytes(open('temp/orgImg.png', 'rb').read()).decode('utf-8')
 
             # Creates an object
             processedImage = img_model.ImgModel(
@@ -312,6 +313,16 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.processImages()
         self.setupLabels(self.currentIndex)
         self.populateComboBox()
+        self.removeTemp()
+
+    """
+    Removes files in temp directory. Prevents memory leak.
+    """
+    def removeTemp(self):
+        os.chdir('temp/')
+        files = glob.glob('*.png')
+        for filename in files:
+            os.remove(filename)
 
     """
     Sets up appropriate labels depending on which image is selected.
@@ -356,7 +367,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """
     Exports results into a .csv file.
     """
-
+     #TODO: Perhaps could use os.path.join(save_path, filename) where save_path by default is results/ but in general
+     #TODO: user will specify himself/herself.
     def export(self):
         for i in range(self.csvIndex, len(self.imgList)):
             self.dataList.append(
