@@ -25,14 +25,25 @@ from fiberfit import SettingsDialog
 
 
 class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
+
+    sendValues = pyqtSignal(float, float, float, float)
     def __init__(self, parent=None):
         super(SettingsWindow, self).__init__(parent)
         self.setupUi(self)
+        self.buttonBox.button(QDialogButtonBox.Ok).clicked.connect(self.make_change)
+
+    @pyqtSlot()
+    def make_change(self):
+        uCut = float(self.ttopField.text())
+        lCut = float(self.tbottomField.text())
+        angleInc = float(self.btopField.text())
+        radStep = float(self.bbottomField.text())
+        self.sendValues.emit(uCut, lCut, angleInc, radStep)
+
 
     @pyqtSlot()
     def do_change(self):
         self.show()
-
 
 class ReportDialog(QDialog):
     printerRequest = pyqtSignal()
@@ -127,6 +138,11 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.logSclCanvas = None
         self.angDistCanvas = None
         self.cartDistCanvas = None
+        # Settings
+        self.uCut = 2
+        self.lCut = 32
+        self.angleInc = 1
+        self.radStep = 0.5
         # Pops up a dialog with
         self.dialogTextBrowser = ReportDialog(self)
         self.settingsBrowser = SettingsWindow(self)
@@ -143,6 +159,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.make_report.connect(self.dialogTextBrowser.do_test)
 
         self.settingsButton.clicked.connect(self.settingsBrowser.do_change)
+        self.settingsBrowser.sendValues.connect(self.updateValues)
 
         # sends off a signal containing string.
         # Conveniently the string will be the name of the file.
@@ -153,6 +170,14 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             print("User requested reported for image: {}".format(int))
         self.show_report.connect(userLog)
         """
+
+    @pyqtSlot(float, float, float, float)
+    def updateValues(self, uCut, lCut, angleInc, radStep):
+        self.uCut = uCut
+        self.lCut = lCut
+        self.angleInc = angleInc
+        self.radStep = radStep
+        print(self.uCut, self.lCut, self.angleInc, self.radStep)
 
     def do_show_report(self, index):
         if (self.isStarted):
@@ -196,7 +221,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def processImages(self):
         for filename in self.filenames:
             # Retrieve Figures from data analysis code
-            k, th, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename)
+            k, th, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename, self.uCut, self.lCut, self.angleInc, self.radStep)
             # Starting from Python3, there is a distinctin between bytes and str. Thus, I can't use
             # methods of str on bytes. However I need to do that in order to properly encode the image
             # into b64. The main thing is that bytes-way produces some improper characters that mess up
