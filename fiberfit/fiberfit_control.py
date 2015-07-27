@@ -26,12 +26,25 @@ import os
 import glob
 
 class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
-
+    genUCut = 2
+    genLCut = 32
+    genAngInc = 1
+    genRadStep = 0.5
     sendValues = pyqtSignal(float, float, float, float)
     def __init__(self, parent=None):
         super(SettingsWindow, self).__init__(parent)
         self.setupUi(self)
         self.buttonBox.button(QDialogButtonBox.Ok).clicked.connect(self.make_change)
+        self.setupDefaultValues()
+
+    """
+    Sets up default settings.
+    """
+    def setupDefaultValues(self):
+        self.ttopField.setText(self.genUCut.__str__())
+        self.tbottomField.setText(self.genLCut.__str__())
+        self.btopField.setText(self.genAngInc.__str__())
+        self.bbottomField.setText(self.genRadStep.__str__())
 
     @pyqtSlot()
     def make_change(self):
@@ -74,7 +87,7 @@ class ReportDialog(QDialog):
         self.printer.setOutputFormat(QPrinter.PdfFormat)
         # self.printer.setPageMargins(10, 10 , 10 , 10 , QPrinter.Inch)
         self.printer.setFullPage(True)
-        self.printer.setOutputFileName('ResultTable.pdf')
+        self.printer.setOutputFileName('results/ResultTable.pdf')
 
     def createHtml(self, model):
         html = """
@@ -114,9 +127,7 @@ class ReportDialog(QDialog):
         self.textBrowser.setHtml(self.createHtml(model))
         self.show()
 
-
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
-    results = open('test.csv', 'a')  # All instances would have this as a starter. Initialized later in code.
     show_report = pyqtSignal(int)
     make_report = pyqtSignal(img_model.ImgModel)
     change_settings = pyqtSignal()
@@ -139,14 +150,14 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.logSclCanvas = None
         self.angDistCanvas = None
         self.cartDistCanvas = None
-        # Settings
-        self.uCut = 2
-        self.lCut = 32
-        self.angleInc = 1
-        self.radStep = 0.5
         # Pops up a dialog with
         self.dialogTextBrowser = ReportDialog(self)
         self.settingsBrowser = SettingsWindow(self)
+        # Settings
+        self.uCut = float(self.settingsBrowser.ttopField.text())
+        self.lCut = float(self.settingsBrowser.tbottomField.text())
+        self.angleInc = float(self.settingsBrowser.btopField.text())
+        self.radStep = float(self.settingsBrowser.bbottomField.text())
         # All the events happen below
         self.startButton.clicked.connect(self.start)
         self.nextButton.clicked.connect(self.nextImage)
@@ -323,6 +334,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         files = glob.glob('*.png')
         for filename in files:
             os.remove(filename)
+        os.chdir('../')
 
     """
     Sets up appropriate labels depending on which image is selected.
@@ -376,7 +388,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                  self.imgList.__getitem__(i).k,
                  self.imgList.__getitem__(i).timeStamp])
             self.csvIndex += 1
-        with open('test.csv', 'w') as csvfile:
+        with open('results/test.csv', 'w') as csvfile:
             a = csv.writer(csvfile)
             a.writerow(['Name', 'Th', 'K', 'Time'])
             a.writerows(self.dataList)
