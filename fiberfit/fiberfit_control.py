@@ -18,10 +18,10 @@ from fiberfit import img_model
 from orderedset import OrderedSet
 import base64
 from PyQt5.QtPrintSupport import QPrinter
-from PyQt5.QtWebKitWidgets import QWebView
-from PyQt5.QtCore import pyqtSlot, pyqtSignal, Qt
-from PyQt5.QtWidgets import QDialogButtonBox, QVBoxLayout, QDialog
+from PyQt5.QtCore import pyqtSlot, pyqtSignal
+from PyQt5.QtWidgets import QDialogButtonBox, QDialog
 from fiberfit import SettingsDialog
+from fiberfit import ExportDialog
 import os
 import glob
 
@@ -59,37 +59,36 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
     def do_change(self):
         self.show()
 
-class ReportDialog(QDialog):
-    printerRequest = pyqtSignal()
-
+class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     def __init__(self, parent=None):
         super(ReportDialog, self).__init__(parent)
+        self.setupUi(self)
+        self.list = []
         self.printer = QPrinter(QPrinter.PrinterResolution)
-        self.buttonBox = QDialogButtonBox(self)
-        self.buttonBox.setOrientation(Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel | QDialogButtonBox.Save)
-        self.textBrowser = QWebView(self)
-        self.textBrowser.setHtml("This is a QTextBrowser!")
-        self.verticalLayout = QVBoxLayout(self)
-        self.verticalLayout.addWidget(self.textBrowser)
-        self.verticalLayout.addWidget(self.buttonBox)
         # Signals and slots:
-        self.buttonBox.button(QDialogButtonBox.Save).clicked.connect(self.print)
-        self.printerRequest.connect(self.printerSetup)
+        self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.print)
+        self.saveBox.button(QDialogButtonBox.SaveAll).clicked.connect(self.printAll)
+
+
+    def printAll(self):
+        print(self.list)
+        for model in self.list:
+            self.do_test(model, self.list)
+            self.printerSetup(model)
+            self.webView.print(self.printer)
 
     def print(self):
-        self.printerRequest.emit()
-        self.textBrowser.print(self.printer)
+        self.webView.print(self.printer)
 
-    @pyqtSlot()
-    def printerSetup(self):
+    @pyqtSlot(img_model.ImgModel)
+    def printerSetup(self, model):
         self.printer.setPageSize(QPrinter.A4)
         self.printer.setOutputFormat(QPrinter.PdfFormat)
-        # self.printer.setPageMargins(10, 10 , 10 , 10 , QPrinter.Inch)
         self.printer.setFullPage(True)
-        self.printer.setOutputFileName('results/ResultTable.pdf')
+        self.printer.setOutputFileName('results/' + str(model.filename.stem) + '.pdf')
 
     def createHtml(self, model):
+        #TODO: Problem somewhere here; doesnt see the images???
         html = """
         <html>
             <head>
@@ -122,15 +121,20 @@ class ReportDialog(QDialog):
         # print(html)
         return html
 
-    @pyqtSlot(img_model.ImgModel)
-    def do_test(self, model):
-        self.textBrowser.setHtml(self.createHtml(model))
+    @pyqtSlot(img_model.ImgModel, OrderedSet)
+    def do_test(self, model, list):
+        self.webView.setHtml(self.createHtml(model))
+        self.list = list
         self.show()
+
 
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     show_report = pyqtSignal(int)
-    make_report = pyqtSignal(img_model.ImgModel)
+    make_report = pyqtSignal(img_model.ImgModel, OrderedSet)
     change_settings = pyqtSignal()
+    do_run = pyqtSignal()
+    do_update = pyqtSignal(int)
+
     """
     Initializes all instance variables a.k.a attributes of a class.
     """
@@ -162,11 +166,19 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.startButton.clicked.connect(self.start)
         self.nextButton.clicked.connect(self.nextImage)
         self.prevButton.clicked.connect(self.prevImage)
+
+
         self.loadButton.clicked.connect(self.launch)
+        self.do_run.connect(self.processImages)
+        self.do_update.connect(self.populateComboBox)
+        self.do_update.connect(self.setupLabels)
+
+
         self.clearButton.clicked.connect(self.clear)
         self.exportButton.clicked.connect(lambda i: self.show_report.emit(self.currentIndex))
         self.exportButton.clicked.connect(self.export)
 
+        self.make_report.connect(self.dialogTextBrowser.printerSetup)
         self.show_report.connect(self.do_show_report)
         self.make_report.connect(self.dialogTextBrowser.do_test)
 
@@ -193,7 +205,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def do_show_report(self):
         if (self.isStarted):
-            self.make_report.emit(self.imgList[self.currentIndex])
+            self.make_report.emit(self.imgList[self.currentIndex], self.imgList)
 
     """
     Clears out canvas.
@@ -224,12 +236,15 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         filenames = dialog.getOpenFileNames(self, '', None)  # creates a list of fileNames
         for name in filenames[0]:
             self.filenames.append(pathlib.Path(name))
+        self.do_run.emit()
+        self.do_update.emit(self.currentIndex)
+        self.removeTemp()
 
     """
     Processes selected images. Displays it onto a canvas.
     Technical: Creates img_model objects that encapsulate all of the useful data.
     """
-    # @PyQt.Slot(List)
+    @pyqtSlot()
     def processImages(self):
         for filename in self.filenames:
             # Retrieve Figures from data analysis code
@@ -276,12 +291,16 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     Populates combox box with the names.
     """
 
+    @pyqtSlot()
     def populateComboBox(self):
         self.selectImgBox.clear()
         for element in self.imgList:
             self.selectImgBox.addItem(element.filename.stem)
         self.selectImgBox.setCurrentIndex(self.currentIndex)
 
+    """
+    Cleans the canvas.
+    """
     def cleanCanvas(self):
         self.figureLayout.removeWidget(self.angDistCanvas)
         self.figureLayout.removeWidget(self.cartDistCanvas)
@@ -292,6 +311,9 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.imgCanvas.deleteLater()
         self.logSclCanvas.deleteLater()
 
+    """
+    Fills the canvas.
+    """
     def fillCanvas(self, img):
         # updates canvases
         self.imgCanvas = FigureCanvas(img.orgImg)
@@ -321,9 +343,20 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def start(self):
         # Processes selected images; sets up the labels and fills selectImgBox with references to images.
         # TODO: Make an exception to catch IndexError, and pop the window with appropriate message.
-        self.processImages()
-        self.setupLabels(self.currentIndex)
-        self.populateComboBox()
+        self.kLabel.setText("k = ")
+        self.muLabel.setText("mu =  ")
+        # clears canvas
+        self.cleanCanvas()
+        # clears combo-box
+        self.selectImgBox.clear()
+        # resets isStarted
+        self.isStarted = False
+        # empties all images
+        self.imgList.clear()
+        # resets current index
+        self.currentIndex = 0
+        self.do_run.emit()
+        self.do_update.emit(self.currentIndex)
         self.removeTemp()
 
     """
@@ -339,7 +372,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """
     Sets up appropriate labels depending on which image is selected.
     """
-
+    @pyqtSlot(int)
     def setupLabels(self, num):
         self.kLabel.setText("k = " + str(round(self.imgList.__getitem__(num).k, 2)))
         self.muLabel.setText("mu = " + str(round(self.imgList.__getitem__(num).th, 2)))
