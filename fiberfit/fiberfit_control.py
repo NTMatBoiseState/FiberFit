@@ -23,6 +23,7 @@ from PyQt5.QtWidgets import QDialogButtonBox, QDialog
 from fiberfit import SettingsDialog
 from fiberfit import ExportDialog
 import os
+import time
 import glob
 
 class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
@@ -54,7 +55,6 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
         radStep = float(self.bbottomField.text())
         self.sendValues.emit(uCut, lCut, angleInc, radStep)
 
-
     @pyqtSlot()
     def do_change(self):
         self.show()
@@ -73,9 +73,11 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     def printAll(self):
         print(self.list)
         for model in self.list:
+            #self.printerSetup(model)
             self.do_test(model, self.list)
-            self.printerSetup(model)
-            self.webView.print(self.printer)
+            self.printer.setOutputFileName('results/'+str(model.filename.stem) + '.pdf')
+            self.webView.print_(self.printer)
+
 
     def print(self):
         self.webView.print(self.printer)
