@@ -60,17 +60,27 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
         self.show()
 
 class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
+    do_print = pyqtSignal()
     def __init__(self, parent=None):
         super(ReportDialog, self).__init__(parent)
         self.setupUi(self)
         self.list = []
+        self.savedfiles = None
         self.index = 0; # for recursive call?
         self.printer = QPrinter(QPrinter.PrinterResolution)
         # Signals and slots:
-        self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.print)
+        self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.saveas)
+        self.do_print.connect(self.print)
+        #self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.print)
         self.saveBox.button(QDialogButtonBox.SaveAll).clicked.connect(self.printAll)
-        self.webView.loadFinished.connect(self.print)
+        #self.webView.loadFinished.connect(self.print)
 
+    def saveas(self):
+        dialog = QFileDialog()
+        self.savedfiles = dialog.getSaveFileName(self, "Save")[0]
+        self.printerSetup()
+        self.do_print.emit()
+        print(self.savedfiles)
 
     def printAll(self):
         self.printerSetup(self.list[0])
@@ -90,14 +100,15 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         #     self.do_test(model, self.list)
 
     def print(self):
-        self.webView.print(self.printer)
+        self.webView.print_(self.printer)
 
     @pyqtSlot(img_model.ImgModel)
-    def printerSetup(self, model):
+    def printerSetup(self):
         self.printer.setPageSize(QPrinter.A4)
         self.printer.setOutputFormat(QPrinter.PdfFormat)
         self.printer.setFullPage(True)
-        self.printer.setOutputFileName('results/' + str(model.filename.stem) + '.pdf')
+        print(self.savedfiles)
+        self.printer.setOutputFileName(str(self.savedfiles))
 
     def createHtml(self, model):
         #TODO: Problem somewhere here; doesnt see the images???
@@ -192,7 +203,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.exportButton.clicked.connect(lambda i: self.show_report.emit(self.currentIndex))
         self.exportButton.clicked.connect(self.export)
 
-        self.make_report.connect(self.dialogTextBrowser.printerSetup)
+        #self.make_report.connect(self.dialogTextBrowser.printerSetup)
         self.show_report.connect(self.do_show_report)
         self.make_report.connect(self.dialogTextBrowser.do_test)
 
@@ -208,7 +219,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             print("User requested reported for image: {}".format(int))
         self.show_report.connect(userLog)
         """
-
     @pyqtSlot(float, float, float, float)
     def updateValues(self, uCut, lCut, angleInc, radStep):
         self.uCut = uCut
@@ -220,6 +230,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def do_show_report(self):
         if (self.isStarted):
             self.make_report.emit(self.imgList[self.currentIndex], self.imgList)
+
 
     """
     Clears out canvas.
