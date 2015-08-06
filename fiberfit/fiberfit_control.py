@@ -64,20 +64,30 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         super(ReportDialog, self).__init__(parent)
         self.setupUi(self)
         self.list = []
+        self.index = 0; # for recursive call?
         self.printer = QPrinter(QPrinter.PrinterResolution)
         # Signals and slots:
         self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.print)
         self.saveBox.button(QDialogButtonBox.SaveAll).clicked.connect(self.printAll)
+        self.webView.loadFinished.connect(self.print)
 
 
     def printAll(self):
-        print(self.list)
-        for model in self.list:
-            #self.printerSetup(model)
-            self.do_test(model, self.list)
-            self.printer.setOutputFileName('results/'+str(model.filename.stem) + '.pdf')
-            self.webView.print_(self.printer)
-
+        self.printerSetup(self.list[0])
+        self.do_test(self.list[0], self.list)
+        print(self.list[0])
+        self.printerSetup(self.list[1])
+        self.do_test(self.list[1], self.list)
+        print(self.list[1])
+        self.printerSetup(self.list[2])
+        self.do_test(self.list[2], self.list)
+        print(self.list[2])
+        self.printerSetup(self.list[3])
+        self.do_test(self.list[3], self.list)
+        print(self.list[3])
+        # for model in self.list:
+        #     self.printerSetup(model)
+        #     self.do_test(model, self.list)
 
     def print(self):
         self.webView.print(self.printer)
@@ -121,6 +131,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                    encodedCartDist=model.cartDistEncoded.translate('bn\''),
                    date=model.timeStamp)
         # print(html)
+        print('Set html')
         return html
 
     @pyqtSlot(img_model.ImgModel, OrderedSet)
@@ -128,6 +139,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.webView.setHtml(self.createHtml(model))
         self.list = list
         self.show()
+
 
 
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
@@ -276,7 +288,11 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 timeStamp=datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
 
             # Ordered Set
-            self.imgList.add(processedImage)
+            if processedImage in self.imgList:
+                self.imgList.remove(processedImage)
+                self.imgList.add(processedImage)
+            else:
+                self.imgList.add(processedImage)
             # TODO: Don't compute the ones that are already in.
         if self.isStarted:
             # removes/deletes all canvases
