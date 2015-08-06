@@ -22,6 +22,7 @@ from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QDialogButtonBox, QDialog
 from fiberfit import SettingsDialog
 from fiberfit import ExportDialog
+from PyQt5.QtGui import QTextDocument
 import os
 import time
 import glob
@@ -61,46 +62,61 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
 
 class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     do_print = pyqtSignal()
+    do_excel = pyqtSignal()
     def __init__(self, parent=None):
         super(ReportDialog, self).__init__(parent)
         self.setupUi(self)
         self.list = []
         self.savedfiles = None
-        self.index = 0; # for recursive call?
+        self.csvIndex = 0; # for recursive call?
         self.printer = QPrinter(QPrinter.PrinterResolution)
         # Signals and slots:
+        self.do_excel.connect(self.exportExcel)
         self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.saveas)
         self.do_print.connect(self.print)
         #self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.print)
         self.saveBox.button(QDialogButtonBox.SaveAll).clicked.connect(self.printAll)
-        #self.webView.loadFinished.connect(self.print)
+        #self.webView.loadFinished.connect(self.printAll)
 
+    @pyqtSlot()
+    def printAll(self):
+        for model in self.list:
+            document = QTextDocument()
+            document.setHtml(self.createHtml(model))
+            self.printer.setPageSize(QPrinter.A4)
+            self.printer.setOutputFormat(QPrinter.PdfFormat)
+            self.printer.setFullPage(True)
+            print(self.savedfiles.parents[0].__str__() + '/' + model.filename.stem + '.pdf')
+            self.printer.setOutputFileName(self.savedfiles.parents[0].__str__() + '/' + model.filename.stem + '.pdf')
+            document.print(self.printer)
+
+
+    @pyqtSlot()
+    def exportExcel(self):
+        dataList = []
+        for i in range(self.csvIndex, len(self.list)):
+            dataList.append(
+                [self.list.__getitem__(i).filename.stem, self.list.__getitem__(i).th,
+                 self.list.__getitem__(i).k,
+                 self.list.__getitem__(i).timeStamp])
+            self.csvIndex += 1
+        print(self.savedfiles.parents[0].__str__() + '/summary.csv')
+        with open(str(self.savedfiles.parents[0]) + '/summary.csv', 'a') as csvfile:
+            a = csv.writer(csvfile)
+            a.writerow(['Name', 'Th', 'K', 'Time'])
+            a.writerows(dataList)
+
+    @pyqtSlot()
     def saveas(self):
         dialog = QFileDialog()
-        self.savedfiles = dialog.getSaveFileName(self, "Save")[0]
+        self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Save")[0])
         self.printerSetup()
         self.do_print.emit()
+        self.do_excel.emit()
         print(self.savedfiles)
 
-    def printAll(self):
-        self.printerSetup(self.list[0])
-        self.do_test(self.list[0], self.list)
-        print(self.list[0])
-        self.printerSetup(self.list[1])
-        self.do_test(self.list[1], self.list)
-        print(self.list[1])
-        self.printerSetup(self.list[2])
-        self.do_test(self.list[2], self.list)
-        print(self.list[2])
-        self.printerSetup(self.list[3])
-        self.do_test(self.list[3], self.list)
-        print(self.list[3])
-        # for model in self.list:
-        #     self.printerSetup(model)
-        #     self.do_test(model, self.list)
-
     def print(self):
-        self.webView.print_(self.printer)
+        self.webView.print(self.printer)
 
     @pyqtSlot(img_model.ImgModel)
     def printerSetup(self):
@@ -111,7 +127,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.printer.setOutputFileName(str(self.savedfiles))
 
     def createHtml(self, model):
-        #TODO: Problem somewhere here; doesnt see the images???
+        #TODO: Cut the images' size down to (250, 250) so that to fit to QTextDocument.
         html = """
         <html>
             <head>
@@ -120,19 +136,20 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
             <body>
                 <p> Image Name: {name} </p> <p> mu: {th} </p>
                 <p>k: {k} </p>
+                <br>
                 <table>
                     <tr>
-                        <td> <img src = "data:image/png;base64,{encodedOrgImg}"/></td>
-                        <td> <img src ="data:image/png;base64,{encodedLogScl}"/></td>
+                        <td> <img src = "data:image/png;base64,{encodedOrgImg}" width = "250", height = "250"/></td>
+                        <td> <img src ="data:image/png;base64,{encodedLogScl}" width = "250", height = "250"/></td>
                     </tr>
                     <tr>
-                        <td> <img src = "data:image/png;base64,{encodedAngDist}"/></td>
-                        <td> <img src = "data:image/png;base64,{encodedCartDist}"/></td>
+                        <td> <img src = "data:image/png;base64,{encodedAngDist}" width = "250", height = "250" /></td>
+                        <td> <img src = "data:image/png;base64,{encodedCartDist}" width = "250", height = "250" /></td>
                     </tr>
                 </table>
-                <div class="footer">
+                <p><br><br><br><br><br><br>
                     {date}
-                </div>
+                </p>
             </body>
         </html>
         """.format(name=model.filename.stem, th=model.th, k=model.k,
@@ -150,8 +167,6 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.webView.setHtml(self.createHtml(model))
         self.list = list
         self.show()
-
-
 
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     show_report = pyqtSignal(int)
