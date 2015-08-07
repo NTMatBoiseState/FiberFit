@@ -66,30 +66,25 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     def __init__(self, parent=None):
         super(ReportDialog, self).__init__(parent)
         self.setupUi(self)
+        self.document = QTextDocument()
+        self.printAll = False #default
         self.list = []
         self.savedfiles = None
         self.csvIndex = 0; # for recursive call?
         self.printer = QPrinter(QPrinter.PrinterResolution)
         # Signals and slots:
         self.do_excel.connect(self.exportExcel)
+        self.saveBox.button(QDialogButtonBox.SaveAll).clicked.connect(self.saveas)
+        self.saveBox.button(QDialogButtonBox.SaveAll).clicked.connect(self.setTrue)
         self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.saveas)
         self.do_print.connect(self.print)
-        #self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.print)
-        self.saveBox.button(QDialogButtonBox.SaveAll).clicked.connect(self.printAll)
-        #self.webView.loadFinished.connect(self.printAll)
 
+    """
+    Indicated whether Save All button was pressed.
+    """
     @pyqtSlot()
-    def printAll(self):
-        for model in self.list:
-            document = QTextDocument()
-            document.setHtml(self.createHtml(model))
-            self.printer.setPageSize(QPrinter.A4)
-            self.printer.setOutputFormat(QPrinter.PdfFormat)
-            self.printer.setFullPage(True)
-            print(self.savedfiles.parents[0].__str__() + '/' + model.filename.stem + '.pdf')
-            self.printer.setOutputFileName(self.savedfiles.parents[0].__str__() + '/' + model.filename.stem + '.pdf')
-            document.print(self.printer)
-
+    def setTrue(self):
+        self.printAll = True
 
     @pyqtSlot()
     def exportExcel(self):
@@ -113,12 +108,19 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.printerSetup()
         self.do_print.emit()
         self.do_excel.emit()
-        print(self.savedfiles)
+        # print(self.savedfiles)
 
     def print(self):
-        self.webView.print(self.printer)
+        if (self.saveBox.button(QDialogButtonBox.SaveAll) == self.sender()):
+            for model in self.list:
+                self.document.setHtml(self.createHtml(model))
+                # print(self.savedfiles.parents[0].__str__() + '/' + model.filename.stem + '.pdf') <--- for debugging
+                self.printer.setOutputFileName(self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name + model.filename.stem + '.pdf')
+                self.document.print(self.printer)
+                self.printAll = False # reset it back to False
+        elif (self.saveBox.button(QDialogButtonBox.Save) == self.sender()):
+            self.document.print(self.printer)
 
-    @pyqtSlot(img_model.ImgModel)
     def printerSetup(self):
         self.printer.setPageSize(QPrinter.A4)
         self.printer.setOutputFormat(QPrinter.PdfFormat)
@@ -165,6 +167,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     @pyqtSlot(img_model.ImgModel, OrderedSet)
     def do_test(self, model, list):
         self.webView.setHtml(self.createHtml(model))
+        self.document.setHtml(self.createHtml(model))
         self.list = list
         self.show()
 
