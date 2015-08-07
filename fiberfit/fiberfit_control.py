@@ -65,11 +65,13 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     do_excel = pyqtSignal()
     def __init__(self, parent=None):
         super(ReportDialog, self).__init__(parent)
+        self.dataList = []
         self.setupUi(self)
+        self.isNew = True
         self.document = QTextDocument()
         self.list = []
         self.savedfiles = None
-        self.csvIndex = 0; # for recursive call?
+        self.csvIndex = 1; # for recursive call?
         self.printer = QPrinter(QPrinter.PrinterResolution)
         # Signals and slots:
         self.do_excel.connect(self.exportExcel)
@@ -82,18 +84,38 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     #TODO: Need to work here!
     @pyqtSlot()
     def exportExcel(self):
-        dataList = []
-        for i in range(self.csvIndex, len(self.list)):
-            dataList.append(
-                [self.list.__getitem__(i).filename.stem, self.list.__getitem__(i).th,
-                 self.list.__getitem__(i).k,
-                 self.list.__getitem__(i).timeStamp])
-            self.csvIndex += 1
-        print(self.savedfiles.parents[0].__str__() + '/summary.csv')
-        with open(str(self.savedfiles.parents[0]) + '/summary.csv', 'a') as csvfile:
+        if self.isNew:
+            self.dataList.append(
+                [self.list.__getitem__(0).filename.stem, self.list.__getitem__(0).th,
+                 self.list.__getitem__(0).k,
+                 self.list.__getitem__(0).timeStamp])
+            self.isNew = False
+        temp = self.list
+        for i in range(0, len(self.dataList)):
+            found = False
+            for j in range(0, len(temp)):
+                print('i = ' + i.__str__())
+                print('Did I fail Here?')
+                print(self.dataList)
+                print('temp is ' + temp.__str__())
+                # One image from list is at most can equal to one another image from temp
+                if found == False and self.dataList[i][0] == temp.__getitem__(j).filename.stem:
+                    #self.dataList[i][0] = temp.__getitem__(j).filename.stem
+                    self.dataList.remove(self.dataList[i])
+                    self.dataList.insert(i, [temp.__getitem__(j).filename.stem, temp.__getitem__(j).th, temp.__getitem__(j).k, temp.__getitem__(j).timeStamp])
+                    temp.remove(temp.__getitem__(j))
+                    found = True
+
+        print('DataList is: ' + self.dataList.__str__() + "\n and temp is: " + temp.__str__())
+        for k in range(0, len(temp)):
+            self.dataList.append( [temp.__getitem__(k).filename.stem, temp.__getitem__(k).th,
+                        temp.__getitem__(k).k,
+                        temp.__getitem__(k).timeStamp])
+        print('DataList after modif is: ' + self.dataList.__str__())
+        with open(str(self.savedfiles.parents[0]) + '/summary.csv', 'w') as csvfile:
             a = csv.writer(csvfile)
             a.writerow(['Name', 'Th', 'K', 'Time'])
-            a.writerows(dataList)
+            a.writerows(self.dataList)
 
     """
     Pops out a dialog allowing user to select where to save the image.
@@ -182,6 +204,10 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.list = list
         self.show()
 
+    @pyqtSlot()
+    def listReceiver(self):
+
+
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     show_report = pyqtSignal(int)
     make_report = pyqtSignal(img_model.ImgModel, OrderedSet)
@@ -230,7 +256,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
         self.clearButton.clicked.connect(self.clear)
         self.exportButton.clicked.connect(lambda i: self.show_report.emit(self.currentIndex))
-        self.exportButton.clicked.connect(self.export)
 
         #self.make_report.connect(self.dialogTextBrowser.printerSetup)
         self.show_report.connect(self.do_show_report)
@@ -259,7 +284,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def do_show_report(self):
         if (self.isStarted):
             self.make_report.emit(self.imgList[self.currentIndex], self.imgList)
-
 
     """
     Clears out canvas.
@@ -326,6 +350,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 cartDist=cartDist,
                 cartDistEncoded=cartDistEncoded,
                 timeStamp=datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
+
 
             # Ordered Set
             if processedImage in self.imgList:
@@ -466,23 +491,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.fillCanvas(image)
             self.setupLabels(self.currentIndex)
             self.selectImgBox.setCurrentIndex(self.currentIndex)
-
-    """
-    Exports results into a .csv file.
-    """
-     #TODO: Perhaps could use os.path.join(save_path, filename) where save_path by default is results/ but in general
-     #TODO: user will specify himself/herself.
-    def export(self):
-        for i in range(self.csvIndex, len(self.imgList)):
-            self.dataList.append(
-                [self.imgList.__getitem__(i).filename.stem, self.imgList.__getitem__(i).th,
-                 self.imgList.__getitem__(i).k,
-                 self.imgList.__getitem__(i).timeStamp])
-            self.csvIndex += 1
-        with open('results/test.csv', 'w') as csvfile:
-            a = csv.writer(csvfile)
-            a.writerow(['Name', 'Th', 'K', 'Time'])
-            a.writerows(self.dataList)
 
     """
     Slot for Combo Box's activated() signal. Searches for image and displays it onto
