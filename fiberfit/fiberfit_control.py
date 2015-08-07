@@ -67,7 +67,6 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         super(ReportDialog, self).__init__(parent)
         self.setupUi(self)
         self.document = QTextDocument()
-        self.printAll = False #default
         self.list = []
         self.savedfiles = None
         self.csvIndex = 0; # for recursive call?
@@ -75,17 +74,12 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         # Signals and slots:
         self.do_excel.connect(self.exportExcel)
         self.saveBox.button(QDialogButtonBox.SaveAll).clicked.connect(self.saveas)
-        self.saveBox.button(QDialogButtonBox.SaveAll).clicked.connect(self.setTrue)
         self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.saveas)
         self.do_print.connect(self.print)
 
+    """Makes excel spreadsheet.
     """
-    Indicated whether Save All button was pressed.
-    """
-    @pyqtSlot()
-    def setTrue(self):
-        self.printAll = True
-
+    #TODO: Need to work here!
     @pyqtSlot()
     def exportExcel(self):
         dataList = []
@@ -101,6 +95,9 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
             a.writerow(['Name', 'Th', 'K', 'Time'])
             a.writerows(dataList)
 
+    """
+    Pops out a dialog allowing user to select where to save the image.
+    """
     @pyqtSlot()
     def saveas(self):
         dialog = QFileDialog()
@@ -109,6 +106,10 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.do_print.emit()
         self.do_excel.emit()
         # print(self.savedfiles)
+
+    """
+    Checks which button sent a signal. Based on that it either prints all images or just a single specific image.
+    """
 
     def print(self):
         if (self.saveBox.button(QDialogButtonBox.SaveAll) == self.sender()):
@@ -121,6 +122,10 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         elif (self.saveBox.button(QDialogButtonBox.Save) == self.sender()):
             self.document.print(self.printer)
 
+    """
+    Sets up default instructions for printer.
+    """
+
     def printerSetup(self):
         self.printer.setPageSize(QPrinter.A4)
         self.printer.setOutputFormat(QPrinter.PdfFormat)
@@ -128,6 +133,9 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         print(self.savedfiles)
         self.printer.setOutputFileName(str(self.savedfiles))
 
+    """
+    Creates html-based report that shows the basic information about the sample.
+    """
     def createHtml(self, model):
         #TODO: Cut the images' size down to (250, 250) so that to fit to QTextDocument.
         html = """
@@ -164,6 +172,9 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         print('Set html')
         return html
 
+    """
+    Makes report for an image that was active when user pressed Export button.
+    """
     @pyqtSlot(img_model.ImgModel, OrderedSet)
     def do_test(self, model, list):
         self.webView.setHtml(self.createHtml(model))
