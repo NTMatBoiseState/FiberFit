@@ -68,11 +68,15 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         super(ReportDialog, self).__init__(parent)
         self.dataList = []
         self.setupUi(self)
-        self.isNew = True
         self.document = QTextDocument()
         self.list = []
         self.savedfiles = None
-        self.csvIndex = 1; # for recursive call?
+        # settings
+        self.uCut = 0
+        self.lCut = 0
+        self.angleInc = 0
+        self.radStep = 0
+        # printer
         self.printer = QPrinter(QPrinter.PrinterResolution)
         # Signals and slots:
         self.do_excel.connect(self.exportExcel)
@@ -88,7 +92,12 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     def exportExcel(self):
         if self.dataList.__len__() == 0:
             self.dataList.append(
-                [self.list[0].filename.stem, self.list[0].th,
+                [self.list[0].filename.stem,
+                 self.uCut,
+                 self.lCut,
+                 self.radStep,
+                 self.angleInc,
+                 self.list[0].th,
                  self.list[0].k,
                  self.list[0].timeStamp])
         temp = self.list
@@ -104,20 +113,32 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                 if found == False and self.dataList[i][0] == temp[j].filename.stem:
                     #self.dataList[i][0] = temp.__getitem__(j).filename.stem
                     self.dataList.remove(self.dataList[i])
-                    self.dataList.insert(i, [temp[j].filename.stem, temp[j].th, temp[j].k, temp[j].timeStamp])
+                    self.dataList.insert(i, [temp[j].filename.stem,
+                                             self.uCut,
+                                             self.lCut,
+                                             self.radStep,
+                                             self.angleInc,
+                                             temp[j].th,
+                                             temp[j].k,
+                                             temp[j].timeStamp])
                     temp.remove(temp[j])
                     print('temp after removal: ' + temp.__str__())
                     found = True
 
         print('DataList is: ' + self.dataList.__str__() + "\n and temp is: " + temp.__str__())
         for k in range(0, len(temp)):
-            self.dataList.append( [temp[k].filename.stem, temp[k].th,
-                        temp[k].k,
-                        temp[k].timeStamp])
+            self.dataList.append( [temp[k].filename.stem,
+                                   self.uCut,
+                                   self.lCut,
+                                   self.radStep,
+                                   self.angleInc,
+                                   temp[k].th,
+                                   temp[k].k,
+                                   temp[k].timeStamp])
         print('DataList after modif is: ' + self.dataList.__str__())
         with open(str(self.savedfiles.parents[0]) + '/summary.csv', 'w') as csvfile:
             a = csv.writer(csvfile)
-            a.writerow(['Name', 'Th', 'K', 'Time'])
+            a.writerow(['Name', 'LowerCut', 'UpperCut', 'RadialStep', 'AngleIncrement', 'Th', 'K', 'Time'])
             a.writerows(self.dataList)
         fft_mainWindow.dataList = self.dataList
 
@@ -206,19 +227,21 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.document.setHtml(self.createHtml(model))
         self.show()
 
-    @pyqtSlot(list, list)
-    def receiver(self, selectedImgs, dataList):
+    @pyqtSlot(list, list, float, float, float, float)
+    def receiver(self, selectedImgs, dataList, uCut, lCut, radStep, angleInc):
         self.dataList = dataList
         self.list = selectedImgs
-
+        self.uCut = uCut
+        self.lCut = lCut
+        self.radStep = radStep
+        self.angleInc = angleInc
 
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     show_report = pyqtSignal(int)
     make_report = pyqtSignal(img_model.ImgModel, OrderedSet)
-    change_settings = pyqtSignal()
     do_run = pyqtSignal()
     do_update = pyqtSignal(int)
-    sendProcessedImagesList = pyqtSignal(list, list)
+    sendProcessedImagesList = pyqtSignal(list, list, float, float, float, float)
 
     """
     Initializes all instance variables a.k.a attributes of a class.
@@ -371,7 +394,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             else:
                 self.imgList.add(processedImage)
         print('Processed Img List when sent is: ' + processedImagesList.__str__())
-        self.sendProcessedImagesList.emit(processedImagesList, self.dataList)
+        self.sendProcessedImagesList.emit(processedImagesList, self.dataList, self.uCut, self.lCut, self.radStep, self.angleInc)
         processedImagesList = []
         if self.isStarted:
             # removes/deletes all canvases
