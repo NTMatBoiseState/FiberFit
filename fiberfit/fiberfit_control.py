@@ -88,9 +88,9 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     def exportExcel(self):
         if self.dataList.__len__() == 0:
             self.dataList.append(
-                [self.list.__getitem__(0).filename.stem, self.list.__getitem__(0).th,
-                 self.list.__getitem__(0).k,
-                 self.list.__getitem__(0).timeStamp])
+                [self.list[0].filename.stem, self.list[0].th,
+                 self.list[0].k,
+                 self.list[0].timeStamp])
         temp = self.list
         print('temp before removal: ' + temp.__str__())
         for i in range(0, len(self.dataList)):
@@ -111,9 +111,9 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
 
         print('DataList is: ' + self.dataList.__str__() + "\n and temp is: " + temp.__str__())
         for k in range(0, len(temp)):
-            self.dataList.append( [temp.__getitem__(k).filename.stem, temp.__getitem__(k).th,
-                        temp.__getitem__(k).k,=
-                        temp.__getitem__(k).timeStamp])
+            self.dataList.append( [temp[k].filename.stem, temp[k].th,
+                        temp[k].k,
+                        temp[k].timeStamp])
         print('DataList after modif is: ' + self.dataList.__str__())
         with open(str(self.savedfiles.parents[0]) + '/summary.csv', 'w') as csvfile:
             a = csv.writer(csvfile)
