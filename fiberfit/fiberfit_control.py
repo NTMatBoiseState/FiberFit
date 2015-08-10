@@ -204,9 +204,9 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.list = list
         self.show()
 
-    @pyqtSlot()
-    def listReceiver(self):
-
+    @pyqtSlot(img_model.ImgModel)
+    def listReceiver(self, processedImg):
+        self.list.append(processedImg)
 
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     show_report = pyqtSignal(int)
