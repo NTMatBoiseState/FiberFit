@@ -63,6 +63,7 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
 class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     do_print = pyqtSignal()
     do_excel = pyqtSignal()
+    sendDataList = pyqtSignal(list)
     def __init__(self, parent=None):
         super(ReportDialog, self).__init__(parent)
         self.dataList = []
@@ -78,44 +79,47 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.saveBox.button(QDialogButtonBox.SaveAll).clicked.connect(self.saveas)
         self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.saveas)
         self.do_print.connect(self.print)
+        # self.sendDataList.connect(fft_mainWindow.receiveDataList)
 
     """Makes excel spreadsheet.
     """
     #TODO: Need to work here!
     @pyqtSlot()
     def exportExcel(self):
-        if self.isNew:
+        if self.dataList.__len__() == 0:
             self.dataList.append(
                 [self.list.__getitem__(0).filename.stem, self.list.__getitem__(0).th,
                  self.list.__getitem__(0).k,
                  self.list.__getitem__(0).timeStamp])
-            self.isNew = False
         temp = self.list
+        print('temp before removal: ' + temp.__str__())
         for i in range(0, len(self.dataList)):
             found = False
             for j in range(0, len(temp)):
-                print('i = ' + i.__str__())
-                print('Did I fail Here?')
-                print(self.dataList)
-                print('temp is ' + temp.__str__())
+                #print('i = ' + i.__str__())
+                #print('Did I fail Here?')
+                #print(self.dataList)
+                #print('temp is ' + temp.__str__())
                 # One image from list is at most can equal to one another image from temp
-                if found == False and self.dataList[i][0] == temp.__getitem__(j).filename.stem:
+                if found == False and self.dataList[i][0] == temp[j].filename.stem:
                     #self.dataList[i][0] = temp.__getitem__(j).filename.stem
                     self.dataList.remove(self.dataList[i])
-                    self.dataList.insert(i, [temp.__getitem__(j).filename.stem, temp.__getitem__(j).th, temp.__getitem__(j).k, temp.__getitem__(j).timeStamp])
-                    temp.remove(temp.__getitem__(j))
+                    self.dataList.insert(i, [temp[j].filename.stem, temp[j].th, temp[j].k, temp[j].timeStamp])
+                    temp.remove(temp[j])
+                    print('temp after removal: ' + temp.__str__())
                     found = True
 
         print('DataList is: ' + self.dataList.__str__() + "\n and temp is: " + temp.__str__())
         for k in range(0, len(temp)):
             self.dataList.append( [temp.__getitem__(k).filename.stem, temp.__getitem__(k).th,
-                        temp.__getitem__(k).k,
+                        temp.__getitem__(k).k,=
                         temp.__getitem__(k).timeStamp])
         print('DataList after modif is: ' + self.dataList.__str__())
         with open(str(self.savedfiles.parents[0]) + '/summary.csv', 'w') as csvfile:
             a = csv.writer(csvfile)
             a.writerow(['Name', 'Th', 'K', 'Time'])
             a.writerows(self.dataList)
+        fft_mainWindow.dataList = self.dataList
 
     """
     Pops out a dialog allowing user to select where to save the image.
@@ -140,7 +144,6 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                 # print(self.savedfiles.parents[0].__str__() + '/' + model.filename.stem + '.pdf') <--- for debugging
                 self.printer.setOutputFileName(self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name + model.filename.stem + '.pdf')
                 self.document.print(self.printer)
-                self.printAll = False # reset it back to False
         elif (self.saveBox.button(QDialogButtonBox.Save) == self.sender()):
             self.document.print(self.printer)
 
@@ -197,16 +200,17 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     """
     Makes report for an image that was active when user pressed Export button.
     """
-    @pyqtSlot(img_model.ImgModel, OrderedSet)
-    def do_test(self, model, list):
+    @pyqtSlot(img_model.ImgModel)
+    def do_test(self, model):
         self.webView.setHtml(self.createHtml(model))
         self.document.setHtml(self.createHtml(model))
-        self.list = list
         self.show()
 
-    @pyqtSlot(img_model.ImgModel)
-    def listReceiver(self, processedImg):
-        self.list.append(processedImg)
+    @pyqtSlot(list, list)
+    def receiver(self, selectedImgs, dataList):
+        self.dataList = dataList
+        self.list = selectedImgs
+
 
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     show_report = pyqtSignal(int)
@@ -214,6 +218,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     change_settings = pyqtSignal()
     do_run = pyqtSignal()
     do_update = pyqtSignal(int)
+    sendProcessedImagesList = pyqtSignal(list, list)
 
     """
     Initializes all instance variables a.k.a attributes of a class.
@@ -242,6 +247,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.lCut = float(self.settingsBrowser.tbottomField.text())
         self.angleInc = float(self.settingsBrowser.btopField.text())
         self.radStep = float(self.settingsBrowser.bbottomField.text())
+        # dataList for export
+        self.dataList = []
         # All the events happen below
         self.startButton.clicked.connect(self.start)
         self.nextButton.clicked.connect(self.nextImage)
@@ -260,6 +267,9 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         #self.make_report.connect(self.dialogTextBrowser.printerSetup)
         self.show_report.connect(self.do_show_report)
         self.make_report.connect(self.dialogTextBrowser.do_test)
+
+        #sends export data sets
+        self.sendProcessedImagesList.connect(self.dialogTextBrowser.receiver)
 
         self.settingsButton.clicked.connect(self.settingsBrowser.do_change)
         self.settingsBrowser.sendValues.connect(self.updateValues)
@@ -310,6 +320,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """
 
     def launch(self):
+        self.filenames = []
         dialog = QFileDialog()
         filenames = dialog.getOpenFileNames(self, '', None)  # creates a list of fileNames
         for name in filenames[0]:
@@ -324,6 +335,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """
     @pyqtSlot()
     def processImages(self):
+        processedImagesList = []
         for filename in self.filenames:
             # Retrieve Figures from data analysis code
             k, th, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename, self.uCut, self.lCut, self.angleInc, self.radStep)
@@ -351,14 +363,16 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 cartDistEncoded=cartDistEncoded,
                 timeStamp=datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
 
-
+            processedImagesList.append(processedImage)
             # Ordered Set
             if processedImage in self.imgList:
                 self.imgList.remove(processedImage)
                 self.imgList.add(processedImage)
             else:
                 self.imgList.add(processedImage)
-            # TODO: Don't compute the ones that are already in.
+        print('Processed Img List when sent is: ' + processedImagesList.__str__())
+        self.sendProcessedImagesList.emit(processedImagesList, self.dataList)
+        processedImagesList = []
         if self.isStarted:
             # removes/deletes all canvases
             self.cleanCanvas()
