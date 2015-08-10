@@ -13,6 +13,7 @@ import scipy.ndimage
 import scipy.interpolate
 import scipy.optimize
 import scipy.integrate
+import scipy.stats
 import math
 import glob
 from pylab import *
@@ -167,8 +168,8 @@ def process_kappa(t_final, theta1RadFinal, normPower):
     plt.ylim([0, max(normPower1) + .3])
     cartDist.savefig('temp/cartDist')
     plt.close()
-
-    return kappa, cartDist
+    slope, intercept, rValue, pValue, stderr = scipy.stats.linregress(p_act, normPower1)
+    return kappa, cartDist, rValue
 
 
 def process_image(name, uCut, lCut, angleInc, radStep):
@@ -229,7 +230,7 @@ def process_image(name, uCut, lCut, angleInc, radStep):
     t_final, angDist = process_ellipse(normPower, theta1RadFinal)
 
     # k and cartesian distrubution are getting retrieved.
-    k, cartDist = process_kappa(t_final, theta1RadFinal, normPower)
+    k, cartDist, rValue = process_kappa(t_final, theta1RadFinal, normPower)
 
     # Rounding results for Title of Figure
     krnd = math.ceil(k * 1000) / 1000
@@ -237,7 +238,7 @@ def process_image(name, uCut, lCut, angleInc, radStep):
     krnd = math.trunc(krnd * 100) / 100
     thrnd = math.trunc(thrnd * 100) / 100
 
-    return k[0], t_final, angDist, cartDist, logScale, originalImage
+    return k[0], t_final, rValue**2, angDist, cartDist, logScale, originalImage
 
 
 def pol2cart(theta, radius):

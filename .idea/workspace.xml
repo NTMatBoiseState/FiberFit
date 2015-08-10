@@ -13,7 +13,10 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/fiberfit/results/ResultTable.pdf" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/fiberfit/temp/ResultTable.pdf" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/fiberfit/temp/test.csv" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/computerVision_BP.py" afterPath="$PROJECT_DIR$/fiberfit/computerVision_BP.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/fiberfit_control.py" afterPath="$PROJECT_DIR$/fiberfit/fiberfit_control.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/img_model.py" afterPath="$PROJECT_DIR$/fiberfit/img_model.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="fiberfit.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -34,11 +37,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="computerVision_BP.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="computerVision_BP.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fiberfit/computerVision_BP.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.38274336">
-              <caret line="156" column="16" selection-start-line="156" selection-start-column="16" selection-end-line="156" selection-end-column="16" />
+            <state vertical-scroll-proportion="-16.666666">
+              <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -54,14 +57,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="fiberfit_control.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="fiberfit_control.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/fiberfit/fiberfit_control.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-11.296296">
-              <caret line="229" column="52" selection-start-line="229" selection-start-column="52" selection-end-line="229" selection-end-column="52" />
+            <state vertical-scroll-proportion="0.87942475">
+              <caret line="209" column="35" selection-start-line="209" selection-start-column="35" selection-end-line="209" selection-end-column="35" />
               <folding>
                 <element signature="e#78#92#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pathlib.py" pinned="false" current-in-tab="false">
+        <entry file="file:///usr/local/Cellar/python3/3.4.3/Frameworks/Python.framework/Versions/3.4/lib/python3.4/pathlib.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="531" column="0" selection-start-line="531" selection-start-column="0" selection-end-line="531" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -100,7 +113,7 @@
         <entry file="file:///usr/local/lib/python3.4/site-packages/matplotlib/backends/backend_qt5.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="236" column="0" selection-start-line="236" selection-start-column="0" selection-end-line="236" selection-end-column="0" />
+              <caret line="247" column="34" selection-start-line="247" selection-start-column="34" selection-end-line="247" selection-end-column="34" />
               <folding />
             </state>
           </provider>
@@ -110,7 +123,7 @@
         <entry file="file://$PROJECT_DIR$/fiberfit/img_model.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+              <caret line="0" column="3" selection-start-line="0" selection-start-column="3" selection-end-line="0" selection-end-column="3" />
               <folding />
             </state>
           </provider>
@@ -141,12 +154,12 @@
         <option value="$PROJECT_DIR$/fiberfit/fiberfit_pop.py" />
         <option value="$PROJECT_DIR$/fiberfit/computerVision_BP_nographs.py" />
         <option value="$PROJECT_DIR$/fiberfit/Test.csv" />
-        <option value="$PROJECT_DIR$/fiberfit/img_model.py" />
         <option value="$PROJECT_DIR$/fiberfit/SettingsDialog.py" />
         <option value="$PROJECT_DIR$/fiberfit/fiberfit_GUI.py" />
-        <option value="$PROJECT_DIR$/fiberfit/computerVision_BP.py" />
         <option value="$PROJECT_DIR$/fiberfit/EllipseDirectFit.py" />
         <option value="$PROJECT_DIR$/fiberfit/ExportDialog.py" />
+        <option value="$PROJECT_DIR$/fiberfit/img_model.py" />
+        <option value="$PROJECT_DIR$/fiberfit/computerVision_BP.py" />
         <option value="$PROJECT_DIR$/fiberfit/fiberfit_control.py" />
       </list>
     </option>
@@ -155,7 +168,7 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="355" />
+    <option name="x" value="715" />
     <option name="y" value="22" />
     <option name="width" value="1821" />
     <option name="height" value="1282" />
@@ -481,7 +494,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="355" y="22" width="1821" height="1282" extended-state="0" />
+    <frame x="715" y="22" width="1821" height="1282" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -894,14 +907,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/local/lib/python3.4/site-packages/matplotlib/backends/backend_qt5.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="236" column="0" selection-start-line="236" selection-start-column="0" selection-end-line="236" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/setup.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -917,14 +922,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/local/Cellar/python3/3.4.3/Frameworks/Python.framework/Versions/3.4/lib/python3.4/pathlib.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5200594">
-          <caret line="531" column="0" selection-start-line="531" selection-start-column="0" selection-end-line="531" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/fiberfit/EllipseDirectFit.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -933,29 +930,45 @@
         </state>
       </provider>
     </entry>
+    <entry file="file:///usr/local/lib/python3.4/site-packages/matplotlib/backends/backend_qt5.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="247" column="34" selection-start-line="247" selection-start-column="34" selection-end-line="247" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/fiberfit/img_model.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+          <caret line="0" column="3" selection-start-line="0" selection-start-column="3" selection-end-line="0" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/Cellar/python3/3.4.3/Frameworks/Python.framework/Versions/3.4/lib/python3.4/pathlib.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="531" column="0" selection-start-line="531" selection-start-column="0" selection-end-line="531" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fiberfit/computerVision_BP.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-16.666666">
+          <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/fiberfit/fiberfit_control.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.296296">
-          <caret line="229" column="52" selection-start-line="229" selection-start-column="52" selection-end-line="229" selection-end-column="52" />
+        <state vertical-scroll-proportion="0.87942475">
+          <caret line="209" column="35" selection-start-line="209" selection-start-column="35" selection-end-line="209" selection-end-column="35" />
           <folding>
             <element signature="e#78#92#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/fiberfit/computerVision_BP.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.38274336">
-          <caret line="156" column="16" selection-start-line="156" selection-start-column="16" selection-end-line="156" selection-end-column="16" />
-          <folding />
         </state>
       </provider>
     </entry>

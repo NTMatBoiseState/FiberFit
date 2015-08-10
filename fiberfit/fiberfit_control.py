@@ -99,6 +99,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                  self.angleInc,
                  self.list[0].th,
                  self.list[0].k,
+                 self.list[0].R2,
                  self.list[0].timeStamp])
         temp = self.list
         print('temp before removal: ' + temp.__str__())
@@ -120,6 +121,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                                              self.angleInc,
                                              temp[j].th,
                                              temp[j].k,
+                                             temp[j].R2,
                                              temp[j].timeStamp])
                     temp.remove(temp[j])
                     print('temp after removal: ' + temp.__str__())
@@ -134,11 +136,12 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                                    self.angleInc,
                                    temp[k].th,
                                    temp[k].k,
+                                   temp[k].R2,
                                    temp[k].timeStamp])
         print('DataList after modif is: ' + self.dataList.__str__())
         with open(str(self.savedfiles.parents[0]) + '/summary.csv', 'w') as csvfile:
             a = csv.writer(csvfile)
-            a.writerow(['Name', 'LowerCut', 'UpperCut', 'RadialStep', 'AngleIncrement', 'Th', 'K', 'Time'])
+            a.writerow(['Name', 'LowerCut', 'UpperCut', 'RadialStep', 'AngleIncrement', 'Th', 'K', 'R^2', 'Time'])
             a.writerows(self.dataList)
         fft_mainWindow.dataList = self.dataList
 
@@ -148,7 +151,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     @pyqtSlot()
     def saveas(self):
         dialog = QFileDialog()
-        self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Save")[0])
+        self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Save", "Image Name")[0])
         self.printerSetup()
         self.do_print.emit()
         self.do_excel.emit()
@@ -192,6 +195,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
             <body>
                 <p> Image Name: {name} </p> <p> mu: {th} </p>
                 <p>k: {k} </p>
+                <p>R2: {R2} </p>
                 <br>
                 <table>
                     <tr>
@@ -203,12 +207,12 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                         <td> <img src = "data:image/png;base64,{encodedCartDist}" width = "250", height = "250" /></td>
                     </tr>
                 </table>
-                <p><br><br><br><br><br><br>
+                <p><br><br><br><br>
                     {date}
                 </p>
             </body>
         </html>
-        """.format(name=model.filename.stem, th=model.th, k=model.k,
+        """.format(name=model.filename.stem, th=model.th, k=model.k, R2 = model.R2,
                    encodedOrgImg=model.orgImgEncoded.translate('bn\''),
                    encodedLogScl=model.logSclEncoded.translate('bn\''),
                    encodedAngDist=model.angDistEncoded.translate('bn\''),
@@ -361,7 +365,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         processedImagesList = []
         for filename in self.filenames:
             # Retrieve Figures from data analysis code
-            k, th, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename, self.uCut, self.lCut, self.angleInc, self.radStep)
+            k, th, R2, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename, self.uCut, self.lCut, self.angleInc, self.radStep)
             # Starting from Python3, there is a distinctin between bytes and str. Thus, I can't use
             # methods of str on bytes. However I need to do that in order to properly encode the image
             # into b64. The main thing is that bytes-way produces some improper characters that mess up
@@ -376,6 +380,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 filename=filename,
                 k=k,
                 th=th,
+                R2 = R2,
                 orgImg=orgImg,
                 orgImgEncoded=orgImgEncoded,
                 logScl=logScl,

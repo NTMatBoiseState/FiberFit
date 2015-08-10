@@ -3,10 +3,11 @@ Class representing a an imgage model, encapsulating th and k.
 """
 class ImgModel:
     count = 0 # for all classes count starts from 0
-    def __init__(self, filename, k= None, th = None, orgImg = None, orgImgEncoded = None, logScl = None, logSclEncoded = None, angDist = None, angDistEncoded = None, cartDist = None, cartDistEncoded = None, timeStamp = None):
+    def __init__(self, filename, k= None, th = None, R2 = None, orgImg = None, orgImgEncoded = None, logScl = None, logSclEncoded = None, angDist = None, angDistEncoded = None, cartDist = None, cartDistEncoded = None, timeStamp = None):
         self.filename = filename
         self.th = th
         self.k = k
+        self.R2 = R2
         self.orgImg = orgImg
         self.orgImgEncoded = orgImgEncoded
         self.logScl = logScl
