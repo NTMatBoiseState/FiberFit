@@ -19,12 +19,12 @@ class Ui_Dialog(object):
         self.gridLayout.addWidget(self.webView, 0, 0, 1, 1)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.prevBut = QtWidgets.QPushButton(Dialog)
-        self.prevBut.setObjectName("prevBut")
-        self.horizontalLayout.addWidget(self.prevBut)
-        self.nextBut = QtWidgets.QPushButton(Dialog)
-        self.nextBut.setObjectName("nextBut")
-        self.horizontalLayout.addWidget(self.nextBut)
+        #self.prevBut = QtWidgets.QPushButton(Dialog)
+        #self.prevBut.setObjectName("prevBut")
+        #self.horizontalLayout.addWidget(self.prevBut)
+        #self.nextBut = QtWidgets.QPushButton(Dialog)
+        #self.nextBut.setObjectName("nextBut")
+        #self.horizontalLayout.addWidget(self.nextBut)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.saveBox = QtWidgets.QDialogButtonBox(Dialog)
@@ -39,7 +39,7 @@ class Ui_Dialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
-        self.prevBut.setText(_translate("Dialog", "<---"))
-        self.nextBut.setText(_translate("Dialog", "--->"))
+        # self.prevBut.setText(_translate("Dialog", "<---"))
+        # self.nextBut.setText(_translate("Dialog", "--->"))
 
 from PyQt5 import QtWebKitWidgets

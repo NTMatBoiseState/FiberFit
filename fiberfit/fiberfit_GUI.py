@@ -1,7 +1,8 @@
 #!/usr/local/bin/python3
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+import sys
+import os
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -31,6 +32,34 @@ class Ui_MainWindow(object):
         self.midGrid.addWidget(self.selectImgBox, 0, 0, 1, 1)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.midGrid.addItem(spacerItem, 0, 1, 1, 1)
+
+        # R^2 label
+        self.RLabel = QtWidgets.QLabel(self.centralwidget)
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(20)
+        font.setItalic(False)
+        self.RLabel.setFont(font)
+        self.RLabel.setTextFormat(QtCore.Qt.AutoText)
+        self.RLabel.setObjectName("RLabel")
+        self.midGrid.addWidget(self.RLabel, 0, 2, 1, 1)
+
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.midGrid.addItem(spacerItem1, 0, 3, 1, 1)
+
+        # mu label
+        self.muLabel = QtWidgets.QLabel(self.centralwidget)
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(20)
+        self.muLabel.setFont(font)
+        self.muLabel.setObjectName("muLabel")
+        self.midGrid.addWidget(self.muLabel, 0, 4, 1, 1)
+
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.midGrid.addItem(spacerItem2, 0, 5, 1, 1)
+
+        #k label
         self.kLabel = QtWidgets.QLabel(self.centralwidget)
         font = QtGui.QFont()
         font.setFamily("Times New Roman")
@@ -39,18 +68,12 @@ class Ui_MainWindow(object):
         self.kLabel.setFont(font)
         self.kLabel.setTextFormat(QtCore.Qt.AutoText)
         self.kLabel.setObjectName("kLabel")
-        self.midGrid.addWidget(self.kLabel, 0, 2, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.midGrid.addItem(spacerItem1, 0, 3, 1, 1)
-        self.muLabel = QtWidgets.QLabel(self.centralwidget)
-        font = QtGui.QFont()
-        font.setFamily("Times New Roman")
-        font.setPointSize(20)
-        self.muLabel.setFont(font)
-        self.muLabel.setObjectName("muLabel")
-        self.midGrid.addWidget(self.muLabel, 0, 4, 1, 1)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.midGrid.addItem(spacerItem2, 0, 6, 1, 1)
+        self.midGrid.addWidget(self.kLabel, 0, 6, 1, 1)
+
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.midGrid.addItem(spacerItem3, 0, 7, 1, 1)
+
+
         self.gridLayout.addLayout(self.midGrid, 1, 0, 1, 1)
         self.figureWidget = QtWidgets.QWidget(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
@@ -77,7 +100,8 @@ class Ui_MainWindow(object):
         self.clearButton.setMaximumSize(QtCore.QSize(1000000, 1000000))
         self.clearButton.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("images/clearButton.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(self.find_data_file('clearButton.png')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        #icon.addPixmap(QtGui.QPixmap("images/clearButton.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.clearButton.setIcon(icon)
         self.clearButton.setIconSize(QtCore.QSize(40, 40))
         self.clearButton.setObjectName("clearButton")
@@ -92,7 +116,8 @@ class Ui_MainWindow(object):
         self.exportButton.setMaximumSize(QtCore.QSize(1000000, 1000000))
         self.exportButton.setText("")
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("images/export.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(self.find_data_file('export.png')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        #icon1.addPixmap(QtGui.QPixmap("images/export.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.exportButton.setIcon(icon1)
         self.exportButton.setIconSize(QtCore.QSize(50, 50))
         self.exportButton.setObjectName("exportButton")
@@ -110,7 +135,8 @@ class Ui_MainWindow(object):
         self.loadButton.setAutoFillBackground(False)
         self.loadButton.setText("")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap("images/open.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(self.find_data_file('open.png')), QtGui.QIcon.Normal, QtGui.QIcon.Off)    
+        #icon2.addPixmap(QtGui.QPixmap("images/open.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.loadButton.setIcon(icon2)
         self.loadButton.setIconSize(QtCore.QSize(50, 50))
         self.loadButton.setObjectName("loadButton")
@@ -126,7 +152,8 @@ class Ui_MainWindow(object):
         self.startButton.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.startButton.setText("")
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap("images/start-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap(self.find_data_file('start-icon.png')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        #icon3.addPixmap(QtGui.QPixmap("images/start-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.startButton.setIcon(icon3)
         self.startButton.setIconSize(QtCore.QSize(40, 40))
         self.startButton.setObjectName("startButton")
@@ -143,7 +170,8 @@ class Ui_MainWindow(object):
         self.settingsButton.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.settingsButton.setText("")
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap("images/settings.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon4.addPixmap(QtGui.QPixmap(self.find_data_file('settings.png')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        #icon4.addPixmap(QtGui.QPixmap("images/settings.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.settingsButton.setIcon(icon4)
         self.settingsButton.setIconSize(QtCore.QSize(40, 40))
         self.settingsButton.setObjectName("settingsButton")
@@ -195,9 +223,18 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "FiberFit"))
+        self.RLabel.setText(_translate("MainWindow", "R^2 = "))
         self.kLabel.setText(_translate("MainWindow", "k = "))
-        self.muLabel.setText(_translate("MainWindow", "mu ="))
+        self.muLabel.setText(_translate("MainWindow", "μ ="))
         self.nextButton.setText(_translate("MainWindow", "Next →"))
         self.prevButton.setText(_translate("MainWindow", "← Previous"))
         self.menuFiberfit.setTitle(_translate("MainWindow", "Fiberfit"))
+        
+    def find_data_file(self, filename):
+        if getattr(sys, 'frozen', False):
+            datadir = os.path.dirname(sys.executable)
+        else:
+            datadir = os.path.dirname('images/' + filename)
+        return os.path.join(datadir, filename)
+    

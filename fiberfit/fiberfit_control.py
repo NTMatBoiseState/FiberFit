@@ -71,6 +71,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.document = QTextDocument()
         self.list = []
         self.savedfiles = None
+        self.currentModel = None
         # settings
         self.uCut = 0
         self.lCut = 0
@@ -102,17 +103,11 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                  self.list[0].R2,
                  self.list[0].timeStamp])
         temp = self.list
-        print('temp before removal: ' + temp.__str__())
         for i in range(0, len(self.dataList)):
             found = False
             for j in range(0, len(temp)):
-                #print('i = ' + i.__str__())
-                #print('Did I fail Here?')
-                #print(self.dataList)
-                #print('temp is ' + temp.__str__())
                 # One image from list is at most can equal to one another image from temp
                 if found == False and self.dataList[i][0] == temp[j].filename.stem:
-                    #self.dataList[i][0] = temp.__getitem__(j).filename.stem
                     self.dataList.remove(self.dataList[i])
                     self.dataList.insert(i, [temp[j].filename.stem,
                                              self.uCut,
@@ -124,21 +119,17 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                                              temp[j].R2,
                                              temp[j].timeStamp])
                     temp.remove(temp[j])
-                    print('temp after removal: ' + temp.__str__())
                     found = True
-
-        print('DataList is: ' + self.dataList.__str__() + "\n and temp is: " + temp.__str__())
         for k in range(0, len(temp)):
             self.dataList.append( [temp[k].filename.stem,
                                    self.uCut,
                                    self.lCut,
                                    self.radStep,
                                    self.angleInc,
-                                   temp[k].th,
-                                   temp[k].k,
-                                   temp[k].R2,
+                                   round(temp[k].th, 2),
+                                   round(temp[k].k, 2),
+                                   round(temp[k].R2, 2),
                                    temp[k].timeStamp])
-        print('DataList after modif is: ' + self.dataList.__str__())
         with open(str(self.savedfiles.parents[0]) + '/summary.csv', 'w') as csvfile:
             a = csv.writer(csvfile)
             a.writerow(['Name', 'LowerCut', 'UpperCut', 'RadialStep', 'AngleIncrement', 'Th', 'K', 'R^2', 'Time'])
@@ -151,7 +142,10 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     @pyqtSlot()
     def saveas(self):
         dialog = QFileDialog()
-        self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Save", "Image Name")[0])
+        if (self.saveBox.button(QDialogButtonBox.Save) == self.sender()):
+            self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export", self.currentModel.filename.stem)[0])
+        else:
+            self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export", "The name of each image selected will be appended to whatever you put in here.")[0])
         self.printerSetup()
         self.do_print.emit()
         self.do_excel.emit()
@@ -195,7 +189,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
             <body>
                 <p> Image Name: {name} </p> <p> mu: {th} </p>
                 <p>k: {k} </p>
-                <p>R2: {R2} </p>
+                <p>R^2: {R2} </p>
                 <br>
                 <table>
                     <tr>
@@ -212,7 +206,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                 </p>
             </body>
         </html>
-        """.format(name=model.filename.stem, th=model.th, k=model.k, R2 = model.R2,
+        """.format(name=model.filename.stem, th= round(model.th, 2),  k= round(model.k, 2), R2 = round(model.R2, 2),
                    encodedOrgImg=model.orgImgEncoded.translate('bn\''),
                    encodedLogScl=model.logSclEncoded.translate('bn\''),
                    encodedAngDist=model.angDistEncoded.translate('bn\''),
@@ -229,6 +223,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     def do_test(self, model):
         self.webView.setHtml(self.createHtml(model))
         self.document.setHtml(self.createHtml(model))
+        self.currentModel = model
         self.show()
 
     @pyqtSlot(list, list, float, float, float, float)
@@ -370,10 +365,10 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             # methods of str on bytes. However I need to do that in order to properly encode the image
             # into b64. The main thing is that bytes-way produces some improper characters that mess up
             # the decoding process. Hence, decode(utf-8) translates bytes into str.
-            angDistEncoded = base64.encodebytes(open('temp/angDist.png', 'rb').read()).decode('utf-8')
-            cartDistEncoded = base64.encodebytes(open('temp/cartDist.png', 'rb').read()).decode('utf-8')
-            logSclEncoded = base64.encodebytes(open('temp/logScl.png', 'rb').read()).decode('utf-8')
-            orgImgEncoded = base64.encodebytes(open('temp/orgImg.png', 'rb').read()).decode('utf-8')
+            angDistEncoded = base64.encodebytes(open('angDist.png', 'rb').read()).decode('utf-8')
+            cartDistEncoded = base64.encodebytes(open('cartDist.png', 'rb').read()).decode('utf-8')
+            logSclEncoded = base64.encodebytes(open('logScl.png', 'rb').read()).decode('utf-8')
+            orgImgEncoded = base64.encodebytes(open('orgImg.png', 'rb').read()).decode('utf-8')
 
             # Creates an object
             processedImage = img_model.ImgModel(
@@ -488,11 +483,13 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     Removes files in temp directory. Prevents memory leak.
     """
     def removeTemp(self):
-        os.chdir('temp/')
-        files = glob.glob('*.png')
+        files = []
+        files.append('angDist.png')
+        files.append('orgImg.png')
+        files.append('cartDist.png')
+        files.append('logScl.png')
         for filename in files:
             os.remove(filename)
-        os.chdir('../')
 
     """
     Sets up appropriate labels depending on which image is selected.
@@ -500,7 +497,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     @pyqtSlot(int)
     def setupLabels(self, num):
         self.kLabel.setText("k = " + str(round(self.imgList.__getitem__(num).k, 2)))
-        self.muLabel.setText("mu = " + str(round(self.imgList.__getitem__(num).th, 2)))
+        self.muLabel.setText("μ = " + str(round(self.imgList.__getitem__(num).th, 2)))
+        self.RLabel.setText("R^2 = " + str(round(self.imgList.__getitem__(num).R2, 2)))
 
     """
     Scrolls to next image.

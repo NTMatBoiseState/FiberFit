@@ -1,3 +1,5 @@
+#!usr/local/bin/python3
+
 # from __future__ import print_function
 # from __future__ import unicode_literals
 # from __future__ import division
@@ -29,8 +31,8 @@ import matplotlib.pyplot as plt
 # except ImportError:
 #     from smop.runtime import *
 
-from fiberfit.EllipseDirectFit import *  # XXX: Changed here
-from fiberfit.helpers import *  # XXX: Changed here
+from fiberfit.EllipseDirectFit import*  # XXX: Changed here
+from fiberfit import helpers  # XXX: Changed here
 
 figSize = 4.5
 
@@ -110,10 +112,10 @@ def process_ellipse(normPower, theta1RadFinal):
         th[i] = t
     th = np.concatenate([th, (th + 180)])
     r_line = np.concatenate([r_line, r_line])
-    plt.polar(Mirtheta1RadFinal1, MirnormPower, linewidth=2)
+    plt.polar(Mirtheta1RadFinal1, MirnormPower, color ='k', linewidth=2)
     plt.polar(th * pi / 180, r_line, color='r', linewidth=3)
     plt.yticks(np.arange(.5, max(MirnormPower), .5))
-    angDist.savefig('temp/angDist')
+    angDist.savefig('angDist')
     plt.close()
 
     return t, angDist
@@ -159,14 +161,13 @@ def process_kappa(t_final, theta1RadFinal, normPower):
     plt.xticks(np.arange(-180, 180, 45))
     plt.xlim([t - 100, t + 100])
     p_act = fitted_func(theta1RadFinal1, kappa)
-    h3, = plt.plot(theta1RadFinal1 * 180 / pi, p_act, label='Pred VM Dist', linewidth=3)
+    h3, = plt.plot(theta1RadFinal1 * 180 / pi, p_act, linewidth=3)
     plt.title('Angular Distribution')
     plt.xlabel('Angle (Degrees)')
     plt.ylabel('Normalized Intensity')
-    plt.legend(handles=[h3], loc=2)
     plt.yticks(np.arange(0, max(normPower1) + .3, .5))
     plt.ylim([0, max(normPower1) + .3])
-    cartDist.savefig('temp/cartDist')
+    cartDist.savefig('cartDist')
     plt.close()
     slope, intercept, rValue, pValue, stderr = scipy.stats.linregress(p_act, normPower1)
     return kappa, cartDist, rValue
@@ -197,7 +198,7 @@ def process_image(name, uCut, lCut, angleInc, radStep):
     originalImage.add_axes(ax)
     plt.imshow(im, cmap='gray', aspect='auto')
     plt.axis('off')
-    originalImage.savefig('temp/orgImg')
+    originalImage.savefig('orgImg')
     plt.close()
 
     fft_result = np.fft.fft2(im)
@@ -219,7 +220,7 @@ def process_image(name, uCut, lCut, angleInc, radStep):
     logScale.add_axes(ax)
     plt.axis('off')
     plt.imshow(log(PabsFlip), cmap='gray', aspect='auto')
-    logScale.savefig('temp/logScl')
+    logScale.savefig('logScl')
     plt.close()
 
     M, N1 = im.shape
