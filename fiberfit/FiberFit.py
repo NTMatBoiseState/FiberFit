@@ -28,16 +28,28 @@ import time
 import glob
 
 class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
-    genUCut = 2
-    genLCut = 32
-    genAngInc = 1
+    genUCut = 2.0
+    genLCut = 32.0
+    genAngInc = 1.0
     genRadStep = 0.5
     sendValues = pyqtSignal(float, float, float, float)
     def __init__(self, parent=None):
         super(SettingsWindow, self).__init__(parent)
         self.setupUi(self)
+        self.valuesStack = [(self.genUCut, self.genLCut, self.genAngInc, self.genRadStep)]
         self.buttonBox.button(QDialogButtonBox.Ok).clicked.connect(self.make_change)
+        self.buttonBox.button(QDialogButtonBox.Reset).clicked.connect(self.reset_changes)
         self.setupDefaultValues()
+
+    """
+    Resets changes to the last saved changes.
+    """
+
+    def reset_changes(self):
+        self.ttopField.setText(self.valuesStack[self.valuesStack.__len__() - 1][0].__str__())
+        self.tbottomField.setText(self.valuesStack[self.valuesStack.__len__() -1][1].__str__())
+        self.btopField.setText(self.valuesStack[self.valuesStack.__len__() - 1][2].__str__())
+        self.bbottomField.setText(self.valuesStack[self.valuesStack.__len__() - 1][3].__str__())
 
     """
     Sets up default settings.
@@ -54,6 +66,8 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
         lCut = float(self.tbottomField.text())
         angleInc = float(self.btopField.text())
         radStep = float(self.bbottomField.text())
+        self.valuesStack.append((uCut, lCut, angleInc, radStep))
+
         self.sendValues.emit(uCut, lCut, angleInc, radStep)
 
     @pyqtSlot()
@@ -102,7 +116,10 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                  self.list[0].k,
                  self.list[0].R2,
                  self.list[0].timeStamp])
-        temp = self.list
+        # temp = self.list
+        temp = []
+        for i in range(0, self.list.__len__()):
+            temp.append(self.list[i])
         for i in range(0, len(self.dataList)):
             found = False
             for j in range(0, len(temp)):
@@ -157,6 +174,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
 
     def print(self):
         if (self.saveBox.button(QDialogButtonBox.SaveAll) == self.sender()):
+            print('list before printin is:' + self.list.__str__())
             for model in self.list:
                 self.document.setHtml(self.createHtml(model))
                 # print(self.savedfiles.parents[0].__str__() + '/' + model.filename.stem + '.pdf') <--- for debugging
@@ -393,7 +411,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 self.imgList.add(processedImage)
             else:
                 self.imgList.add(processedImage)
-        print('Processed Img List when sent is: ' + processedImagesList.__str__())
         self.sendProcessedImagesList.emit(processedImagesList, self.dataList, self.uCut, self.lCut, self.radStep, self.angleInc)
         processedImagesList = []
         if self.isStarted:
@@ -483,6 +500,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     Removes files in temp directory. Prevents memory leak.
     """
     def removeTemp(self):
+        #fix bug so that it does remove images only when they are selected.
         files = []
         files.append('angDist.png')
         files.append('orgImg.png')
