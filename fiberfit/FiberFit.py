@@ -220,12 +220,12 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                 <br>
                 <table>
                     <tr>
-                        <td> <img src = "data:image/png;base64,{encodedOrgImg}" width = {width1}, height = {heigth1} /></td>
-                        <td> <img src ="data:image/png;base64,{encodedLogScl}" width = {width2}, height = {heigth2}/></td>
+                        <td> <img src = "data:image/png;base64,{encodedOrgImg}" width = 250, height = 250 /></td>
+                        <td> <img src ="data:image/png;base64,{encodedLogScl}" width = 250, height = 250/></td>
                     </tr>
                     <tr>
-                        <td> <img src = "data:image/png;base64,{encodedAngDist}" width = {width3}, height = {heigth3} /></td>
-                        <td> <img src = "data:image/png;base64,{encodedCartDist}" width = {width4}, height = {heigth4} /></td>
+                        <td> <img src = "data:image/png;base64,{encodedAngDist}" width = 250, height = 250 /></td>
+                        <td> <img src = "data:image/png;base64,{encodedCartDist}" width = 250, height = 250 /></td>
                     </tr>
                 </table>
                 <p><br>
@@ -235,23 +235,15 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         </html>
         """.format(name=model.filename.stem, th=round(model.th, 2), k=round(model.k, 2), R2=round(model.R2, 2),
                    encodedOrgImg=model.orgImgEncoded.translate('bn\''),
-                   width1=0.2 * self.screenDim.width(),
-                   heigth1=0.2 * self.screenDim.width(),
                    encodedLogScl=model.logSclEncoded.translate('bn\''),
-                   width2=0.2 * self.screenDim.width(),
-                   heigth2=0.2 * self.screenDim.width(),
                    # width = 0.01* self.screenDim.width(),
                    # heigth = 0.01* self.screenDim.width(),
                    encodedAngDist=model.angDistEncoded.translate('bn\''),
-                   width3=0.01 * self.screenDim.width(),
-                   heigth3=0.01 * self.screenDim.width(),
                    encodedCartDist=model.cartDistEncoded.translate('bn\''),
-                   width4=0.02 * self.screenDim.width(),
-                   heigth4=0.02 * self.screenDim.width(),
+                   width = 0.09766*self.screenDim.width(),
+                   heigth = 0.09766*self.screenDim.width(),
                    date=model.timeStamp)
-        # width = 0.01* self.screenDim.width(),
-        # heigth = 0.01* self.screenDim.width())
-        # print(html)
+        print(0.09766*self.screenDim.width(), self.screenDim.width())
         print('Set html')
         return html
 
@@ -316,6 +308,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.radStep = float(self.settingsBrowser.bbottomField.text())
         # dataList for export
         self.dataList = []
+        self.isDone = False
         # All the events happen below
         self.startButton.clicked.connect(self.start)
         self.nextButton.clicked.connect(self.nextImage)
@@ -405,6 +398,14 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.filenames.append(pathlib.Path(name))
         self.do_run.emit()
         self.do_update.emit(self.currentIndex)
+        if self.isDone:
+            self.resize(1000,1000)
+            sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                           QtWidgets.QSizePolicy.Expanding)
+            sizePolicy.setHorizontalStretch(0)
+            sizePolicy.setVerticalStretch(0)
+            sizePolicy.setHeightForWidth(self.figureWidget.sizePolicy().hasHeightForWidth())
+            self.figureWidget.setSizePolicy(sizePolicy)
         self.removeTemp()
 
     """
@@ -464,6 +465,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         # example:
         #     self.updateCanvasSignal.emit(self.currentIndex)
         self.fillCanvas(self.imgList.__getitem__(self.currentIndex))
+
         # started
         self.isStarted = True
 
@@ -507,6 +509,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.figureLayout.addWidget(self.logSclCanvas, 0, 1)
         self.figureLayout.addWidget(self.angDistCanvas, 1, 0)
         self.figureLayout.addWidget(self.cartDistCanvas, 1, 1)
+        self.isDone = True
 
     """
     Helps to process an image from using a Combo Box.
@@ -610,7 +613,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 self.processImagesFromComboBox(image)
                 self.kLabel.setText("k = " + str(round(image.k, 2)))
                 self.muLabel.setText("mu = " + str(round(image.th, 2)))
-                self.RLabel.setText(('R' + u"\u00B2") + " = " + str(round(image.R2)))
+                self.RLabel.setText(('R' + u"\u00B2") + " = " + str(round(image.R2, 2)))
                 # sets current index to the index of the found image.
                 self.currentIndex = self.imgList.index(image)
 
