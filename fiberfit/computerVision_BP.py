@@ -10,6 +10,8 @@ import matplotlib
 
 import numpy as np
 
+
+
 import scipy
 import scipy.ndimage
 import scipy.interpolate
@@ -33,9 +35,6 @@ import matplotlib.pyplot as plt
 
 from fiberfit.EllipseDirectFit import*  # XXX: Changed here
 from fiberfit import helpers  # XXX: Changed here
-
-figSize = 4.5
-
 
 def process_histogram(PabsFlip, N1, uCut, lCut, angleInc, radStep):
     # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -90,7 +89,7 @@ def process_histogram(PabsFlip, N1, uCut, lCut, angleInc, radStep):
     return normPower, theta1RadFinal
 
 
-def process_ellipse(normPower, theta1RadFinal):
+def process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth):
     # Combine data into [XY] to fit to an ellipse
     Mirtheta1RadFinal1 = np.concatenate([theta1RadFinal.T, (theta1RadFinal + np.pi).T])
     MirnormPower = np.concatenate([normPower.T, normPower.T])
@@ -105,7 +104,7 @@ def process_ellipse(normPower, theta1RadFinal):
     t = orientation(A)
 
     # Plot Lower Left - Polar plot of angular distribution
-    angDist = plt.figure(figsize=(figSize, figSize))  # Creates a figure containing angular distribution.
+    angDist = plt.figure(figsize=(figWidth, figHeigth))  # Creates a figure containing angular distribution.
     r_line = np.arange(0, max(MirnormPower) + .5, .5)
     th = np.zeros(len(r_line))
     for i in range(0, len(r_line)):
@@ -121,7 +120,7 @@ def process_ellipse(normPower, theta1RadFinal):
     return t, angDist
 
 
-def process_kappa(t_final, theta1RadFinal, normPower):
+def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth):
     t_final_rad = t_final * pi / 180
 
     def fitted_func(thetas, c):
@@ -155,7 +154,7 @@ def process_kappa(t_final, theta1RadFinal, normPower):
             theta1RadFinal1[k] = -pi + theta1RadFinal1[k]
 
     # Plot Lower Right - Distribution on a cartesian plane with appropriate shift
-    cartDist = plt.figure(figsize=(figSize, figSize))  # Creates a figure containing cartesian distribution.
+    cartDist = plt.figure(figsize=(figWidth, figHeigth))  # Creates a figure containing cartesian distribution.
 
     h2 = plt.bar((theta1RadFinal1 * 180 / pi), normPower1, edgecolor = 'k', color = 'k')
     plt.xticks(np.arange(-180, 180, 45))
@@ -173,13 +172,15 @@ def process_kappa(t_final, theta1RadFinal, normPower):
     return kappa, cartDist, rValue
 
 
-def process_image(name, uCut, lCut, angleInc, radStep):
+def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
     # %
     #  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #  FFT // POWER SPECTRUM // ANGULAR DISTRIBUTION
     #  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #  SIMPLE FFT
     #  %%%%%%%%%%%%%%%%%%%%%E%%%%%%%%%%%%%%%%
+    figWidth = 0.1 * screenDim.width()/dpi
+    figHeigth = 0.15 * screenDim.width()/dpi
     im = scipy.ndimage.imread(fname=str(name))
 
     m, n = im.shape
@@ -191,7 +192,7 @@ def process_image(name, uCut, lCut, angleInc, radStep):
         im = np.delete(im, (0), axis=1)
 
     # Plot Upper left - Original Image
-    originalImage = plt.figure(frameon=False, figsize=(figSize, figSize))
+    originalImage = plt.figure(frameon=False, figsize=(figWidth, figHeigth))
     # Makes it so the image fits entire dedicated space.
     ax = plt.Axes(originalImage, [0., 0., 1., 1.])
     ax.set_axis_off()
@@ -213,7 +214,7 @@ def process_image(name, uCut, lCut, angleInc, radStep):
     PabsFlip = np.delete(PabsFlip, (0), axis=1)
 
     # Plot Upper Right - Power Spectrum on logrithmic scale
-    logScale = plt.figure(frameon=False, figsize=(figSize, figSize))
+    logScale = plt.figure(frameon=False, figsize=(figWidth, figHeigth))
     # Makes it so the image fits entire dedicated space.
     ax = plt.Axes(logScale, [0., 0., 1., 1.])
     ax.set_axis_off()
@@ -228,10 +229,10 @@ def process_image(name, uCut, lCut, angleInc, radStep):
     normPower, theta1RadFinal = process_histogram(PabsFlip, N1, uCut, lCut, angleInc, radStep)
 
     # theta and angular distribution are getting retrieved.
-    t_final, angDist = process_ellipse(normPower, theta1RadFinal)
+    t_final, angDist = process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth)
 
     # k and cartesian distrubution are getting retrieved.
-    k, cartDist, rValue = process_kappa(t_final, theta1RadFinal, normPower)
+    k, cartDist, rValue = process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth)
 
     # Rounding results for Title of Figure
     krnd = math.ceil(k * 1000) / 1000

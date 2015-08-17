@@ -24,8 +24,7 @@ from fiberfit import SettingsDialog
 from fiberfit import ExportDialog
 from PyQt5.QtGui import QTextDocument
 import os
-import time
-import glob
+from PyQt5.QtWidgets import QDesktopWidget
 
 class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
     genUCut = 2.0
@@ -33,6 +32,7 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
     genAngInc = 1.0
     genRadStep = 0.5
     sendValues = pyqtSignal(float, float, float, float)
+
     def __init__(self, parent=None):
         super(SettingsWindow, self).__init__(parent)
         self.setupUi(self)
@@ -47,13 +47,14 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
 
     def reset_changes(self):
         self.ttopField.setText(self.valuesStack[self.valuesStack.__len__() - 1][0].__str__())
-        self.tbottomField.setText(self.valuesStack[self.valuesStack.__len__() -1][1].__str__())
+        self.tbottomField.setText(self.valuesStack[self.valuesStack.__len__() - 1][1].__str__())
         self.btopField.setText(self.valuesStack[self.valuesStack.__len__() - 1][2].__str__())
         self.bbottomField.setText(self.valuesStack[self.valuesStack.__len__() - 1][3].__str__())
 
     """
     Sets up default settings.
     """
+
     def setupDefaultValues(self):
         self.ttopField.setText(self.genUCut.__str__())
         self.tbottomField.setText(self.genLCut.__str__())
@@ -74,14 +75,17 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
     def do_change(self):
         self.show()
 
+
 class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     do_print = pyqtSignal()
     do_excel = pyqtSignal()
     sendDataList = pyqtSignal(list)
-    def __init__(self, parent=None):
+
+    def __init__(self, parent=None, screenDim=None):
         super(ReportDialog, self).__init__(parent)
         self.dataList = []
         self.setupUi(self)
+        self.screenDim = screenDim
         self.document = QTextDocument()
         self.list = []
         self.savedfiles = None
@@ -102,7 +106,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
 
     """Makes excel spreadsheet.
     """
-    #TODO: Need to work here!
+    # TODO: Need to work here!
     @pyqtSlot()
     def exportExcel(self):
         if self.dataList.__len__() == 0:
@@ -138,15 +142,15 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                     temp.remove(temp[j])
                     found = True
         for k in range(0, len(temp)):
-            self.dataList.append( [temp[k].filename.stem,
-                                   self.uCut,
-                                   self.lCut,
-                                   self.radStep,
-                                   self.angleInc,
-                                   round(temp[k].th, 2),
-                                   round(temp[k].k, 2),
-                                   round(temp[k].R2, 2),
-                                   temp[k].timeStamp])
+            self.dataList.append([temp[k].filename.stem,
+                                  self.uCut,
+                                  self.lCut,
+                                  self.radStep,
+                                  self.angleInc,
+                                  round(temp[k].th, 2),
+                                  round(temp[k].k, 2),
+                                  round(temp[k].R2, 2),
+                                  temp[k].timeStamp])
         with open(str(self.savedfiles.parents[0]) + '/summary.csv', 'w') as csvfile:
             a = csv.writer(csvfile)
             a.writerow(['Name', 'LowerCut', 'UpperCut', 'RadialStep', 'AngleIncrement', 'Th', 'K', 'R^2', 'Time'])
@@ -156,13 +160,16 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     """
     Pops out a dialog allowing user to select where to save the image.
     """
+
     @pyqtSlot()
     def saveas(self):
         dialog = QFileDialog()
         if (self.saveBox.button(QDialogButtonBox.Save) == self.sender()):
             self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export", self.currentModel.filename.stem)[0])
         else:
-            self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export", "The name of each image selected will be appended to whatever you put in here.")[0])
+            self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export",
+                                                                  "The name of each image selected will be appended to whatever you put in here.")[
+                                               0])
         self.printerSetup()
         self.do_print.emit()
         self.do_excel.emit()
@@ -178,7 +185,8 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
             for model in self.list:
                 self.document.setHtml(self.createHtml(model))
                 # print(self.savedfiles.parents[0].__str__() + '/' + model.filename.stem + '.pdf') <--- for debugging
-                self.printer.setOutputFileName(self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name + model.filename.stem + '.pdf')
+                self.printer.setOutputFileName(
+                    self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name + model.filename.stem + '.pdf')
                 self.document.print(self.printer)
         elif (self.saveBox.button(QDialogButtonBox.Save) == self.sender()):
             self.document.print(self.printer)
@@ -197,8 +205,9 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     """
     Creates html-based report that shows the basic information about the sample.
     """
+
     def createHtml(self, model):
-        #TODO: Cut the images' size down to (250, 250) so that to fit to QTextDocument.
+        # TODO: Cut the images' size down to (250, 250) so that to fit to QTextDocument.
         html = """
         <html>
             <head>
@@ -211,25 +220,37 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                 <br>
                 <table>
                     <tr>
-                        <td> <img src = "data:image/png;base64,{encodedOrgImg}" width = "250", height = "250"/></td>
-                        <td> <img src ="data:image/png;base64,{encodedLogScl}" width = "250", height = "250"/></td>
+                        <td> <img src = "data:image/png;base64,{encodedOrgImg}" width = {width1}, height = {heigth1} /></td>
+                        <td> <img src ="data:image/png;base64,{encodedLogScl}" width = {width2}, height = {heigth2}/></td>
                     </tr>
                     <tr>
-                        <td> <img src = "data:image/png;base64,{encodedAngDist}" width = "250", height = "250" /></td>
-                        <td> <img src = "data:image/png;base64,{encodedCartDist}" width = "250", height = "250" /></td>
+                        <td> <img src = "data:image/png;base64,{encodedAngDist}" width = {width3}, height = {heigth3} /></td>
+                        <td> <img src = "data:image/png;base64,{encodedCartDist}" width = {width4}, height = {heigth4} /></td>
                     </tr>
                 </table>
-                <p><br><br><br><br>
+                <p><br>
                     {date}
                 </p>
             </body>
         </html>
-        """.format(name=model.filename.stem, th= round(model.th, 2),  k= round(model.k, 2), R2 = round(model.R2, 2),
+        """.format(name=model.filename.stem, th=round(model.th, 2), k=round(model.k, 2), R2=round(model.R2, 2),
                    encodedOrgImg=model.orgImgEncoded.translate('bn\''),
+                   width1=0.2 * self.screenDim.width(),
+                   heigth1=0.2 * self.screenDim.width(),
                    encodedLogScl=model.logSclEncoded.translate('bn\''),
+                   width2=0.2 * self.screenDim.width(),
+                   heigth2=0.2 * self.screenDim.width(),
+                   # width = 0.01* self.screenDim.width(),
+                   # heigth = 0.01* self.screenDim.width(),
                    encodedAngDist=model.angDistEncoded.translate('bn\''),
+                   width3=0.01 * self.screenDim.width(),
+                   heigth3=0.01 * self.screenDim.width(),
                    encodedCartDist=model.cartDistEncoded.translate('bn\''),
+                   width4=0.02 * self.screenDim.width(),
+                   heigth4=0.02 * self.screenDim.width(),
                    date=model.timeStamp)
+        # width = 0.01* self.screenDim.width(),
+        # heigth = 0.01* self.screenDim.width())
         # print(html)
         print('Set html')
         return html
@@ -237,6 +258,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     """
     Makes report for an image that was active when user pressed Export button.
     """
+
     @pyqtSlot(img_model.ImgModel)
     def do_test(self, model):
         self.webView.setHtml(self.createHtml(model))
@@ -253,6 +275,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.radStep = radStep
         self.angleInc = angleInc
 
+
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     show_report = pyqtSignal(int)
     make_report = pyqtSignal(img_model.ImgModel, OrderedSet)
@@ -266,10 +289,14 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def __init__(self, Parent=None):
         super(fft_mainWindow, self).__init__()
+        # screen dim
+        self.screenDim, self.dpi = self.receiveDim()
+        # resizing
+        # self.resize(0.8*self.screenDim.height(), 0.2*self.screenDim.width())
         self.imgList = OrderedSet()
         self.csvIndex = 0
         self.dataList = []
-        self.setupUi(self)
+        self.setupUi(self, self.screenDim.height(), self.screenDim.width())
         self.currentIndex = 0
         self.isStarted = False
         self.filenames = []
@@ -280,7 +307,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.angDistCanvas = None
         self.cartDistCanvas = None
         # Pops up a dialog with
-        self.dialogTextBrowser = ReportDialog(self)
+        self.dialogTextBrowser = ReportDialog(self, self.screenDim)
         self.settingsBrowser = SettingsWindow(self)
         # Settings
         self.uCut = float(self.settingsBrowser.ttopField.text())
@@ -294,21 +321,19 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.nextButton.clicked.connect(self.nextImage)
         self.prevButton.clicked.connect(self.prevImage)
 
-
         self.loadButton.clicked.connect(self.launch)
         self.do_run.connect(self.processImages)
         self.do_update.connect(self.populateComboBox)
         self.do_update.connect(self.setupLabels)
 
-
         self.clearButton.clicked.connect(self.clear)
         self.exportButton.clicked.connect(lambda i: self.show_report.emit(self.currentIndex))
 
-        #self.make_report.connect(self.dialogTextBrowser.printerSetup)
+        # self.make_report.connect(self.dialogTextBrowser.printerSetup)
         self.show_report.connect(self.do_show_report)
         self.make_report.connect(self.dialogTextBrowser.do_test)
 
-        #sends export data sets
+        # sends export data sets
         self.sendProcessedImagesList.connect(self.dialogTextBrowser.receiver)
 
         self.settingsButton.clicked.connect(self.settingsBrowser.do_change)
@@ -323,6 +348,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             print("User requested reported for image: {}".format(int))
         self.show_report.connect(userLog)
         """
+
     @pyqtSlot(float, float, float, float)
     def updateValues(self, uCut, lCut, angleInc, radStep):
         self.uCut = uCut
@@ -334,6 +360,18 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def do_show_report(self):
         if (self.isStarted):
             self.make_report.emit(self.imgList[self.currentIndex], self.imgList)
+
+    def receiveDim(self):
+        screenDim = QDesktopWidget().availableGeometry()
+        # print(self.screenDim.__str__())
+        # print(self.screenDim.height(), self.screenDim.width())
+        #       print(QScreen.logicalDotsPerInchX())
+        #      print(QScreen.logicalDotsPerInchY())
+        #     print(QScreen.logicalDotsPerInch())
+        screen = QtWidgets.QApplication.primaryScreen()
+        dpi = screen.logicalDotsPerInch()
+        # print(dpi.__str__())
+        return screenDim, dpi
 
     """
     Clears out canvas.
@@ -373,12 +411,16 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     Processes selected images. Displays it onto a canvas.
     Technical: Creates img_model objects that encapsulate all of the useful data.
     """
+
     @pyqtSlot()
     def processImages(self):
         processedImagesList = []
         for filename in self.filenames:
             # Retrieve Figures from data analysis code
-            k, th, R2, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename, self.uCut, self.lCut, self.angleInc, self.radStep)
+            k, th, R2, angDist, cartDist, logScl, orgImg = computerVision_BP.process_image(filename, self.uCut,
+                                                                                           self.lCut, self.angleInc,
+                                                                                           self.radStep, self.screenDim,
+                                                                                           self.dpi)
             # Starting from Python3, there is a distinctin between bytes and str. Thus, I can't use
             # methods of str on bytes. However I need to do that in order to properly encode the image
             # into b64. The main thing is that bytes-way produces some improper characters that mess up
@@ -393,7 +435,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 filename=filename,
                 k=k,
                 th=th,
-                R2 = R2,
+                R2=R2,
                 orgImg=orgImg,
                 orgImgEncoded=orgImgEncoded,
                 logScl=logScl,
@@ -411,7 +453,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 self.imgList.add(processedImage)
             else:
                 self.imgList.add(processedImage)
-        self.sendProcessedImagesList.emit(processedImagesList, self.dataList, self.uCut, self.lCut, self.radStep, self.angleInc)
+        self.sendProcessedImagesList.emit(processedImagesList, self.dataList, self.uCut, self.lCut, self.radStep,
+                                          self.angleInc)
         processedImagesList = []
         if self.isStarted:
             # removes/deletes all canvases
@@ -438,6 +481,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """
     Cleans the canvas.
     """
+
     def cleanCanvas(self):
         self.figureLayout.removeWidget(self.angDistCanvas)
         self.figureLayout.removeWidget(self.cartDistCanvas)
@@ -451,6 +495,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """
     Fills the canvas.
     """
+
     def fillCanvas(self, img):
         # updates canvases
         self.imgCanvas = FigureCanvas(img.orgImg)
@@ -499,8 +544,9 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """
     Removes files in temp directory. Prevents memory leak.
     """
+
     def removeTemp(self):
-        #TODO: fix bug so that it does remove images only when they are selected.
+        # TODO: fix bug so that it does remove images only when they are selected.
         files = []
         files.append('angDist.png')
         files.append('orgImg.png')
@@ -512,11 +558,12 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """
     Sets up appropriate labels depending on which image is selected.
     """
+
     @pyqtSlot(int)
     def setupLabels(self, num):
         self.kLabel.setText("k = " + str(round(self.imgList.__getitem__(num).k, 2)))
         self.muLabel.setText("μ = " + str(round(self.imgList.__getitem__(num).th, 2)))
-        self.RLabel.setText(('R'+u"\u00B2") + " =" + str(round(self.imgList.__getitem__(num).R2, 2)))
+        self.RLabel.setText(('R' + u"\u00B2") + " =" + str(round(self.imgList.__getitem__(num).R2, 2)))
 
     """
     Scrolls to next image.
@@ -563,6 +610,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 self.processImagesFromComboBox(image)
                 self.kLabel.setText("k = " + str(round(image.k, 2)))
                 self.muLabel.setText("mu = " + str(round(image.th, 2)))
+                self.RLabel.setText(('R' + u"\u00B2") + " = " + str(round(image.R2)))
                 # sets current index to the index of the found image.
                 self.currentIndex = self.imgList.index(image)
 
@@ -573,6 +621,8 @@ def main():
     """
     app = QtWidgets.QApplication(sys.argv)
     fft_app = fft_mainWindow()
+    fft_app.receiveDim()
+
     fft_app.show()
     sys.exit(app.exec_())
 

@@ -5,9 +5,9 @@ import sys
 import os
 
 class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
+    def setupUi(self, MainWindow, heigth, width):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(781, 186)
+        MainWindow.resize(0.3*int(width.__str__()), 0.1*int(heigth.__str__()))
         MainWindow.setMinimumSize(QtCore.QSize(0, 0))
         MainWindow.setMaximumSize(QtCore.QSize(10000, 10000))
         MainWindow.setAutoFillBackground(False)
@@ -224,7 +224,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "FiberFit"))
-        self.RLabel.setText(_translate("MainWindow", ('R'+u"\u00B2")))
+        self.RLabel.setText(_translate("MainWindow", ('R'+u"\u00B2"+" = ")))
         self.kLabel.setText(_translate("MainWindow", "k = "))
         self.muLabel.setText(_translate("MainWindow", "μ ="))
         self.nextButton.setText(_translate("MainWindow", "Next →"))
