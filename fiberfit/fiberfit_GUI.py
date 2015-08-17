@@ -224,13 +224,13 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "FiberFit"))
-        self.RLabel.setText(_translate("MainWindow", "R^2 = "))
+        self.RLabel.setText(_translate("MainWindow", ('R'+u"\u00B2")))
         self.kLabel.setText(_translate("MainWindow", "k = "))
         self.muLabel.setText(_translate("MainWindow", "μ ="))
         self.nextButton.setText(_translate("MainWindow", "Next →"))
         self.prevButton.setText(_translate("MainWindow", "← Previous"))
         self.menuFiberfit.setTitle(_translate("MainWindow", "Fiberfit"))
-        
+
     def find_data_file(self, filename):
         if getattr(sys, 'frozen', False):
             datadir = os.path.dirname(sys.executable)

@@ -131,9 +131,9 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                                              self.lCut,
                                              self.radStep,
                                              self.angleInc,
-                                             temp[j].th,
-                                             temp[j].k,
-                                             temp[j].R2,
+                                             round(temp[j].th, 2),
+                                             round(temp[j].k, 2),
+                                             round(temp[j].R2, 2),
                                              temp[j].timeStamp])
                     temp.remove(temp[j])
                     found = True
@@ -207,7 +207,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
             <body>
                 <p> Image Name: {name} </p> <p> mu: {th} </p>
                 <p>k: {k} </p>
-                <p>R^2: {R2} </p>
+                <p>R&sup2: {R2} </p>
                 <br>
                 <table>
                     <tr>
@@ -500,7 +500,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     Removes files in temp directory. Prevents memory leak.
     """
     def removeTemp(self):
-        #fix bug so that it does remove images only when they are selected.
+        #TODO: fix bug so that it does remove images only when they are selected.
         files = []
         files.append('angDist.png')
         files.append('orgImg.png')
@@ -516,7 +516,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def setupLabels(self, num):
         self.kLabel.setText("k = " + str(round(self.imgList.__getitem__(num).k, 2)))
         self.muLabel.setText("μ = " + str(round(self.imgList.__getitem__(num).th, 2)))
-        self.RLabel.setText("R^2 = " + str(round(self.imgList.__getitem__(num).R2, 2)))
+        self.RLabel.setText(('R'+u"\u00B2") + " =" + str(round(self.imgList.__getitem__(num).R2, 2)))
 
     """
     Scrolls to next image.
