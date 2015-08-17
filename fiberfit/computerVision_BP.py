@@ -240,7 +240,7 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
     krnd = math.trunc(krnd * 100) / 100
     thrnd = math.trunc(thrnd * 100) / 100
 
-    return k[0], t_final, rValue**2, angDist, cartDist, logScale, originalImage
+    return k[0], t_final, rValue**2, angDist, cartDist, logScale, originalImage, figWidth, figHeigth
 
 
 def pol2cart(theta, radius):

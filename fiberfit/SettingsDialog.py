@@ -3,9 +3,9 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Dialog(object):
-    def setupUi(self, Dialog):
+    def setupUi(self, Dialog, screenDim):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(305, 500)
+        Dialog.resize(0.12 * screenDim.width(), 0.35 * screenDim.height())
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(Dialog)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.topDescr = QtWidgets.QLabel(Dialog)
