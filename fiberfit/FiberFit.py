@@ -606,6 +606,10 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         files.append('orgImg.png')
         files.append('cartDist.png')
         files.append('logScl.png')
+        files.append('angDist4.png')
+        files.append('orgImg4.png')
+        files.append('cartDist4.png')
+        files.append('logScl4.png')
         for filename in files:
             os.remove(filename)
 
