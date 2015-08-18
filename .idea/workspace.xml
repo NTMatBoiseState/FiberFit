@@ -6,10 +6,8 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/fiberfit/cartDist.png" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/fiberfit/logScl.png" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/fiberfit/orgImg.png" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/ExportDialog.py" afterPath="$PROJECT_DIR$/fiberfit/ExportDialog.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/FiberFit.py" afterPath="$PROJECT_DIR$/fiberfit/FiberFit.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/SettingsDialog.py" afterPath="$PROJECT_DIR$/fiberfit/SettingsDialog.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fiberfit/computerVision_BP.py" afterPath="$PROJECT_DIR$/fiberfit/computerVision_BP.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="fiberfit.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -73,8 +71,8 @@
       <file leaf-file-name="FiberFit.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/fiberfit/FiberFit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.8870482">
-              <caret line="275" column="32" selection-start-line="275" selection-start-column="32" selection-end-line="275" selection-end-column="32" />
+            <state vertical-scroll-proportion="6.2349396">
+              <caret line="276" column="34" selection-start-line="276" selection-start-column="34" selection-end-line="276" selection-end-column="34" />
               <folding>
                 <element signature="e#78#92#0" expanded="true" />
               </folding>
@@ -108,7 +106,7 @@
         <entry file="file://$PROJECT_DIR$/fiberfit/ExportDialog.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="5" column="49" selection-start-line="5" selection-start-column="49" selection-end-line="5" selection-end-column="49" />
+              <caret line="31" column="45" selection-start-line="31" selection-start-column="45" selection-end-line="31" selection-end-column="45" />
               <folding />
             </state>
           </provider>
@@ -176,8 +174,8 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="2597" />
-    <option name="y" value="22" />
+    <option name="x" value="-5" />
+    <option name="y" value="62" />
     <option name="width" value="1821" />
     <option name="height" value="1027" />
   </component>
@@ -502,7 +500,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="2597" y="22" width="1821" height="1027" extended-state="1" />
+    <frame x="-5" y="62" width="1821" height="1027" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -977,15 +975,15 @@
     <entry file="file://$PROJECT_DIR$/fiberfit/ExportDialog.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="5" column="49" selection-start-line="5" selection-start-column="49" selection-end-line="5" selection-end-column="49" />
+          <caret line="31" column="45" selection-start-line="31" selection-start-column="45" selection-end-line="31" selection-end-column="45" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/fiberfit/FiberFit.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8870482">
-          <caret line="275" column="32" selection-start-line="275" selection-start-column="32" selection-end-line="275" selection-end-column="32" />
+        <state vertical-scroll-proportion="6.2349396">
+          <caret line="276" column="34" selection-start-line="276" selection-start-column="34" selection-end-line="276" selection-end-column="34" />
           <folding>
             <element signature="e#78#92#0" expanded="true" />
           </folding>

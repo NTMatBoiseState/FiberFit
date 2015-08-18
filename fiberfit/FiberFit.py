@@ -216,7 +216,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
             <body>
                 <p> Image Name: {name} </p> <p> mu: {th} </p>
                 <p>k: {k} </p>
-                <p>R&sup2: {R2} </p>
+                <p>R^2: {R2} </p>
                 <br>
                 <table>
                     <tr>
@@ -250,7 +250,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                 <body>
                     <p> Image Name: {name} </p> <p> mu: {th} </p>
                     <p>k: {k} </p>
-                    <p>R&sup2: {R2} </p>
+                    <p>R^2: {R2} </p>
                     <br>
                     <table>
                         <tr>
@@ -258,11 +258,11 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                             <td> <img src ="data:image/png;base64,{encodedLogScl}" width = "{width}", height = "{heigth}"/></td>
                         </tr>
                         <tr>
-                            <td> <img src = "data:image/png;base64,{encodedAngDist}" width = "{width}", height = "{heigth}" /></td>
+                            <td> <img src = "data:image/png;base64,{encodedAngDist}" width = "{width}", height = "{lHeigth}" /></td>
                             <td> <img src = "data:image/png;base64,{encodedCartDist}" width = "{width}", height = "{heigth}" /></td>
                         </tr>
                     </table>
-                    <p><br><br>
+                    <p>
                         {date}
                     </p>
                 </body>
@@ -272,8 +272,10 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                    encodedLogScl=model.logSclEncoded.translate('bn\''),
                    encodedAngDist=model.angDistEncoded.translate('bn\''),
                    encodedCartDist=model.cartDistEncoded.translate('bn\''),
-                   width = (0.11*self.screenDim.width()).__str__(),
-                   heigth = (0.21*self.screenDim.height()).__str__(),
+                   width = (0.09*self.screenDim.width()).__str__(),
+                   heigth = (0.19*self.screenDim.height()).__str__(),
+                   lHeigth = (0.21*self.screenDim.height()).__str__(),
+
                    date=model.timeStamp)
             return html
 
