@@ -6,7 +6,7 @@
 # from __future__ import absolute_import
 
 import matplotlib
-# matplotlib.use('Agg')
+#matplotlib.use('Qt5Agg')
 
 import numpy as np
 
@@ -180,7 +180,7 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
     #  SIMPLE FFT
     #  %%%%%%%%%%%%%%%%%%%%%E%%%%%%%%%%%%%%%%
     figWidth = 0.1 * screenDim.width()/dpi
-    figHeigth = 0.15 * screenDim.width()/dpi
+    figHeigth = 0.1 * screenDim.width()/dpi
     im = scipy.ndimage.imread(fname=str(name))
 
     m, n = im.shape
@@ -292,3 +292,11 @@ def orientation(A):
     t_New = angle * 180 / np.pi
 
     return (t_New)
+
+    # def main():
+    #     process_image('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/Norm Test Image_90_0.2_90.02_0.2_0.38892.png', 2, 32, 1, 0.5, (0, 20, 1420, 2460), 72)
+    #
+    # if __name__ == '__main__':
+    #     import timeit
+    #     runtime = timeit.timeit(main, number=1)
+    #     print(runtime)
