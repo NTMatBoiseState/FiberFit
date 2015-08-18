@@ -183,8 +183,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         if (self.saveBox.button(QDialogButtonBox.SaveAll) == self.sender()):
             print('list before printin is:' + self.list.__str__())
             for model in self.list:
-                self.document.setHtml(self.createHtml(model, False))
-                # print(self.savedfiles.parents[0].__str__() + '/' + model.filename.stem + '.pdf') <--- for debugging
+                self.document.setHtml(self.createHtml(model, forPrinting=True))
                 self.printer.setOutputFileName(
                     self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name + model.filename.stem + '.pdf')
                 self.document.print(self.printer)
@@ -207,6 +206,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     """
 
     def createHtml(self, model, forPrinting):
+        # for printing
         if forPrinting:
             html = """
         <html>
@@ -234,18 +234,18 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
             </body>
         </html>
         """.format(name=model.filename.stem, th=round(model.th, 2), k=round(model.k, 2), R2=round(model.R2, 2),
-                   encodedOrgImg=model.orgImgEncoded.translate('bn\''),
-                   encodedLogScl=model.logSclEncoded.translate('bn\''),
-                   encodedAngDist=model.angDistEncoded.translate('bn\''),
-                   encodedCartDist=model.cartDistEncoded.translate('bn\''),
+                   encodedOrgImg=model.orgImgEncoded4.translate('bn\''),
+                   encodedLogScl=model.logSclEncoded4.translate('bn\''),
+                   encodedAngDist=model.angDistEncoded4.translate('bn\''),
+                   encodedCartDist=model.cartDistEncoded4.translate('bn\''),
                    date=model.timeStamp)
             return html
         else:
-            # TODO: Cut the images' size down to (250, 250) so that to fit to QTextDocument.
+           # for display
             html = """
             <html>
                 <head>
-
+                    <link type="text/css" rel="stylesheet" href="ntm_style.css"/>
                 </head>
                 <body>
                     <p> Image Name: {name} </p> <p> mu: {th} </p>
@@ -258,7 +258,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                             <td> <img src ="data:image/png;base64,{encodedLogScl}" width = "{width}", height = "{heigth}"/></td>
                         </tr>
                         <tr>
-                            <td> <img src = "data:image/png;base64,{encodedAngDist}" width = "{width}", height = "{lHeigth}" /></td>
+                            <td> <img src = "data:image/png;base64,{encodedAngDist}" width = "{width}", height = "{heigth}" /></td>
                             <td> <img src = "data:image/png;base64,{encodedCartDist}" width = "{width}", height = "{heigth}" /></td>
                         </tr>
                     </table>
@@ -272,10 +272,8 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                    encodedLogScl=model.logSclEncoded.translate('bn\''),
                    encodedAngDist=model.angDistEncoded.translate('bn\''),
                    encodedCartDist=model.cartDistEncoded.translate('bn\''),
-                   width = (0.09*self.screenDim.width()).__str__(),
-                   heigth = (0.19*self.screenDim.height()).__str__(),
-                   lHeigth = (0.21*self.screenDim.height()).__str__(),
-
+                   width = (0.1*self.screenDim.width()).__str__(),
+                   heigth = (0.1*self.screenDim.width()).__str__(),
                    date=model.timeStamp)
             return html
 
@@ -446,7 +444,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         processedImagesList = []
         for filename in self.filenames:
             # Retrieve Figures from data analysis code
-            k, th, R2, angDist, cartDist, logScl, orgImg, figWidth, figHeigth = computerVision_BP.process_image(filename,
+            k, th, R2, angDist, angDist4, cartDist, cartDist4, logScl, logScl4, orgImg, orgImg4, figWidth, figHeigth = computerVision_BP.process_image(filename,
                                                                                            self.uCut,
                                                                                            self.lCut, self.angleInc,
                                                                                            self.radStep, self.screenDim,
@@ -460,6 +458,11 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             logSclEncoded = base64.encodebytes(open('logScl.png', 'rb').read()).decode('utf-8')
             orgImgEncoded = base64.encodebytes(open('orgImg.png', 'rb').read()).decode('utf-8')
 
+            angDistEncoded4 = base64.encodebytes(open('angDist4.png', 'rb').read()).decode('utf-8')
+            cartDistEncoded4 = base64.encodebytes(open('cartDist4.png', 'rb').read()).decode('utf-8')
+            logSclEncoded4 = base64.encodebytes(open('logScl4.png', 'rb').read()).decode('utf-8')
+            orgImgEncoded4 = base64.encodebytes(open('orgImg4.png', 'rb').read()).decode('utf-8')
+
             # Creates an object
             processedImage = img_model.ImgModel(
                 filename=filename,
@@ -468,13 +471,21 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 R2=R2,
                 orgImg=orgImg,
                 orgImgEncoded=orgImgEncoded,
+                orgImg4=orgImg4,
+                orgImgEncoded4 = orgImgEncoded4,
                 logScl=logScl,
                 logSclEncoded=logSclEncoded,
+                logScl4 = logScl4,
+                logSclEncoded4 = logSclEncoded4,
                 angDist=angDist,
                 angDistEncoded=angDistEncoded,
+                angDist4 = angDist4,
+                angDistEncoded4 = angDistEncoded4,
                 cartDist=cartDist,
                 cartDistEncoded=cartDistEncoded,
-                timeStamp=datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
+                cartDist4 = cartDist4,
+                cartDistEncoded4 = cartDistEncoded4,
+                timeStamp= datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
 
             processedImagesList.append(processedImage)
             # Ordered Set

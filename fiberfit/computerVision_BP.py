@@ -36,6 +36,8 @@ import matplotlib.pyplot as plt
 from fiberfit.EllipseDirectFit import*  # XXX: Changed here
 from fiberfit import helpers  # XXX: Changed here
 
+figSize = 4.5
+
 def process_histogram(PabsFlip, N1, uCut, lCut, angleInc, radStep):
     # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #           Create orientation Histogram         %
@@ -117,7 +119,22 @@ def process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth):
     angDist.savefig('angDist')
     plt.close()
 
-    return t, angDist
+    # Plot Lower Left - Polar plot of angular distribution with size of 4.5
+    angDist4 = plt.figure(figsize=(figSize, figSize))  # Creates a figure containing angular distribution.
+    r_line = np.arange(0, max(MirnormPower) + .5, .5)
+    th = np.zeros(len(r_line))
+    for i in range(0, len(r_line)):
+        th[i] = t
+    th = np.concatenate([th, (th + 180)])
+    r_line = np.concatenate([r_line, r_line])
+    plt.polar(Mirtheta1RadFinal1, MirnormPower, color ='k', linewidth=2)
+    plt.polar(th * pi / 180, r_line, color='r', linewidth=3)
+    plt.yticks(np.arange(.5, max(MirnormPower), .5))
+    angDist4.savefig('angDist4')
+    plt.close()
+
+
+    return t, angDist, angDist4
 
 
 def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth):
@@ -168,8 +185,25 @@ def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth):
     plt.ylim([0, max(normPower1) + .3])
     cartDist.savefig('cartDist')
     plt.close()
+
+    # Plot Lower Right - Distribution on a cartesian plane with appropriate shift with fig size 4
+    cartDist4 = plt.figure(figsize=(figSize, figSize))  # Creates a figure containing cartesian distribution.
+    h2 = plt.bar((theta1RadFinal1 * 180 / pi), normPower1, edgecolor = 'k', color = 'k')
+    plt.xticks(np.arange(-180, 180, 45))
+    plt.xlim([t - 100, t + 100])
+    p_act = fitted_func(theta1RadFinal1, kappa)
+    h3, = plt.plot(theta1RadFinal1 * 180 / pi, p_act, linewidth=3)
+    plt.title('Angular Distribution')
+    plt.xlabel('Angle (Degrees)')
+    plt.ylabel('Normalized Intensity')
+    plt.yticks(np.arange(0, max(normPower1) + .3, .5))
+    plt.ylim([0, max(normPower1) + .3])
+    cartDist4.savefig('cartDist4')
+    plt.close()
+
+
     slope, intercept, rValue, pValue, stderr = scipy.stats.linregress(p_act, normPower1)
-    return kappa, cartDist, rValue
+    return kappa, cartDist, cartDist4, rValue
 
 
 def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
@@ -181,6 +215,7 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
     #  %%%%%%%%%%%%%%%%%%%%%E%%%%%%%%%%%%%%%%
     figWidth = 0.1 * screenDim.width()/dpi
     figHeigth = 0.1 * screenDim.width()/dpi
+
     im = scipy.ndimage.imread(fname=str(name))
 
     m, n = im.shape
@@ -200,6 +235,17 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
     plt.imshow(im, cmap='gray', aspect='auto')
     plt.axis('off')
     originalImage.savefig('orgImg')
+    plt.close()
+
+    # Plot Upper left - Original Image with size 4
+    originalImage4 = plt.figure(frameon=False, figsize=(figSize, figSize))
+    # Makes it so the image fits entire dedicated space.
+    ax = plt.Axes(originalImage, [0., 0., 1., 1.])
+    ax.set_axis_off()
+    originalImage.add_axes(ax)
+    plt.imshow(im, cmap='gray', aspect='auto')
+    plt.axis('off')
+    originalImage.savefig('orgImg4')
     plt.close()
 
     fft_result = np.fft.fft2(im)
@@ -224,15 +270,26 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
     logScale.savefig('logScl')
     plt.close()
 
+    # Plot Upper Right - Power Spectrum on logrithmic scale
+    logScale4 = plt.figure(frameon=False, figsize=(figSize, figSize))
+    # Makes it so the image fits entire dedicated space.
+    ax = plt.Axes(logScale, [0., 0., 1., 1.])
+    ax.set_axis_off()
+    logScale.add_axes(ax)
+    plt.axis('off')
+    plt.imshow(log(PabsFlip), cmap='gray', aspect='auto')
+    logScale.savefig('logScl4')
+    plt.close()
+
     M, N1 = im.shape
 
     normPower, theta1RadFinal = process_histogram(PabsFlip, N1, uCut, lCut, angleInc, radStep)
 
     # theta and angular distribution are getting retrieved.
-    t_final, angDist = process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth)
+    t_final, angDist, angDist4 = process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth)
 
     # k and cartesian distrubution are getting retrieved.
-    k, cartDist, rValue = process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth)
+    k, cartDist, cartDist4, rValue = process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth)
 
     # Rounding results for Title of Figure
     krnd = math.ceil(k * 1000) / 1000
@@ -240,7 +297,7 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
     krnd = math.trunc(krnd * 100) / 100
     thrnd = math.trunc(thrnd * 100) / 100
 
-    return k[0], t_final, rValue**2, angDist, cartDist, logScale, originalImage, figWidth, figHeigth
+    return k[0], t_final, rValue**2, angDist, angDist4, cartDist, cartDist4, logScale, logScale4, originalImage, originalImage4, figWidth, figHeigth
 
 
 def pol2cart(theta, radius):
