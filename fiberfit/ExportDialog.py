@@ -3,9 +3,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog, screenDim):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(0.22*screenDim.width(), 0.3*screenDim.width())
+        Dialog.resize(0.23*screenDim.width(), 0.32*screenDim.width())
         #Dialog.setMinimumSize(QtCore.QSize(570, 870))
-        #Dialog.setMaximumSize(QtCore.QSize(570, 870))
+        Dialog.setMaximumSize(QtCore.QSize(0.23*screenDim.width(), 0.32*screenDim.width()))
         self.gridLayout = QtWidgets.QGridLayout(Dialog)
         self.gridLayout.setObjectName("gridLayout")
         self.webView = QtWebKitWidgets.QWebView(Dialog)
