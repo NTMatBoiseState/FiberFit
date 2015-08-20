@@ -40,6 +40,7 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
         self.buttonBox.button(QDialogButtonBox.Ok).clicked.connect(self.make_change)
         self.buttonBox.button(QDialogButtonBox.Reset).clicked.connect(self.reset_changes)
         self.setupDefaultValues()
+        self.rejected.connect(self.reset_changes)
 
     """
     Resets changes to the last saved changes.
@@ -73,8 +74,7 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
 
     @pyqtSlot()
     def do_change(self):
-        self.show()
-
+        self.exec_()
 
 class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     do_print = pyqtSignal()
