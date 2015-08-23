@@ -87,7 +87,10 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.setupUi(self, screenDim)
         self.screenDim = screenDim
         self.document = QTextDocument()
+        #list that keeps track of only selected images
         self.list = []
+        #list that contains all of the stored images
+        self.wholeList = OrderedSet()
         self.savedfiles = None
         self.currentModel = None
         # settings
@@ -181,8 +184,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
 
     def print(self):
         if (self.saveBox.button(QDialogButtonBox.SaveAll) == self.sender()):
-            print('list before printin is:' + self.list.__str__())
-            for model in self.list:
+            for model in self.wholeList:
                 self.document.setHtml(self.createHtml(model, forPrinting=True))
                 self.printer.setOutputFileName(
                     self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name + model.filename.stem + '.pdf')
@@ -288,10 +290,11 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.currentModel = model
         self.show()
 
-    @pyqtSlot(list, list, float, float, float, float)
-    def receiver(self, selectedImgs, dataList, uCut, lCut, radStep, angleInc):
+    @pyqtSlot(list, list, OrderedSet, float, float, float, float)
+    def receiver(self, selectedImgs, dataList, imgList, uCut, lCut, radStep, angleInc):
         self.dataList = dataList
         self.list = selectedImgs
+        self.wholeList = imgList
         self.uCut = uCut
         self.lCut = lCut
         self.radStep = radStep
@@ -300,10 +303,10 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
 
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     show_report = pyqtSignal(int)
-    make_report = pyqtSignal(img_model.ImgModel, OrderedSet)
+    make_report = pyqtSignal(img_model.ImgModel)
     do_run = pyqtSignal()
     do_update = pyqtSignal(int)
-    sendProcessedImagesList = pyqtSignal(list, list, float, float, float, float)
+    sendProcessedImagesList = pyqtSignal(list, list, OrderedSet, float, float, float, float)
 
     """
     Initializes all instance variables a.k.a attributes of a class.
@@ -380,7 +383,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.lCut = lCut
         self.angleInc = angleInc
         self.radStep = radStep
-        print(self.uCut, self.lCut, self.angleInc, self.radStep)
 
     """
     Function that signals to show the report.
@@ -388,7 +390,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def do_show_report(self):
         if (self.isStarted):
-            self.make_report.emit(self.imgList[self.currentIndex], self.imgList)
+            self.make_report.emit(self.imgList[self.currentIndex])
 
     """
     Calculates dimensions of the screen.
@@ -494,7 +496,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 self.imgList.add(processedImage)
             else:
                 self.imgList.add(processedImage)
-        self.sendProcessedImagesList.emit(processedImagesList, self.dataList, self.uCut, self.lCut, self.radStep,
+        self.sendProcessedImagesList.emit(processedImagesList, self.dataList, self.imgList, self.uCut, self.lCut, self.radStep,
                                           self.angleInc)
         processedImagesList = []
         if self.isStarted:
@@ -611,7 +613,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         files.append('cartDist4.png')
         files.append('logScl4.png')
         for filename in files:
-            os.remove(filename)
+            if os.path.isfile(filename):
+                os.remove(filename)
 
     """
     Sets up appropriate labels depending on which image is selected.

@@ -28,6 +28,8 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.selectImgBox.sizePolicy().hasHeightForWidth())
         self.selectImgBox.setSizePolicy(sizePolicy)
+        self.selectImgBox.setMinimumSize(QtCore.QSize(170, 0))
+        self.selectImgBox.setMaximumSize(QtCore.QSize(170, 16777215))
         self.selectImgBox.setObjectName("selectImgBox")
         self.midGrid.addWidget(self.selectImgBox, 0, 0, 1, 1)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
