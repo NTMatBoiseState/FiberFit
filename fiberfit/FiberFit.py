@@ -171,7 +171,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
             self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export", self.currentModel.filename.stem)[0])
         else:
             self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export",
-                                                                  "The name of each image selected will be appended to whatever you put in here.")[
+                                                                  "Image Name")[
                                                0])
         self.printerSetup()
         self.do_print.emit()
@@ -187,7 +187,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
             for model in self.wholeList:
                 self.document.setHtml(self.createHtml(model, forPrinting=True))
                 self.printer.setOutputFileName(
-                    self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name + model.filename.stem + '.pdf')
+                    self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name.replace("Image Name", "") + "_" + model.filename.stem + '.pdf')
                 self.document.print(self.printer)
         elif (self.saveBox.button(QDialogButtonBox.Save) == self.sender()):
             self.document.print(self.printer)
