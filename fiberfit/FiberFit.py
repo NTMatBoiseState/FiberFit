@@ -114,19 +114,19 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     def exportExcel(self):
         if self.dataList.__len__() == 0:
             self.dataList.append(
-                [self.list[0].filename.stem,
+                [self.wholeList[0].filename.stem,
                  self.uCut,
                  self.lCut,
                  self.radStep,
                  self.angleInc,
-                 self.list[0].th,
-                 self.list[0].k,
-                 self.list[0].R2,
-                 self.list[0].timeStamp])
+                 self.wholeList[0].th,
+                 self.wholeList[0].k,
+                 self.wholeList[0].R2,
+                 self.wholeList[0].timeStamp])
         # temp = self.list
         temp = []
-        for i in range(0, self.list.__len__()):
-            temp.append(self.list[i])
+        for i in range(0, self.wholeList.__len__()):
+            temp.append(self.wholeList[i])
         for i in range(0, len(self.dataList)):
             found = False
             for j in range(0, len(temp)):
