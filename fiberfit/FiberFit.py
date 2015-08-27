@@ -156,7 +156,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                                   temp[k].timeStamp])
         with open(str(self.savedfiles.parents[0]) + '/summary.csv', 'w') as csvfile:
             a = csv.writer(csvfile)
-            a.writerow(['Name', 'LowerCut', 'UpperCut', 'RadialStep', 'AngleIncrement', 'Th', 'K', 'R^2', 'Time'])
+            a.writerow(['Name', 'LowerCut', 'UpperCut', 'RadialStep', 'AngleIncrement', 'μ', 'K', 'R^2', 'Time'])
             a.writerows(self.dataList)
         fft_mainWindow.dataList = self.dataList
 
@@ -187,7 +187,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
             for model in self.wholeList:
                 self.document.setHtml(self.createHtml(model, forPrinting=True))
                 self.printer.setOutputFileName(
-                    self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name.replace("Image Name", "") + "_" + model.filename.stem + '.pdf')
+                    self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name.replace("Image Name", "") + model.filename.stem + '.pdf')
                 self.document.print(self.printer)
         elif (self.saveBox.button(QDialogButtonBox.Save) == self.sender()):
             self.document.print(self.printer)
@@ -216,7 +216,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                 <link type="text/css" rel="stylesheet" href="ntm_style.css"/>
             </head>
             <body>
-                <p> Image Name: {name} </p> <p> mu: {th} </p>
+                <p> Image Name: {name} </p> <p> μ: {th} </p>
                 <p>k: {k} </p>
                 <p>R^2: {R2} </p>
                 <br>
@@ -250,7 +250,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                     <link type="text/css" rel="stylesheet" href="ntm_style.css"/>
                 </head>
                 <body>
-                    <p> Image Name: {name} </p> <p> mu: {th} </p>
+                    <p> Image Name: {name} </p> <p> μ: {th} </p>
                     <p>k: {k} </p>
                     <p>R^2: {R2} </p>
                     <br>
@@ -409,7 +409,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def clear(self):
         if (self.isStarted):
             self.kLabel.setText("k = ")
-            self.muLabel.setText("mu =  ")
+            self.muLabel.setText("μ =  ")
             # clears canvas
             self.cleanCanvas()
             self.filenames.clear()

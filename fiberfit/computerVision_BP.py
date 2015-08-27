@@ -179,7 +179,7 @@ def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth):
     p_act = fitted_func(theta1RadFinal1, kappa)
     h3, = plt.plot(theta1RadFinal1 * 180 / pi, p_act, linewidth=3)
     plt.title('Angular Distribution')
-    plt.xlabel('Angle (Degrees)')
+    plt.xlabel('Angle (°)')
     plt.ylabel('Normalized Intensity')
     plt.yticks(np.arange(0, max(normPower1) + .3, .5))
     plt.ylim([0, max(normPower1) + .3])
