@@ -97,7 +97,6 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
     def __init__(self, parent=None, screenDim=None):
 
         super(ReportDialog, self).__init__(parent)
-
         self.dataList = []
         self.setupUi(self, screenDim)
         self.screenDim = screenDim
@@ -106,7 +105,6 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.list = []
         #list that contains all of the stored images
         self.wholeList = OrderedSet()
-
         self.savedfiles = None
         self.currentModel = None
         # settings
@@ -171,7 +169,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                                   temp[k].timeStamp])
         with open(str(self.savedfiles.parents[0]) + '/summary.csv', 'w') as csvfile:
             a = csv.writer(csvfile)
-            a.writerow(['Name', 'LowerCut', 'UpperCut', 'RadialStep', 'AngleIncrement', 'μ', 'K', 'R^2', 'Time'])
+            a.writerow(['Name', 'LowerCut', 'UpperCut', 'RadialStep', 'AngleIncrement', 'Mu', 'K', 'R^2', 'Time'])
             a.writerows(self.dataList)
         fft_mainWindow.dataList = self.dataList
 
@@ -184,10 +182,12 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         dialog = QFileDialog()
         if (self.saveBox.button(QDialogButtonBox.Save) == self.sender()):
             self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export", self.currentModel.filename.stem)[0])
+            self.close()
         else:
             self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export",
                                                                   "Image Name")[
                                                0])
+            self.close()
         self.printerSetup()
         self.do_print.emit()
         self.do_excel.emit()
@@ -214,7 +214,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.printer.setPageSize(QPrinter.A4)
         self.printer.setOutputFormat(QPrinter.PdfFormat)
         self.printer.setFullPage(True)
-        self.printer.setOutputFileName(str(self.savedfiles))
+        self.printer.setOutputFileName(str(self.savedfiles)+".pdf")
 
     """
     Creates html-based report that shows the basic information about the sample.
@@ -303,6 +303,10 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.currentModel = model
         self.show()
 
+    """
+    Received an information from FiberFit applicatin with necessary report data.
+    """
+
     @pyqtSlot(list, list, OrderedSet, float, float, float, float)
     def receiver(self, selectedImgs, dataList, imgList, uCut, lCut, radStep, angleInc):
         self.dataList = dataList
@@ -312,7 +316,6 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.lCut = lCut
         self.radStep = radStep
         self.angleInc = angleInc
-
 
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     show_report = pyqtSignal(int)
@@ -421,6 +424,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         if (self.isStarted):
             self.kLabel.setText("k = ")
             self.muLabel.setText("μ =  ")
+            self.RLabel.setText(('R' + u"\u00B2") + "= ")
             # clears canvas
             self.cleanCanvas()
             self.filenames.clear()
@@ -428,6 +432,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.selectImgBox.clear()
             # resets isStarted
             self.isStarted = False
+            self.dataList.clear()
             # empties all images
             self.imgList.clear()
             # resets current index
