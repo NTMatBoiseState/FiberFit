@@ -69,7 +69,6 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
         angleInc = float(self.btopField.text())
         radStep = float(self.bbottomField.text())
         self.valuesStack.append((uCut, lCut, angleInc, radStep))
-
         self.sendValues.emit(uCut, lCut, angleInc, radStep)
 
     @pyqtSlot()
@@ -77,12 +76,27 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
         self.exec_()
 
 class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
+    """ Summary of ReportDialog.
+
+    Represents a pop-up dialog when user presses "Export" button. Dialog contains a preview of the report containing
+    values of "mu", "k", "R^2" and the replica of FiberFit main window's when a sample has been processed.
+
+    Attributes:
+        - do_print is a signal sent when either Save or Save All button are pressed.
+        - do_excel is a signal starting the process of exporting results into an .csv format
+        - sendDataList is a signal that sends a list containing already exported images back to FiberFit.
+        - dataList is a list representing already exported images
+        - screenDim stores a screen dimension
+        - document is an instance of QTextDocument that 
+    """
     do_print = pyqtSignal()
     do_excel = pyqtSignal()
     sendDataList = pyqtSignal(list)
 
     def __init__(self, parent=None, screenDim=None):
+
         super(ReportDialog, self).__init__(parent)
+
         self.dataList = []
         self.setupUi(self, screenDim)
         self.screenDim = screenDim
@@ -91,6 +105,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.list = []
         #list that contains all of the stored images
         self.wholeList = OrderedSet()
+
         self.savedfiles = None
         self.currentModel = None
         # settings
@@ -105,7 +120,6 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.saveBox.button(QDialogButtonBox.SaveAll).clicked.connect(self.saveas)
         self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.saveas)
         self.do_print.connect(self.print)
-        # self.sendDataList.connect(fft_mainWindow.receiveDataList)
 
     """Makes excel spreadsheet.
     """
@@ -176,7 +190,6 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.printerSetup()
         self.do_print.emit()
         self.do_excel.emit()
-        # print(self.savedfiles)
 
     """
     Checks which button sent a signal. Based on that it either prints all images or just a single specific image.
@@ -200,7 +213,6 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.printer.setPageSize(QPrinter.A4)
         self.printer.setOutputFormat(QPrinter.PdfFormat)
         self.printer.setFullPage(True)
-        print(self.savedfiles)
         self.printer.setOutputFileName(str(self.savedfiles))
 
     """
@@ -316,8 +328,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         super(fft_mainWindow, self).__init__()
         # screen dim
         self.screenDim, self.dpi = self.receiveDim()
-        # resizing
-        # self.resize(0.8*self.screenDim.height(), 0.2*self.screenDim.width())
         self.imgList = OrderedSet()
         self.csvIndex = 0
         self.dataList = []
@@ -503,9 +513,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             # removes/deletes all canvases
             self.cleanCanvas()
         # fills canvas
-        # TODO: send as signal!
-        # example:
-        #     self.updateCanvasSignal.emit(self.currentIndex)
         self.fillCanvas(self.imgList.__getitem__(self.currentIndex))
         self.applyResizing()
         # started
