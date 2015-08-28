@@ -87,7 +87,8 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         - sendDataList is a signal that sends a list containing already exported images back to FiberFit.
         - dataList is a list representing already exported images
         - screenDim stores a screen dimension
-        - document is an instance of QTextDocument that 
+        - document is an instance of QTextDocument that
+        TODO: List the other attributes.
     """
     do_print = pyqtSignal()
     do_excel = pyqtSignal()
@@ -681,7 +682,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 self.RLabel.setText(('R' + u"\u00B2") + " = " + str(round(image.R2, 2)))
                 # sets current index to the index of the found image.
                 self.currentIndex = self.imgList.index(image)
-
 
 def main():
     """

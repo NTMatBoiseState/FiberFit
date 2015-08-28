@@ -38,7 +38,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        Dialog.setWindowTitle(_translate("Preview", "Preview"))
         # self.prevBut.setText(_translate("Dialog", "<---"))
         # self.nextBut.setText(_translate("Dialog", "--->"))
 

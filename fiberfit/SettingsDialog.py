@@ -89,7 +89,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        Dialog.setWindowTitle(_translate("Settings", "Settings"))
         self.topDescr.setText(_translate("Dialog", "Band - Pass Filter Settings: Input fiber width -the frequency will be calculated using f = N/(2*t), where N is the image dimension. "))
         self.upperLabel.setText(_translate("Dialog", "Upper Cutoff Width (Smaller Thickness): \n"
 "\n"
