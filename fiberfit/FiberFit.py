@@ -424,7 +424,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         if (self.isStarted):
             self.kLabel.setText("k = ")
             self.muLabel.setText("μ =  ")
-            self.RLabel.setText(('R' + u"\u00B2") + "= ")
+            self.RLabel.setText(('R' + u"\u00B2") + " = ")
             # clears canvas
             self.cleanCanvas()
             self.filenames.clear()
@@ -595,7 +595,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         # Processes selected images; sets up the labels and fills selectImgBox with references to images.
         # TODO: Make an exception to catch IndexError, and pop the window with appropriate message.
         self.kLabel.setText("k = ")
-        self.muLabel.setText("mu =  ")
+        self.muLabel.setText("μ =  ")
+        self.RLabel.setText(('R' + u"\u00B2") + " = ")
         # clears canvas
         self.cleanCanvas()
         # clears combo-box
@@ -637,7 +638,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def setupLabels(self, num):
         self.kLabel.setText("k = " + str(round(self.imgList.__getitem__(num).k, 2)))
         self.muLabel.setText("μ = " + str(round(self.imgList.__getitem__(num).th, 2)))
-        self.RLabel.setText(('R' + u"\u00B2") + " =" + str(round(self.imgList.__getitem__(num).R2, 2)))
+        self.RLabel.setText(('R' + u"\u00B2") + " = " + str(round(self.imgList.__getitem__(num).R2, 2)))
 
     """
     Scrolls to next image.
@@ -683,7 +684,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             if image.filename.stem == filename:
                 self.processImagesFromComboBox(image)
                 self.kLabel.setText("k = " + str(round(image.k, 2)))
-                self.muLabel.setText("mu = " + str(round(image.th, 2)))
+                self.muLabel.setText("μ = " + str(round(image.th, 2)))
                 self.RLabel.setText(('R' + u"\u00B2") + " = " + str(round(image.R2, 2)))
                 # sets current index to the index of the found image.
                 self.currentIndex = self.imgList.index(image)
