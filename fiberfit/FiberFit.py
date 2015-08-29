@@ -22,9 +22,18 @@ from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QDialogButtonBox, QDialog
 from fiberfit import SettingsDialog
 from fiberfit import ExportDialog
+from fiberfit import ErrorDialog
 from PyQt5.QtGui import QTextDocument
 import os
 from PyQt5.QtWidgets import QDesktopWidget
+
+class ErrorDialog(QDialog, ErrorDialog.Ui_ErrorDialog):
+    def __init__(self, parent=None, screenDim = None):
+        super(ErrorDialog, self).__init__(parent)
+        self.setupUi(self, screenDim)
+
+    def show(self):
+        self.exec_()
 
 class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
     genUCut = 2.0
@@ -348,6 +357,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         # Pops up a dialog with
         self.dialogTextBrowser = ReportDialog(self, self.screenDim)
         self.settingsBrowser = SettingsWindow(self, self.screenDim)
+        self.errorBrowser = ErrorDialog(self, self.screenDim)
         # Settings
         self.uCut = float(self.settingsBrowser.ttopField.text())
         self.lCut = float(self.settingsBrowser.tbottomField.text())
@@ -449,8 +459,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         for name in filenames[0]:
             self.filenames.append(pathlib.Path(name))
         self.do_run.emit()
-        self.do_update.emit(self.currentIndex)
-        self.removeTemp()
 
     """
     Processes selected images. Displays it onto a canvas.
@@ -462,67 +470,79 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         processedImagesList = []
         for filename in self.filenames:
             # Retrieve Figures from data analysis code
-            k, th, R2, angDist, angDist4, cartDist, cartDist4, logScl, logScl4, orgImg, orgImg4, figWidth, figHeigth = computerVision_BP.process_image(filename,
-                                                                                           self.uCut,
-                                                                                           self.lCut, self.angleInc,
-                                                                                           self.radStep, self.screenDim,
-                                                                                           self.dpi)
-            # Starting from Python3, there is a distinctin between bytes and str. Thus, I can't use
-            # methods of str on bytes. However I need to do that in order to properly encode the image
-            # into b64. The main thing is that bytes-way produces some improper characters that mess up
-            # the decoding process. Hence, decode(utf-8) translates bytes into str.
-            angDistEncoded = base64.encodebytes(open('angDist.png', 'rb').read()).decode('utf-8')
-            cartDistEncoded = base64.encodebytes(open('cartDist.png', 'rb').read()).decode('utf-8')
-            logSclEncoded = base64.encodebytes(open('logScl.png', 'rb').read()).decode('utf-8')
-            orgImgEncoded = base64.encodebytes(open('orgImg.png', 'rb').read()).decode('utf-8')
+            try:
+                k, th, R2, angDist, angDist4, cartDist, cartDist4, logScl, logScl4, orgImg, orgImg4, figWidth, figHeigth = computerVision_BP.process_image(filename,
+                                                                                               self.uCut,
+                                                                                               self.lCut, self.angleInc,
+                                                                                               self.radStep, self.screenDim,
+                                                                                               self.dpi)
 
-            angDistEncoded4 = base64.encodebytes(open('angDist4.png', 'rb').read()).decode('utf-8')
-            cartDistEncoded4 = base64.encodebytes(open('cartDist4.png', 'rb').read()).decode('utf-8')
-            logSclEncoded4 = base64.encodebytes(open('logScl4.png', 'rb').read()).decode('utf-8')
-            orgImgEncoded4 = base64.encodebytes(open('orgImg4.png', 'rb').read()).decode('utf-8')
+                # Starting from Python3, there is a distinctin between bytes and str. Thus, I can't use
+                # methods of str on bytes. However I need to do that in order to properly encode the image
+                # into b64. The main thing is that bytes-way produces some improper characters that mess up
+                # the decoding process. Hence, decode(utf-8) translates bytes into str.
+                angDistEncoded = base64.encodebytes(open('angDist.png', 'rb').read()).decode('utf-8')
+                cartDistEncoded = base64.encodebytes(open('cartDist.png', 'rb').read()).decode('utf-8')
+                logSclEncoded = base64.encodebytes(open('logScl.png', 'rb').read()).decode('utf-8')
+                orgImgEncoded = base64.encodebytes(open('orgImg.png', 'rb').read()).decode('utf-8')
 
-            # Creates an object
-            processedImage = img_model.ImgModel(
-                filename=filename,
-                k=k,
-                th=th,
-                R2=R2,
-                orgImg=orgImg,
-                orgImgEncoded=orgImgEncoded,
-                orgImg4=orgImg4,
-                orgImgEncoded4 = orgImgEncoded4,
-                logScl=logScl,
-                logSclEncoded=logSclEncoded,
-                logScl4 = logScl4,
-                logSclEncoded4 = logSclEncoded4,
-                angDist=angDist,
-                angDistEncoded=angDistEncoded,
-                angDist4 = angDist4,
-                angDistEncoded4 = angDistEncoded4,
-                cartDist=cartDist,
-                cartDistEncoded=cartDistEncoded,
-                cartDist4 = cartDist4,
-                cartDistEncoded4 = cartDistEncoded4,
-                timeStamp= datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
+                angDistEncoded4 = base64.encodebytes(open('angDist4.png', 'rb').read()).decode('utf-8')
+                cartDistEncoded4 = base64.encodebytes(open('cartDist4.png', 'rb').read()).decode('utf-8')
+                logSclEncoded4 = base64.encodebytes(open('logScl4.png', 'rb').read()).decode('utf-8')
+                orgImgEncoded4 = base64.encodebytes(open('orgImg4.png', 'rb').read()).decode('utf-8')
 
-            processedImagesList.append(processedImage)
-            # Ordered Set
-            if processedImage in self.imgList:
-                self.imgList.remove(processedImage)
-                self.imgList.add(processedImage)
-            else:
-                self.imgList.add(processedImage)
-        self.sendProcessedImagesList.emit(processedImagesList, self.dataList, self.imgList, self.uCut, self.lCut, self.radStep,
-                                          self.angleInc)
-        processedImagesList = []
-        if self.isStarted:
-            # removes/deletes all canvases
-            self.cleanCanvas()
-        # fills canvas
-        self.fillCanvas(self.imgList.__getitem__(self.currentIndex))
-        self.applyResizing()
-        # started
-        self.isStarted = True
+                # Creates an object
+                processedImage = img_model.ImgModel(
+                    filename=filename,
+                    k=k,
+                    th=th,
+                    R2=R2,
+                    orgImg=orgImg,
+                    orgImgEncoded=orgImgEncoded,
+                    orgImg4=orgImg4,
+                    orgImgEncoded4 = orgImgEncoded4,
+                    logScl=logScl,
+                    logSclEncoded=logSclEncoded,
+                    logScl4 = logScl4,
+                    logSclEncoded4 = logSclEncoded4,
+                    angDist=angDist,
+                    angDistEncoded=angDistEncoded,
+                    angDist4 = angDist4,
+                    angDistEncoded4 = angDistEncoded4,
+                    cartDist=cartDist,
+                    cartDistEncoded=cartDistEncoded,
+                    cartDist4 = cartDist4,
+                    cartDistEncoded4 = cartDistEncoded4,
+                    timeStamp= datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
+
+                processedImagesList.append(processedImage)
+                # Ordered Set
+                if processedImage in self.imgList:
+                    self.imgList.remove(processedImage)
+                    self.imgList.add(processedImage)
+                else:
+                        self.imgList.add(processedImage)
+                self.sendProcessedImagesList.emit(processedImagesList, self.dataList, self.imgList, self.uCut, self.lCut, self.radStep,
+                                                  self.angleInc)
+                processedImagesList = []
+                if self.isStarted:
+                    # removes/deletes all canvases
+                    self.cleanCanvas()
+                # fills canvas
+                self.fillCanvas(self.imgList.__getitem__(self.currentIndex))
+                self.applyResizing()
+                # started
+                self.isStarted = True
+                self.do_update.emit(self.currentIndex)
+                self.removeTemp()
+
+            except TypeError:
+                self.errorBrowser.show()
+            except ValueError:
+                self.errorBrowser.show()
+            except OSError:
+                self.errorBrowser.show()
+
     """
     Makes so that screen can be resized after the images loaded.
     """
