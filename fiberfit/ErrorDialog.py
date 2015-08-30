@@ -6,9 +6,9 @@ class Ui_ErrorDialog(object):
     def setupUi(self, ErrorDialog, screenDim):
         ErrorDialog.setObjectName("ErrorDialog")
         ErrorDialog.setEnabled(True)
-        ErrorDialog.resize(0.12 * screenDim.width(), 0.12 * screenDim.height())
+        ErrorDialog.resize(0.15 * screenDim.width(), 0.15 * screenDim.height())
         ErrorDialog.setMinimumSize(QtCore.QSize(0.12 * screenDim.width(), 0.12 * screenDim.height()))
-        ErrorDialog.setMaximumSize(QtCore.QSize(0.12 * screenDim.width(), 0.12 * screenDim.height()))
+        ErrorDialog.setMaximumSize(QtCore.QSize(0.9 * screenDim.width(), 0.9 * screenDim.height()))
         self.gridLayout = QtWidgets.QGridLayout(ErrorDialog)
         self.gridLayout.setObjectName("gridLayout")
         self.scrollArea = QtWidgets.QScrollArea(ErrorDialog)
