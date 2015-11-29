@@ -6,7 +6,7 @@ import sys
 import csv
 import datetime
 import matplotlib
-
+from PyQt5 import QtWebKitWidgets
 import threading
 import time
 
@@ -29,9 +29,7 @@ from fiberfit import ErrorDialog
 from PyQt5.QtGui import QTextDocument
 import os
 from PyQt5.QtWidgets import QDesktopWidget
-
-
-
+from fiberfit import export_window
 
 
 class ErrorDialog(QDialog, ErrorDialog.Ui_ErrorDialog):
@@ -91,7 +89,7 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
     def do_change(self):
         self.exec_()
 
-class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
+class ReportDialog(QDialog, export_window.Ui_Dialog):
     """ Summary of ReportDialog.
 
     Represents a pop-up dialog when user presses "Export" button. Dialog contains a preview of the report containing
@@ -114,7 +112,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
 
         super(ReportDialog, self).__init__(parent)
         self.dataList = []
-        self.setupUi(self, screenDim)
+        self.setupUi(self)
         self.screenDim = screenDim
         self.document = QTextDocument()
         #list that keeps track of only selected images
@@ -128,13 +126,62 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
         self.lCut = 0
         self.angleInc = 0
         self.radStep = 0
+        #  states
+        """
+        0 -> single
+        1 -> multiple
+        2 -> append
+        """
+        self.isReport = False
+        self.isSummary = False
+        self.reportOption = None
         # printer
         self.printer = QPrinter(QPrinter.PrinterResolution)
         # Signals and slots:
         self.do_excel.connect(self.exportExcel)
-        self.saveBox.button(QDialogButtonBox.SaveAll).clicked.connect(self.saveas)
-        self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.saveas)
+        self.webView = QtWebKitWidgets.QWebView()
+
+        self.checkBox_report.stateChanged.connect(self.topLogicHandler)
+        self.checkBox_summary.stateChanged.connect(self.topLogicHandler)
+
+        self.radio_multiple.toggled.connect(self.toggleHandler)
+        self.radio_single.toggled.connect(self.toggleHandler)
+        self.radio_append.toggled.connect(self.toggleHandler)
+
+        self.buttonBox.Ok.clicked.connect(self.exportHandler)
+       # self.saveBox.button(QDialogButtonBox.SaveAll).clicked.connect(self.saveas)
+       # self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.saveas)
         self.do_print.connect(self.print)
+
+
+    def exportHandler(self):
+
+
+
+    def toggleHandler(self):
+        if self.radio_single.isChecked():
+            self.reportOption = 0
+        elif self.radio_multiple.isChecked():
+            self.reportOption = 1
+        elif self.radio_append.isChecked():
+            self.reportOption = 2
+
+    def topLogicHandler(self):
+        if self.checkBox_report.isChecked():
+            self.radio_single.setEnabled(True)
+            self.radio_multiple.setEnabled(True)
+            self.radio_append.setEnabled(True)
+        elif self.checkBox_report.isChecked() is False:
+            self.radio_none.setChecked(True)
+            self.radio_none.setEnabled(False)
+            self.radio_append.setChecked(False)
+            self.radio_multiple.setChecked(False)
+            self.radio_single.setChecked(False)
+            self.radio_single.setEnabled(False)
+            self.radio_multiple.setEnabled(False)
+            self.radio_append.setEnabled(False)
+        if self.checkBox_summary.isChecked():
+            self.isSummary = True
 
     """Makes excel spreadsheet.
     """
