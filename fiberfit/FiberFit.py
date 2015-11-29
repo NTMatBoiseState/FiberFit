@@ -157,7 +157,17 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
         self.rejected.connect(self.resetOptions)
 
     def resetOptions(self):
-        
+        self.checkBox_report.setChecked(False)
+        self.checkBox_summary.setChecked(False)
+
+        self.radio_none.setChecked(True)
+        self.radio_none.setEnabled(False)
+        self.radio_append.setChecked(False)
+        self.radio_multiple.setChecked(False)
+        self.radio_single.setChecked(False)
+        self.radio_single.setEnabled(False)
+        self.radio_multiple.setEnabled(False)
+        self.radio_append.setEnabled(False)
 
     def exportHandler(self):
         if self.isReport:
@@ -174,7 +184,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
             self.reportOption = 2
         elif self.radio_none.isChecked():
             self.reportOption = -1
-        print("Status: " + str(self.reportOption))
+       #  print("Status: " + str(self.reportOption))
 
     def topLogicHandler(self):
         if self.checkBox_report.isChecked():

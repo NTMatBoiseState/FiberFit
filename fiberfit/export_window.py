@@ -36,6 +36,7 @@ class Ui_Dialog(object):
 
         self.radio_none = QtWidgets.QRadioButton(Dialog)
         self.verticalLayout.addWidget(self.radio_none)
+        self.radio_none.setChecked(True)
         self.radio_none.setEnabled(False)
 
         self.radio_single = QtWidgets.QRadioButton(Dialog)
