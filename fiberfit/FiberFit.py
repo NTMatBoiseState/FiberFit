@@ -289,7 +289,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                             <td> <img src = "data:image/png;base64,{encodedCartDist}" width = "{width}", height = "{heigth}" /></td>
                         </tr>
                     </table>
-                    <p>s
+                    <p>
                         {date}
                     </p>
                 </body>
@@ -337,7 +337,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     sendProcessedImagesList = pyqtSignal(list, list, OrderedSet, float, float, float, float)
     #  For pbar
     sendProcessedImageCounter = pyqtSignal(int, img_model.ImgModel, list)
-    updateParams = pyqtSignal(float, float, float, float, float, float, list)
 
     """
     Initializes all instance variables a.k.a attributes of a class.
@@ -484,7 +483,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     Technical: Creates img_model objects that encapsulate all of the useful data.
     """
 
-    @pyqtSlot(img_model.ImgModel, list)
+    @pyqtSlot(int, img_model.ImgModel, list)
     def processImages(self, count, processedImage, processedImagesList):
         # Ordered Set
         if processedImage in self.imgList:
@@ -505,6 +504,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.isStarted = True
         self.do_update.emit(self.currentIndex)
         self.removeTemp()
+        #  Setting progress bar business
         self.progressBar.setValue(count)
         self.progressBar.valueChanged.emit(self.progressBar.value())
 
