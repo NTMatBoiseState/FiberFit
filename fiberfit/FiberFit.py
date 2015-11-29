@@ -154,7 +154,10 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
        # self.saveBox.button(QDialogButtonBox.SaveAll).clicked.connect(self.saveas)
        # self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.saveas)
         self.do_print.connect(self.print)
+        self.rejected.connect(self.resetOptions)
 
+    def resetOptions(self):
+        
 
     def exportHandler(self):
         if self.isReport:
@@ -256,7 +259,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
                                                                   "Image Name")[
                                                0])
             self.close()
-        print("Did I make it here?")
+        #  print("Did I make it here?")
         self.printerSetup()
         self.do_print.emit()
         self.do_excel.emit()
@@ -284,8 +287,10 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
                 self.document.print(self.printer)
                 input = open(self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name.replace("Image Name", "") + model.filename.stem + '.pdf', "rb")
                 self.merger.append(input)
+                os.remove(self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name.replace("Image Name", "") + model.filename.stem + '.pdf')
 
             out = open(self.savedfiles.parents[0].__str__() + '/' + "report.pdf", "wb")
+
             self.merger.write(out)
     """
     Sets up default instructions for printer.
