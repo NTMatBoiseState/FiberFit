@@ -399,8 +399,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.selectImgBox.activated[str].connect(self.changeState)
 
         # pbar
-        self.pThread = myThread(self.sendProcessedImageCounter)
-        self.do_run.connect(self.pThread.start)
+        self.do_run.connect(self.runner)
         self.progressBar.setMinimum(0)
         self.sendProcessedImageCounter.connect(self.processImages)
 
@@ -419,6 +418,13 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.lCut = lCut
         self.angleInc = angleInc
         self.radStep = radStep
+
+
+    def runner(self):
+        pThread = myThread(self.sendProcessedImageCounter)
+        pThread.update_values(self.uCut, self.lCut, self.angleInc, self.radStep, self.screenDim, self.dpi, self.filenames)
+        self.progressBar.setValue(0)
+        pThread.start()
 
     """
     Function that signals to show the report.
@@ -470,8 +476,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         filenames = dialog.getOpenFileNames(self, '', None)  # creates a list of fileNames
         for name in filenames[0]:
             self.filenames.append(pathlib.Path(name))
-        self.progressBar.setMaximum(len(filenames))
-        self.pThread.update_values(self.uCut, self.lCut, self.angleInc, self.radStep, self.screenDim, self.dpi, self.filenames)
+        self.progressBar.setMaximum(len(filenames[0]))
         self.do_run.emit()
 
     """
@@ -753,7 +758,6 @@ class myThread(threading.Thread):
                 self.errorBrowser.show()
 
             self.sig.emit(count, processedImage, processedImagesList)
-            print("Here")
             time.sleep(0.5)
 
 def main():
