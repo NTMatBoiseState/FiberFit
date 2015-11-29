@@ -30,6 +30,10 @@ from PyQt5.QtGui import QTextDocument
 import os
 from PyQt5.QtWidgets import QDesktopWidget
 
+
+
+
+
 class ErrorDialog(QDialog, ErrorDialog.Ui_ErrorDialog):
     def __init__(self, parent=None, screenDim = None):
         super(ErrorDialog, self).__init__(parent)
