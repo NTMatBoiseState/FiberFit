@@ -9,6 +9,7 @@ import matplotlib
 from PyQt5 import QtWebKitWidgets
 import threading
 import time
+from PyPDF2 import PdfFileMerger as merger
 
 matplotlib.use("Qt5Agg")  ## forces to use Qt5Agg so that Backends work
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -135,6 +136,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
         self.isReport = False
         self.isSummary = False
         self.reportOption = None
+        self.merger = merger()
         # printer
         self.printer = QPrinter(QPrinter.PrinterResolution)
         # Signals and slots:
@@ -148,15 +150,17 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
         self.radio_single.toggled.connect(self.toggleHandler)
         self.radio_append.toggled.connect(self.toggleHandler)
 
-        self.buttonBox.Ok.clicked.connect(self.exportHandler)
+        self.buttonBox.button(QDialogButtonBox.Ok).clicked.connect(self.exportHandler)
        # self.saveBox.button(QDialogButtonBox.SaveAll).clicked.connect(self.saveas)
        # self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.saveas)
         self.do_print.connect(self.print)
 
 
     def exportHandler(self):
-
-
+        if self.isReport:
+            self.saveas()
+        if (self.reportOption == 0 or self.reportOption == 2 or self.reportOption == 1):
+            self.saveas()
 
     def toggleHandler(self):
         if self.radio_single.isChecked():
@@ -165,6 +169,9 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
             self.reportOption = 1
         elif self.radio_append.isChecked():
             self.reportOption = 2
+        elif self.radio_none.isChecked():
+            self.reportOption = -1
+        print("Status: " + str(self.reportOption))
 
     def topLogicHandler(self):
         if self.checkBox_report.isChecked():
@@ -239,36 +246,47 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
     """
     Pops out a dialog allowing user to select where to save the image.
     """
-
-    @pyqtSlot()
     def saveas(self):
         dialog = QFileDialog()
-        if (self.saveBox.button(QDialogButtonBox.Save) == self.sender()):
+        if (self.reportOption == 0):
             self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export", self.currentModel.filename.stem)[0])
             self.close()
-        else:
+        elif (self.reportOption == 1 or self.reportOption == 2):
             self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export",
                                                                   "Image Name")[
                                                0])
             self.close()
+        print("Did I make it here?")
         self.printerSetup()
         self.do_print.emit()
         self.do_excel.emit()
+
 
     """
     Checks which button sent a signal. Based on that it either prints all images or just a single specific image.
     """
 
     def print(self):
-        if (self.saveBox.button(QDialogButtonBox.SaveAll) == self.sender()):
+        if (self.reportOption == 1):
             for model in self.wholeList:
                 self.document.setHtml(self.createHtml(model, forPrinting=True))
                 self.printer.setOutputFileName(
                     self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name.replace("Image Name", "") + model.filename.stem + '.pdf')
                 self.document.print(self.printer)
-        elif (self.saveBox.button(QDialogButtonBox.Save) == self.sender()):
+        elif (self.reportOption == 0):
             self.document.print(self.printer)
 
+        elif (self.reportOption == 2):
+            for model in self.wholeList:
+                self.document.setHtml(self.createHtml(model, forPrinting=True))
+                self.printer.setOutputFileName(
+                    self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name.replace("Image Name", "") + model.filename.stem + '.pdf')
+                self.document.print(self.printer)
+                input = open(self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name.replace("Image Name", "") + model.filename.stem + '.pdf', "rb")
+                self.merger.append(input)
+
+            out = open(self.savedfiles.parents[0].__str__() + '/' + "report.pdf", "wb")
+            self.merger.write(out)
     """
     Sets up default instructions for printer.
     """
