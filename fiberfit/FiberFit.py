@@ -286,7 +286,7 @@ class ReportDialog(QDialog, ExportDialog.Ui_Dialog):
                             <td> <img src = "data:image/png;base64,{encodedCartDist}" width = "{width}", height = "{heigth}" /></td>
                         </tr>
                     </table>
-                    <p>
+                    <p>s
                         {date}
                     </p>
                 </body>

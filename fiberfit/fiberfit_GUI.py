@@ -71,9 +71,18 @@ class Ui_MainWindow(object):
         self.kLabel.setTextFormat(QtCore.Qt.AutoText)
         self.kLabel.setObjectName("kLabel")
         self.midGrid.addWidget(self.kLabel, 0, 6, 1, 1)
-
+        
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.midGrid.addItem(spacerItem3, 0, 7, 1, 1)
+        
+        #  Progress bar
+        self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
+        self.progressBar.setProperty("value", 0)
+        self.progressBar.setObjectName("progressBar")
+        self.midGrid.addWidget(self.progressBar, 0, 8, 1, 1)
+        
+        # spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+  #       self.midGrid.addItem(spacerItem4, 0, 9, 1, 1)
 
 
         self.gridLayout.addLayout(self.midGrid, 1, 0, 1, 1)
