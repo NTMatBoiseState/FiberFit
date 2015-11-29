@@ -7,6 +7,9 @@ import csv
 import datetime
 import matplotlib
 
+import threading
+import time
+
 matplotlib.use("Qt5Agg")  ## forces to use Qt5Agg so that Backends work
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from fiberfit import fiberfit_GUI
@@ -332,6 +335,9 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     do_run = pyqtSignal()
     do_update = pyqtSignal(int)
     sendProcessedImagesList = pyqtSignal(list, list, OrderedSet, float, float, float, float)
+    #  For pbar
+    sendProcessedImageCounter = pyqtSignal(int, img_model.ImgModel, list)
+    updateParams = pyqtSignal(float, float, float, float, float, float, list)
 
     """
     Initializes all instance variables a.k.a attributes of a class.
@@ -371,7 +377,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.prevButton.clicked.connect(self.prevImage)
 
         self.loadButton.clicked.connect(self.launch)
-        self.do_run.connect(self.processImages)
+
         self.do_update.connect(self.populateComboBox)
         self.do_update.connect(self.setupLabels)
 
@@ -391,6 +397,12 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         # sends off a signal containing string.
         # Conveniently the string will be the name of the file.
         self.selectImgBox.activated[str].connect(self.changeState)
+
+        # pbar
+        self.pThread = myThread(self.sendProcessedImageCounter)
+        self.do_run.connect(self.pThread.start)
+        self.progressBar.setMinimum(0)
+        self.sendProcessedImageCounter.connect(self.processImages)
 
         """This is to gain better insight into Slots and Signals.
         def userLog(int):
@@ -458,6 +470,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         filenames = dialog.getOpenFileNames(self, '', None)  # creates a list of fileNames
         for name in filenames[0]:
             self.filenames.append(pathlib.Path(name))
+        self.progressBar.setMaximum(len(filenames))
+        self.pThread.update_values(self.uCut, self.lCut, self.angleInc, self.radStep, self.screenDim, self.dpi, self.filenames)
         self.do_run.emit()
 
     """
@@ -465,83 +479,29 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     Technical: Creates img_model objects that encapsulate all of the useful data.
     """
 
-    @pyqtSlot()
-    def processImages(self):
-        processedImagesList = []
-        for filename in self.filenames:
-            # Retrieve Figures from data analysis code
-            try:
-                k, th, R2, angDist, angDist4, cartDist, cartDist4, logScl, logScl4, orgImg, orgImg4, figWidth, figHeigth = computerVision_BP.process_image(filename,
-                                                                                               self.uCut,
-                                                                                               self.lCut, self.angleInc,
-                                                                                               self.radStep, self.screenDim,
-                                                                                               self.dpi)
+    @pyqtSlot(img_model.ImgModel, list)
+    def processImages(self, count, processedImage, processedImagesList):
+        # Ordered Set
+        if processedImage in self.imgList:
+            self.imgList.remove(processedImage)
+            self.imgList.add(processedImage)
+        else:
+            self.imgList.add(processedImage)
+        self.sendProcessedImagesList.emit(processedImagesList, self.dataList, self.imgList, self.uCut, self.lCut, self.radStep,
+                                          self.angleInc)
 
-                # Starting from Python3, there is a distinctin between bytes and str. Thus, I can't use
-                # methods of str on bytes. However I need to do that in order to properly encode the image
-                # into b64. The main thing is that bytes-way produces some improper characters that mess up
-                # the decoding process. Hence, decode(utf-8) translates bytes into str.
-                angDistEncoded = base64.encodebytes(open('angDist.png', 'rb').read()).decode('utf-8')
-                cartDistEncoded = base64.encodebytes(open('cartDist.png', 'rb').read()).decode('utf-8')
-                logSclEncoded = base64.encodebytes(open('logScl.png', 'rb').read()).decode('utf-8')
-                orgImgEncoded = base64.encodebytes(open('orgImg.png', 'rb').read()).decode('utf-8')
-
-                angDistEncoded4 = base64.encodebytes(open('angDist4.png', 'rb').read()).decode('utf-8')
-                cartDistEncoded4 = base64.encodebytes(open('cartDist4.png', 'rb').read()).decode('utf-8')
-                logSclEncoded4 = base64.encodebytes(open('logScl4.png', 'rb').read()).decode('utf-8')
-                orgImgEncoded4 = base64.encodebytes(open('orgImg4.png', 'rb').read()).decode('utf-8')
-
-                # Creates an object
-                processedImage = img_model.ImgModel(
-                    filename=filename,
-                    k=k,
-                    th=th,
-                    R2=R2,
-                    orgImg=orgImg,
-                    orgImgEncoded=orgImgEncoded,
-                    orgImg4=orgImg4,
-                    orgImgEncoded4 = orgImgEncoded4,
-                    logScl=logScl,
-                    logSclEncoded=logSclEncoded,
-                    logScl4 = logScl4,
-                    logSclEncoded4 = logSclEncoded4,
-                    angDist=angDist,
-                    angDistEncoded=angDistEncoded,
-                    angDist4 = angDist4,
-                    angDistEncoded4 = angDistEncoded4,
-                    cartDist=cartDist,
-                    cartDistEncoded=cartDistEncoded,
-                    cartDist4 = cartDist4,
-                    cartDistEncoded4 = cartDistEncoded4,
-                    timeStamp= datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
-
-                processedImagesList.append(processedImage)
-                # Ordered Set
-                if processedImage in self.imgList:
-                    self.imgList.remove(processedImage)
-                    self.imgList.add(processedImage)
-                else:
-                        self.imgList.add(processedImage)
-                self.sendProcessedImagesList.emit(processedImagesList, self.dataList, self.imgList, self.uCut, self.lCut, self.radStep,
-                                                  self.angleInc)
-                processedImagesList = []
-                if self.isStarted:
-                    # removes/deletes all canvases
-                    self.cleanCanvas()
-                # fills canvas
-                self.fillCanvas(self.imgList.__getitem__(self.currentIndex))
-                self.applyResizing()
-                # started
-                self.isStarted = True
-                self.do_update.emit(self.currentIndex)
-                self.removeTemp()
-
-            except TypeError:
-                self.errorBrowser.show()
-            except ValueError:
-                self.errorBrowser.show()
-            except OSError:
-                self.errorBrowser.show()
+        if self.isStarted:
+            # removes/deletes all canvases
+            self.cleanCanvas()
+        # fills canvas
+        self.fillCanvas(self.imgList.__getitem__(self.currentIndex))
+        self.applyResizing()
+        # started
+        self.isStarted = True
+        self.do_update.emit(self.currentIndex)
+        self.removeTemp()
+        self.progressBar.setValue(count)
+        self.progressBar.valueChanged.emit(self.progressBar.value())
 
     """
     Makes so that screen can be resized after the images loaded.
@@ -708,6 +668,93 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 self.RLabel.setText(('R' + u"\u00B2") + " = " + str(round(image.R2, 2)))
                 # sets current index to the index of the found image.
                 self.currentIndex = self.imgList.index(image)
+
+class myThread(threading.Thread):
+
+    def __init__(self, sig):
+        super(myThread, self).__init__()
+        self.uCut = 0
+        self.lCut = 0
+        self.angleInc = 0
+        self.radStep = 0
+        self.screenDim = 0
+        self.dpi = 0
+        self.sig = sig
+        self.filenames = []
+
+    def update_values(self, uCut, lCut, angleInc, radStep, screenDim, dpi, filenames):
+        self.lCut = lCut
+        self.uCut = uCut
+        self.angleInc = angleInc
+        self.radStep = radStep
+        self.screenDim = screenDim
+        self.dpi = dpi
+        self.filenames = filenames
+
+    def run(self):
+        processedImagesList = []
+        count = 0
+        for filename in self.filenames:
+            # Retrieve Figures from data analysis code
+            try:
+                k, th, R2, angDist, angDist4, cartDist, cartDist4, logScl, logScl4, orgImg, orgImg4, figWidth, figHeigth = computerVision_BP.process_image(filename,
+                                                                                               self.uCut,
+                                                                                               self.lCut, self.angleInc,
+                                                                                               self.radStep, self.screenDim,
+                                                                                               self.dpi)
+
+                # Starting from Python3, there is a distinctin between bytes and str. Thus, I can't use
+                # methods of str on bytes. However I need to do that in order to properly encode the image
+                # into b64. The main thing is that bytes-way produces some improper characters that mess up
+                # the decoding process. Hence, decode(utf-8) translates bytes into str.
+
+                angDistEncoded = base64.encodebytes(open('angDist.png', 'rb').read()).decode('utf-8')
+                cartDistEncoded = base64.encodebytes(open('cartDist.png', 'rb').read()).decode('utf-8')
+                logSclEncoded = base64.encodebytes(open('logScl.png', 'rb').read()).decode('utf-8')
+                orgImgEncoded = base64.encodebytes(open('orgImg.png', 'rb').read()).decode('utf-8')
+
+                angDistEncoded4 = base64.encodebytes(open('angDist4.png', 'rb').read()).decode('utf-8')
+                cartDistEncoded4 = base64.encodebytes(open('cartDist4.png', 'rb').read()).decode('utf-8')
+                logSclEncoded4 = base64.encodebytes(open('logScl4.png', 'rb').read()).decode('utf-8')
+                orgImgEncoded4 = base64.encodebytes(open('orgImg4.png', 'rb').read()).decode('utf-8')
+
+                # Creates an object
+                processedImage = img_model.ImgModel(
+                    filename=filename,
+                    k=k,
+                    th=th,
+                    R2=R2,
+                    orgImg=orgImg,
+                    orgImgEncoded=orgImgEncoded,
+                    orgImg4=orgImg4,
+                    orgImgEncoded4 = orgImgEncoded4,
+                    logScl=logScl,
+                    logSclEncoded=logSclEncoded,
+                    logScl4 = logScl4,
+                    logSclEncoded4 = logSclEncoded4,
+                    angDist=angDist,
+                    angDistEncoded=angDistEncoded,
+                    angDist4 = angDist4,
+                    angDistEncoded4 = angDistEncoded4,
+                    cartDist=cartDist,
+                    cartDistEncoded=cartDistEncoded,
+                    cartDist4 = cartDist4,
+                    cartDistEncoded4 = cartDistEncoded4,
+                    timeStamp= datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
+
+                processedImagesList.append(processedImage)
+                count += 1
+
+            except TypeError:
+                self.errorBrowser.show()
+            except ValueError:
+                self.errorBrowser.show()
+            except OSError:
+                self.errorBrowser.show()
+
+            self.sig.emit(count, processedImage, processedImagesList)
+            print("Here")
+            time.sleep(0.5)
 
 def main():
     """
