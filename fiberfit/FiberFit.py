@@ -294,7 +294,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
         elif (self.reportOption == 2):
             for model in self.wholeList:
                 self.document.setHtml(self.createHtml(model, forPrinting=True))
-                name = self.savedfiles.parents[0].__str__() + self.savedfiles.__str__() + '.pdf'
+                name = self.savedfiles.__str__() + '.pdf'
                 print(name)
                 self.printer.setOutputFileName(
                     self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name.replace("Image Name", "") + model.filename.stem + '.pdf')
