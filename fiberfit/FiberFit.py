@@ -263,11 +263,13 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
         dialog = QFileDialog()
         if (self.reportOption == 0):
             self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export", self.currentModel.filename.stem)[0])
+            #  print(self.savedfiles)
             self.close()
         elif (self.reportOption == 1 or self.reportOption == 2):
             self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export",
                                                                   "Image Name")[
                                                0])
+            # print(self.savedfiles)
             self.close()
         #  print("Did I make it here?")
         self.printerSetup()
@@ -292,6 +294,8 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
         elif (self.reportOption == 2):
             for model in self.wholeList:
                 self.document.setHtml(self.createHtml(model, forPrinting=True))
+                name = self.savedfiles.parents[0].__str__() + self.savedfiles.__str__() + '.pdf'
+                print(name)
                 self.printer.setOutputFileName(
                     self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name.replace("Image Name", "") + model.filename.stem + '.pdf')
                 self.document.print(self.printer)
@@ -299,8 +303,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
                 self.merger.append(input)
                 os.remove(self.savedfiles.parents[0].__str__() + '/' + self.savedfiles.name.replace("Image Name", "") + model.filename.stem + '.pdf')
 
-            out = open(self.savedfiles.parents[0].__str__() + '/' + "report.pdf", "wb")
-
+            out = open(name, "wb")
             self.merger.write(out)
     """
     Sets up default instructions for printer.
@@ -413,6 +416,9 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
         self.radStep = radStep
         self.angleInc = angleInc
 
+"""
+Main window of the application
+"""
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     show_report = pyqtSignal(int)
     make_report = pyqtSignal(img_model.ImgModel)
