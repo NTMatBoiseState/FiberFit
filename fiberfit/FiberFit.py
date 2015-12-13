@@ -159,7 +159,6 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
     def resetOptions(self):
         self.checkBox_report.setChecked(False)
         self.checkBox_summary.setChecked(False)
-
         self.radio_none.setChecked(True)
         self.radio_none.setEnabled(False)
         self.radio_append.setChecked(False)
@@ -170,9 +169,11 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
         self.radio_append.setEnabled(False)
 
     def exportHandler(self):
-        if self.isReport:
+        if self.isSummary and self.isReport is False:
             self.saveas()
-        if (self.reportOption == 0 or self.reportOption == 2 or self.reportOption == 1):
+        elif (self.reportOption == 0 or self.reportOption == 2 or self.reportOption == 1) and self.isSummary is False:
+            self.saveas()
+        elif self.isSummary and self.isReport:
             self.saveas()
 
     def toggleHandler(self):
@@ -191,6 +192,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
             self.radio_single.setEnabled(True)
             self.radio_multiple.setEnabled(True)
             self.radio_append.setEnabled(True)
+            self.isReport = True
         elif self.checkBox_report.isChecked() is False:
             self.radio_none.setChecked(True)
             self.radio_none.setEnabled(False)
@@ -200,8 +202,11 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
             self.radio_single.setEnabled(False)
             self.radio_multiple.setEnabled(False)
             self.radio_append.setEnabled(False)
+            self.isReport = False
         if self.checkBox_summary.isChecked():
             self.isSummary = True
+        elif self.checkBox_summary.isChecked() is False:
+            self.isSummary = False
 
     """Makes excel spreadsheet.
     """
@@ -273,8 +278,10 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
             self.close()
         #  print("Did I make it here?")
         self.printerSetup()
-        self.do_print.emit()
-        self.do_excel.emit()
+        if (self.isReport == True):
+            self.do_print.emit()
+        if self.isSummary == True:
+            self.do_excel.emit()
 
 
     """
@@ -292,6 +299,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
             self.document.print(self.printer)
 
         elif (self.reportOption == 2):
+            self.merger = merger()
             for model in self.wholeList:
                 self.document.setHtml(self.createHtml(model, forPrinting=True))
                 name = self.savedfiles.__str__() + '.pdf'
@@ -305,6 +313,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
 
             out = open(name, "wb")
             self.merger.write(out)
+            self.merger.close()
     """
     Sets up default instructions for printer.
     """
