@@ -17,9 +17,11 @@ class Ui_Dialog(object):
         self.gridLayout.setObjectName("gridLayout")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.checkBox_report = QtWidgets.QCheckBox(Dialog)
-        self.checkBox_report.setObjectName("checkBox_report")
-        self.horizontalLayout.addWidget(self.checkBox_report)
+        
+        self.label = QtWidgets.QLabel(Dialog)
+        self.label.setObjectName("label")
+        self.horizontalLayout.addWidget(self.label)
+        
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.checkBox_summary = QtWidgets.QCheckBox(Dialog)
@@ -36,20 +38,20 @@ class Ui_Dialog(object):
 
         self.radio_none = QtWidgets.QRadioButton(Dialog)
         self.verticalLayout.addWidget(self.radio_none)
-        self.radio_none.setChecked(True)
-        self.radio_none.setEnabled(False)
+        #  self.radio_none.setChecked(True)
+        self.radio_none.setEnabled(True)
 
         self.radio_single = QtWidgets.QRadioButton(Dialog)
         self.radio_single.setObjectName("radio_single")
-        self.radio_single.setEnabled(False)
+        self.radio_single.setEnabled(True)
         self.verticalLayout.addWidget(self.radio_single)
         self.radio_multiple = QtWidgets.QRadioButton(Dialog)
-        self.radio_multiple.setEnabled(False)
+        self.radio_multiple.setEnabled(True)
         self.radio_multiple.setObjectName("radio_multiple")
         self.verticalLayout.addWidget(self.radio_multiple)
         self.radio_append = QtWidgets.QRadioButton(Dialog)
-        self.radio_append.setEnabled(False)
-
+        self.radio_append.setEnabled(True)
+        self.radio_append.setChecked(True)
         self.radio_append.setObjectName("radio_append")
         self.verticalLayout.addWidget(self.radio_append)
 
@@ -67,7 +69,7 @@ class Ui_Dialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
-        self.checkBox_report.setText(_translate("Dialog", "Report (PDF)"))
+        self.label.setText(_translate("Dialog", "Report (PDF)"))
         self.checkBox_summary.setText(_translate("Dialog", "Summary Table (.xlsx)"))
         self.radio_single.setText(_translate("Dialog", "Single"))
         self.radio_multiple.setText(_translate("Dialog", "Multiple"))

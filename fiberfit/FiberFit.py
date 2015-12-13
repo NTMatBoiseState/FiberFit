@@ -133,9 +133,9 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
         1 -> multiple
         2 -> append
         """
-        self.isReport = False
+        self.isReport = True
         self.isSummary = False
-        self.reportOption = None
+        self.reportOption = 2
         self.merger = merger()
         # printer
         self.printer = QPrinter(QPrinter.PrinterResolution)
@@ -143,7 +143,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
         self.do_excel.connect(self.exportExcel)
         self.webView = QtWebKitWidgets.QWebView()
 
-        self.checkBox_report.stateChanged.connect(self.topLogicHandler)
+        # self.checkBox_report.stateChanged.connect(self.topLogicHandler)
         self.checkBox_summary.stateChanged.connect(self.topLogicHandler)
 
         self.radio_multiple.toggled.connect(self.toggleHandler)
@@ -157,16 +157,16 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
         self.rejected.connect(self.resetOptions)
 
     def resetOptions(self):
-        self.checkBox_report.setChecked(False)
+        #self.checkBox_report.setChecked(False)
         self.checkBox_summary.setChecked(False)
-        self.radio_none.setChecked(True)
-        self.radio_none.setEnabled(False)
-        self.radio_append.setChecked(False)
+        #self.radio_none.setChecked(True)
+        #self.radio_none.setEnabled(False)
+        self.radio_append.setChecked(True)
         self.radio_multiple.setChecked(False)
         self.radio_single.setChecked(False)
-        self.radio_single.setEnabled(False)
-        self.radio_multiple.setEnabled(False)
-        self.radio_append.setEnabled(False)
+        #self.radio_single.setEnabled(False)
+        #self.radio_multiple.setEnabled(False)
+        #self.radio_append.setEnabled(False)
 
     def exportHandler(self):
         if self.isSummary and self.isReport is False:
@@ -179,30 +179,20 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
     def toggleHandler(self):
         if self.radio_single.isChecked():
             self.reportOption = 0
+            self.isReport = True
         elif self.radio_multiple.isChecked():
             self.reportOption = 1
+            self.isReport = True
         elif self.radio_append.isChecked():
             self.reportOption = 2
+            self.isReport = True
         elif self.radio_none.isChecked():
             self.reportOption = -1
+            self.isReport = False
+
        #  print("Status: " + str(self.reportOption))
 
     def topLogicHandler(self):
-        if self.checkBox_report.isChecked():
-            self.radio_single.setEnabled(True)
-            self.radio_multiple.setEnabled(True)
-            self.radio_append.setEnabled(True)
-            self.isReport = True
-        elif self.checkBox_report.isChecked() is False:
-            self.radio_none.setChecked(True)
-            self.radio_none.setEnabled(False)
-            self.radio_append.setChecked(False)
-            self.radio_multiple.setChecked(False)
-            self.radio_single.setChecked(False)
-            self.radio_single.setEnabled(False)
-            self.radio_multiple.setEnabled(False)
-            self.radio_append.setEnabled(False)
-            self.isReport = False
         if self.checkBox_summary.isChecked():
             self.isSummary = True
         elif self.checkBox_summary.isChecked() is False:
@@ -270,16 +260,28 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
             self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export", self.currentModel.filename.stem)[0])
             #  print(self.savedfiles)
             self.close()
-        elif (self.reportOption == 1 or self.reportOption == 2):
+
+        elif (self.reportOption == 1):
             self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export",
                                                                   "Image Name")[
                                                0])
+            self.close()
+        elif (self.reportOption == 2):
+            self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export",
+                                                                  "Report")[
+                                               0])
             # print(self.savedfiles)
             self.close()
-        #  print("Did I make it here?")
+        if (self.isSummary and not self.isReport):
+            self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export",
+                                                                  "SummaryTable")[
+                                               0])
+        # print("Did I make it here?")
+        # print(str(self.isReport))
         self.printerSetup()
         if (self.isReport == True):
             self.do_print.emit()
+        #    print("EMITTED!")
         if self.isSummary == True:
             self.do_excel.emit()
 
