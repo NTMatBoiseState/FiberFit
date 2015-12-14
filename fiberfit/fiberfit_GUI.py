@@ -176,7 +176,7 @@ class Ui_MainWindow(object):
         self.loadButton.setIcon(icon2)
         self.loadButton.setIconSize(QtCore.QSize(50, 50))
         self.loadButton.setObjectName("loadButton")
-        self.topGrid.addWidget(self.loadButton, 0, 1, 1, 1)
+        self.topGrid.addWidget(self.loadButton, 0, 0, 1, 1)
         self.startButton = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -193,7 +193,7 @@ class Ui_MainWindow(object):
         self.startButton.setIcon(icon3)
         self.startButton.setIconSize(QtCore.QSize(40, 40))
         self.startButton.setObjectName("startButton")
-        self.topGrid.addWidget(self.startButton, 0, 0, 1, 1)
+        self.topGrid.addWidget(self.startButton, 0, 1, 1, 1)
 
         self.settingsButton = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
