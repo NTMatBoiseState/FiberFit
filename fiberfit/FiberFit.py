@@ -345,6 +345,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
                 <p> Image Name: {name} </p> <p> μ: {th} </p>
                 <p>k: {k} </p>
                 <p>R^2: {R2} </p>
+                <p>Sigma: {sig}</p>
                 <br>
                 <table>
                     <tr>
@@ -356,12 +357,13 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
                         <td> <img src = "data:image/png;base64,{encodedCartDist}" width = "250", height = "250" /></td>
                     </tr>
                 </table>
-                <p><br><br><br><br><br>
+                <p><br><br>
                     {date}
                 </p>
             </body>
         </html>
         """.format(name=model.filename.stem, th=round(model.th, 2), k=round(model.k, 2), R2=round(model.R2, 2),
+                   sig = round(model.sig[0], 2),
                    encodedOrgImg=model.orgImgEncoded4.translate('bn\''),
                    encodedLogScl=model.logSclEncoded4.translate('bn\''),
                    encodedAngDist=model.angDistEncoded4.translate('bn\''),
@@ -379,6 +381,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
                     <p> Image Name: {name} </p> <p> μ: {th} </p>
                     <p>k: {k} </p>
                     <p>R^2: {R2} </p>
+                    <p>Sig: {sig}</p>
                     <br>
                     <table>
                         <tr>
@@ -396,6 +399,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
                 </body>
             </html>
             """.format(name=model.filename.stem, th=round(model.th, 2), k=round(model.k, 2), R2=round(model.R2, 2),
+                   sig = round(model.sig[0], 2),
                    encodedOrgImg=model.orgImgEncoded.translate('bn\''),
                    encodedLogScl=model.logSclEncoded.translate('bn\''),
                    encodedAngDist=model.angDistEncoded.translate('bn\''),
