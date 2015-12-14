@@ -210,6 +210,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
                  self.lCut,
                  self.radStep,
                  self.angleInc,
+                 self.wholeList[0].sig,
                  self.wholeList[0].th,
                  self.wholeList[0].k,
                  self.wholeList[0].R2,
@@ -229,6 +230,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
                                              self.lCut,
                                              self.radStep,
                                              self.angleInc,
+                                             round(temp[j].sig[0], 2),
                                              round(temp[j].th, 2),
                                              round(temp[j].k, 2),
                                              round(temp[j].R2, 2),
@@ -241,13 +243,14 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
                                   self.lCut,
                                   self.radStep,
                                   self.angleInc,
+                                  round(temp[k].sig[0], 2),
                                   round(temp[k].th, 2),
                                   round(temp[k].k, 2),
                                   round(temp[k].R2, 2),
                                   temp[k].timeStamp])
         with open(str(self.savedfiles.parents[0]) + '/summary.csv', 'w') as csvfile:
             a = csv.writer(csvfile)
-            a.writerow(['Name', 'LowerCut', 'UpperCut', 'RadialStep', 'AngleIncrement', 'Mu', 'K', 'R^2', 'Time'])
+            a.writerow(['Name', 'LowerCut', 'UpperCut', 'RadialStep', 'AngleIncrement', 'Sig', 'Mu', 'K', 'R^2', 'Time'])
             a.writerows(self.dataList)
         fft_mainWindow.dataList = self.dataList
 
@@ -722,6 +725,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     @pyqtSlot(int)
     def setupLabels(self, num):
+        self.sigLabel.setText("σ = " + str(round(self.imgList.__getitem__(num).sig[0], 2)))
         self.kLabel.setText("k = " + str(round(self.imgList.__getitem__(num).k, 2)))
         self.muLabel.setText("μ = " + str(round(self.imgList.__getitem__(num).th, 2)))
         self.RLabel.setText(('R' + u"\u00B2") + " = " + str(round(self.imgList.__getitem__(num).R2, 2)))
@@ -769,6 +773,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         for image in self.imgList:
             if image.filename.stem == filename:
                 self.processImagesFromComboBox(image)
+                self.sigLabel.setText("σ = " + str(round(image.sig[0], 2)))
                 self.kLabel.setText("k = " + str(round(image.k, 2)))
                 self.muLabel.setText("μ = " + str(round(image.th, 2)))
                 self.RLabel.setText(('R' + u"\u00B2") + " = " + str(round(image.R2, 2)))
@@ -803,7 +808,7 @@ class myThread(threading.Thread):
         for filename in self.filenames:
             # Retrieve Figures from data analysis code
             try:
-                k, th, R2, angDist, angDist4, cartDist, cartDist4, logScl, logScl4, orgImg, orgImg4, figWidth, figHeigth = computerVision_BP.process_image(filename,
+                sig, k, th, R2, angDist, angDist4, cartDist, cartDist4, logScl, logScl4, orgImg, orgImg4, figWidth, figHeigth = computerVision_BP.process_image(filename,
                                                                                                self.uCut,
                                                                                                self.lCut, self.angleInc,
                                                                                                self.radStep, self.screenDim,
@@ -827,6 +832,7 @@ class myThread(threading.Thread):
                 # Creates an object
                 processedImage = img_model.ImgModel(
                     filename=filename,
+                    sig = sig,
                     k=k,
                     th=th,
                     R2=R2,

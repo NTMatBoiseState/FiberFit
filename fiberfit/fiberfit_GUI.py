@@ -32,8 +32,37 @@ class Ui_MainWindow(object):
         self.selectImgBox.setMaximumSize(QtCore.QSize(170, 16777215))
         self.selectImgBox.setObjectName("selectImgBox")
         self.midGrid.addWidget(self.selectImgBox, 0, 0, 1, 1)
+          #  Progress bar
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.MinimumExpanding)
+        self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
+        self.progressBar.setSizePolicy(sizePolicy)
+
+        self.progressBar.setMinimumSize(QtCore.QSize(40, 20))
+        self.progressBar.setMaximumSize(QtCore.QSize(40, 20))
+
+        self.progressBar.setProperty("value", 0)
+        self.progressBar.setObjectName("progressBar")
+        self.midGrid.addWidget(self.progressBar, 0, 2, 1, 1)
+
+
+        spacerItem0 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        self.midGrid.addItem(spacerItem0, 0, 3, 1, 1)
+
+        self.sigLabel = QtWidgets.QLabel(self.centralwidget)
+        font = QtGui.QFont()
+        font.setFamily("Times New Roman")
+        font.setPointSize(20)
+        self.sigLabel.setFont(font)
+        self.sigLabel.setObjectName("sigLabel")
+        self.midGrid.addWidget(self.sigLabel, 0, 4, 1, 1)
+
+
+
+
+
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.midGrid.addItem(spacerItem, 0, 1, 1, 1)
+        self.midGrid.addItem(spacerItem, 0, 5, 1, 1)
 
         # R^2 label
         self.RLabel = QtWidgets.QLabel(self.centralwidget)
@@ -44,10 +73,10 @@ class Ui_MainWindow(object):
         self.RLabel.setFont(font)
         self.RLabel.setTextFormat(QtCore.Qt.AutoText)
         self.RLabel.setObjectName("RLabel")
-        self.midGrid.addWidget(self.RLabel, 0, 2, 1, 1)
+        self.midGrid.addWidget(self.RLabel, 0, 6, 1, 1)
 
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.midGrid.addItem(spacerItem1, 0, 3, 1, 1)
+        self.midGrid.addItem(spacerItem1, 0, 7, 1, 1)
 
         # mu label
         self.muLabel = QtWidgets.QLabel(self.centralwidget)
@@ -56,10 +85,10 @@ class Ui_MainWindow(object):
         font.setPointSize(20)
         self.muLabel.setFont(font)
         self.muLabel.setObjectName("muLabel")
-        self.midGrid.addWidget(self.muLabel, 0, 4, 1, 1)
+        self.midGrid.addWidget(self.muLabel, 0, 8, 1, 1)
 
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.midGrid.addItem(spacerItem2, 0, 5, 1, 1)
+        self.midGrid.addItem(spacerItem2, 0, 9, 1, 1)
 
         #k label
         self.kLabel = QtWidgets.QLabel(self.centralwidget)
@@ -70,16 +99,12 @@ class Ui_MainWindow(object):
         self.kLabel.setFont(font)
         self.kLabel.setTextFormat(QtCore.Qt.AutoText)
         self.kLabel.setObjectName("kLabel")
-        self.midGrid.addWidget(self.kLabel, 0, 6, 1, 1)
+        self.midGrid.addWidget(self.kLabel, 0, 10, 1, 1)
         
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.midGrid.addItem(spacerItem3, 0, 7, 1, 1)
+        self.midGrid.addItem(spacerItem3, 0, 11, 1, 1)
         
-        #  Progress bar
-        self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
-        self.progressBar.setProperty("value", 0)
-        self.progressBar.setObjectName("progressBar")
-        self.midGrid.addWidget(self.progressBar, 0, 8, 1, 1)
+
         
         # spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
   #       self.midGrid.addItem(spacerItem4, 0, 9, 1, 1)
@@ -241,6 +266,7 @@ class Ui_MainWindow(object):
         self.nextButton.setText(_translate("MainWindow", "Next →"))
         self.prevButton.setText(_translate("MainWindow", "← Previous"))
         self.menuFiberfit.setTitle(_translate("MainWindow", "Fiberfit"))
+        self.sigLabel.setText(_translate("MainWindow", "σ = "))
 
     def find_data_file(self, filename):
         if getattr(sys, 'frozen', False):
