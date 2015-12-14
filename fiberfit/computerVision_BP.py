@@ -158,10 +158,8 @@ def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth):
     normPower1 = np.roll(normPower, -shift)
     theta1RadFinal1 = np.roll(theta1RadFinal, -shift)
 
-    s = (num_angles - shift) + 1
-
     if (shift > 0):
-        s = num_angles - shift + 1
+        s = num_angles - shift
         for k in range(s, num_angles):
             theta1RadFinal1[k] = pi + theta1RadFinal1[k]
     elif (shift < 0):
