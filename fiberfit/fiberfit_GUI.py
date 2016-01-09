@@ -57,13 +57,8 @@ class Ui_MainWindow(object):
         self.sigLabel.setObjectName("sigLabel")
         self.midGrid.addWidget(self.sigLabel, 0, 4, 1, 1)
 
-
-
-
-
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.midGrid.addItem(spacerItem, 0, 5, 1, 1)
-
         # R^2 label
         self.RLabel = QtWidgets.QLabel(self.centralwidget)
         font = QtGui.QFont()

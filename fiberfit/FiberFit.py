@@ -869,7 +869,7 @@ class myThread(threading.Thread):
                 self.errorBrowser.show()
 
             self.sig.emit(count, processedImage, processedImagesList)
-            time.sleep(0.5)
+            # time.sleep(0.5)
 
 def main():
     """
