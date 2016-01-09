@@ -115,7 +115,7 @@ def process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth):
     plt.polar(th * pi / 180, r_line, color='r', linewidth=3)
     plt.yticks(np.arange(.5, max(MirnormPower), .5))
     angDist.savefig('angDist')
-    plt.title('Fiber Distribution', y = 1.08)
+    plt.title('Fiber Orientation', y = 1.08)
     plt.close()
 
     # Plot Lower Left - Polar plot of angular distribution with size of 4.5

@@ -180,23 +180,32 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
         if self.radio_single.isChecked():
             self.reportOption = 0
             self.isReport = True
+            self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(True)
         elif self.radio_multiple.isChecked():
             self.reportOption = 1
             self.isReport = True
+            self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(True)
         elif self.radio_append.isChecked():
             self.reportOption = 2
             self.isReport = True
+            self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(True)
         elif self.radio_none.isChecked():
             self.reportOption = -1
             self.isReport = False
+            if (not self.checkBox_summary.isChecked()):
+                self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
 
        #  print("Status: " + str(self.reportOption))
 
     def topLogicHandler(self):
         if self.checkBox_summary.isChecked():
             self.isSummary = True
+            self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(True)
         elif self.checkBox_summary.isChecked() is False:
             self.isSummary = False
+            if (self.radio_none.isChecked()):
+                self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
+
 
     """Makes excel spreadsheet.
     """
