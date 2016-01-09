@@ -115,6 +115,7 @@ def process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth):
     plt.polar(th * pi / 180, r_line, color='r', linewidth=3)
     plt.yticks(np.arange(.5, max(MirnormPower), .5))
     angDist.savefig('angDist')
+    plt.title('Fiber Distribution', y = 1.08)
     plt.close()
 
     # Plot Lower Left - Polar plot of angular distribution with size of 4.5
@@ -174,7 +175,7 @@ def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth):
     plt.xlim([t - 100, t + 100])
     p_act = fitted_func(theta1RadFinal1, kappa)
     h3, = plt.plot(theta1RadFinal1 * 180 / pi, p_act, linewidth=3)
-    plt.title('Angular Distribution')
+    plt.title('Fiber Distribution')
     plt.xlabel('Angle (°)')
     plt.ylabel('Normalized Intensity')
     plt.yticks(np.arange(0, max(normPower1) + .3, .5))

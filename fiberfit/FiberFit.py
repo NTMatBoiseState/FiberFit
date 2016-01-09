@@ -442,7 +442,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     make_report = pyqtSignal(img_model.ImgModel)
     do_run = pyqtSignal()
     do_update = pyqtSignal(int)
-    time_to_hide = pyqtSignal()
     sendProcessedImagesList = pyqtSignal(list, list, OrderedSet, float, float, float, float)
     #  For pbar
     sendProcessedImageCounter = pyqtSignal(int, img_model.ImgModel, list)
@@ -512,7 +511,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.sendProcessedImageCounter.connect(self.processImages)
 
         #hiding
-        #self.time_to_hide.connect(self.do_hide)
 
         """This is to gain better insight into Slots and Signals.
         def userLog(int):
@@ -795,14 +793,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 # sets current index to the index of the found image.
                 self.currentIndex = self.imgList.index(image)
 
-
-class pBar(threading.Thread):
-    def __init__(self, bar):
-        super(pBar, self).__init__()
-        self.bar = bar
-    def run(self):
-        self.bar.hide();
-        print("HIDDEN!")
 
 class myThread(threading.Thread):
 
