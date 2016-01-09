@@ -55,10 +55,10 @@ class Ui_MainWindow(object):
         font.setPointSize(20)
         self.sigLabel.setFont(font)
         self.sigLabel.setObjectName("sigLabel")
-        self.midGrid.addWidget(self.sigLabel, 0, 4, 1, 1)
+        self.midGrid.addWidget(self.sigLabel, 0, 10, 1, 1)
 
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.midGrid.addItem(spacerItem, 0, 5, 1, 1)
+        self.midGrid.addItem(spacerItem, 0, 11, 1, 1)
         # R^2 label
         self.RLabel = QtWidgets.QLabel(self.centralwidget)
         font = QtGui.QFont()
@@ -68,10 +68,10 @@ class Ui_MainWindow(object):
         self.RLabel.setFont(font)
         self.RLabel.setTextFormat(QtCore.Qt.AutoText)
         self.RLabel.setObjectName("RLabel")
-        self.midGrid.addWidget(self.RLabel, 0, 6, 1, 1)
+        self.midGrid.addWidget(self.RLabel, 0, 4, 1, 1)
 
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.midGrid.addItem(spacerItem1, 0, 7, 1, 1)
+        self.midGrid.addItem(spacerItem1, 0, 5, 1, 1)
 
         # mu label
         self.muLabel = QtWidgets.QLabel(self.centralwidget)
@@ -80,10 +80,10 @@ class Ui_MainWindow(object):
         font.setPointSize(20)
         self.muLabel.setFont(font)
         self.muLabel.setObjectName("muLabel")
-        self.midGrid.addWidget(self.muLabel, 0, 8, 1, 1)
+        self.midGrid.addWidget(self.muLabel, 0, 6, 1, 1)
 
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.midGrid.addItem(spacerItem2, 0, 9, 1, 1)
+        self.midGrid.addItem(spacerItem2, 0, 7, 1, 1)
 
         #k label
         self.kLabel = QtWidgets.QLabel(self.centralwidget)
@@ -94,10 +94,10 @@ class Ui_MainWindow(object):
         self.kLabel.setFont(font)
         self.kLabel.setTextFormat(QtCore.Qt.AutoText)
         self.kLabel.setObjectName("kLabel")
-        self.midGrid.addWidget(self.kLabel, 0, 10, 1, 1)
+        self.midGrid.addWidget(self.kLabel, 0, 8, 1, 1)
         
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.midGrid.addItem(spacerItem3, 0, 11, 1, 1)
+        self.midGrid.addItem(spacerItem3, 0, 9, 1, 1)
         
 
         
