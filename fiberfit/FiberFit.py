@@ -519,8 +519,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.progressBar.setMinimum(0)
         self.sendProcessedImageCounter.connect(self.processImages)
 
-        #hiding
-
         """This is to gain better insight into Slots and Signals.
         def userLog(int):
             print("User requested reported for image: {}".format(int))
