@@ -44,7 +44,7 @@ class Ui_MainWindow(object):
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName("progressBar")
         self.midGrid.addWidget(self.progressBar, 0, 2, 1, 1)
-
+        self.progressBar.hide()
 
         spacerItem0 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.midGrid.addItem(spacerItem0, 0, 3, 1, 1)

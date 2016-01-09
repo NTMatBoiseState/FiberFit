@@ -442,6 +442,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     make_report = pyqtSignal(img_model.ImgModel)
     do_run = pyqtSignal()
     do_update = pyqtSignal(int)
+    time_to_hide = pyqtSignal()
     sendProcessedImagesList = pyqtSignal(list, list, OrderedSet, float, float, float, float)
     #  For pbar
     sendProcessedImageCounter = pyqtSignal(int, img_model.ImgModel, list)
@@ -510,12 +511,18 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.progressBar.setMinimum(0)
         self.sendProcessedImageCounter.connect(self.processImages)
 
+        #hiding
+        #self.time_to_hide.connect(self.do_hide)
+
         """This is to gain better insight into Slots and Signals.
         def userLog(int):
             print("User requested reported for image: {}".format(int))
         self.show_report.connect(userLog)
         """
 
+    def do_hide(self):
+        pBarT = pBar(self.progressBar)
+        pBarT.start()
     """
     Updates the settings
     """
@@ -528,10 +535,12 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
 
     def runner(self):
-        pThread = myThread(self.sendProcessedImageCounter)
+        pThread = myThread(self.sendProcessedImageCounter, self.progressBar)
         pThread.update_values(self.uCut, self.lCut, self.angleInc, self.radStep, self.screenDim, self.dpi, self.filenames)
+        self.progressBar.show()
         self.progressBar.setValue(0)
         pThread.start()
+
 
     """
     Function that signals to show the report.
@@ -586,6 +595,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.progressBar.setMaximum(len(filenames[0]))
         self.do_run.emit()
 
+
     """
     Processes selected images. Displays it onto a canvas.
     Technical: Creates img_model objects that encapsulate all of the useful data.
@@ -615,6 +625,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         #  Setting progress bar business
         self.progressBar.setValue(count)
         self.progressBar.valueChanged.emit(self.progressBar.value())
+
 
     """
     Makes so that screen can be resized after the images loaded.
@@ -784,9 +795,19 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
                 # sets current index to the index of the found image.
                 self.currentIndex = self.imgList.index(image)
 
+
+class pBar(threading.Thread):
+    def __init__(self, bar):
+        super(pBar, self).__init__()
+        self.bar = bar
+    def run(self):
+        self.bar.hide();
+        print("HIDDEN!")
+
 class myThread(threading.Thread):
 
-    def __init__(self, sig):
+
+    def __init__(self, sig, bar):
         super(myThread, self).__init__()
         self.uCut = 0
         self.lCut = 0
@@ -796,6 +817,7 @@ class myThread(threading.Thread):
         self.dpi = 0
         self.sig = sig
         self.filenames = []
+        self.bar = bar
 
     def update_values(self, uCut, lCut, angleInc, radStep, screenDim, dpi, filenames):
         self.lCut = lCut
@@ -869,8 +891,8 @@ class myThread(threading.Thread):
                 self.errorBrowser.show()
 
             self.sig.emit(count, processedImage, processedImagesList)
-            # time.sleep(0.5)
-
+        time.sleep(0.5)
+        self.bar.hide()
 def main():
     """
     Enters an event-loop.
