@@ -537,7 +537,22 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
 
     def runner(self):
-        pThread = myThread(self.sendProcessedImageCounter, self.progressBar)
+        for filename in self.filenames:
+                  # Retrieve Figures from data analysis code
+            try:
+                sig, k, th, R2, angDist, angDist4, cartDist, cartDist4, logScl, logScl4, orgImg, orgImg4, figWidth, figHeigth = computerVision_BP.process_image(filename,
+                                                                                                     self.uCut,
+                                                                                                     self.lCut, self.angleInc,
+                                                                                                     self.radStep, self.screenDim,
+                                                                                                     self.dpi)
+            except TypeError:
+                self.errorBrowser.show()
+            except ValueError:
+                self.errorBrowser.show()
+            except OSError:
+                self.errorBrowser.show()
+
+        pThread = myThread(self.sendProcessedImageCounter, self.progressBar, self.errorBrowser)
         pThread.update_values(self.uCut, self.lCut, self.angleInc, self.radStep, self.screenDim, self.dpi, self.filenames)
         self.progressBar.show()
         self.progressBar.setValue(0)
@@ -801,7 +816,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 class myThread(threading.Thread):
 
 
-    def __init__(self, sig, bar):
+    def __init__(self, sig, bar, errorBrowser):
         super(myThread, self).__init__()
         self.uCut = 0
         self.lCut = 0
@@ -812,6 +827,7 @@ class myThread(threading.Thread):
         self.sig = sig
         self.filenames = []
         self.bar = bar
+        self.errorBrowser = errorBrowser
 
     def update_values(self, uCut, lCut, angleInc, radStep, screenDim, dpi, filenames):
         self.lCut = lCut
@@ -825,6 +841,7 @@ class myThread(threading.Thread):
     def run(self):
         processedImagesList = []
         count = 0
+        toContinue = True
         for filename in self.filenames:
             # Retrieve Figures from data analysis code
             try:
@@ -879,14 +896,19 @@ class myThread(threading.Thread):
 
             except TypeError:
                 self.errorBrowser.show()
+                toContinue = False
             except ValueError:
                 self.errorBrowser.show()
+                toContinue = False
             except OSError:
                 self.errorBrowser.show()
+                toContinue = False
 
-            self.sig.emit(count, processedImage, processedImagesList)
-        time.sleep(0.5)
-        self.bar.hide()
+            if (toContinue):
+                self.sig.emit(count, processedImage, processedImagesList)
+        if toContinue:
+            time.sleep(0.5)
+            self.bar.hide()
 def main():
     """
     Enters an event-loop.

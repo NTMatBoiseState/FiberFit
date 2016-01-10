@@ -70,7 +70,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        Dialog.setWindowTitle(_translate("Dialog", "Export Results"))
         self.label.setText(_translate("Dialog", "Report (PDF)"))
         self.checkBox_summary.setText(_translate("Dialog", "Summary Table (.xlsx)"))
         self.radio_single.setText(_translate("Dialog", "Single"))

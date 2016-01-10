@@ -35,6 +35,8 @@ class Ui_MainWindow(object):
           #  Progress bar
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
                                            QtWidgets.QSizePolicy.MinimumExpanding)
+
+        
         self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
         self.progressBar.setSizePolicy(sizePolicy)
 
