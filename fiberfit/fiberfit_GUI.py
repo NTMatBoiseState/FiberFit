@@ -36,12 +36,17 @@ class Ui_MainWindow(object):
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
                                            QtWidgets.QSizePolicy.MinimumExpanding)
 
-        
+
         self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
+
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.progressBar.sizePolicy().hasHeightForWidth())
+
         self.progressBar.setSizePolicy(sizePolicy)
 
-        self.progressBar.setMinimumSize(QtCore.QSize(40, 20))
-        self.progressBar.setMaximumSize(QtCore.QSize(40, 20))
+        self.progressBar.setMinimumSize(QtCore.QSize(50, 0))
+        self.progressBar.setMaximumSize(QtCore.QSize(50, 20))
 
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName("progressBar")
