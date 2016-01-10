@@ -113,7 +113,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
 
         super(ReportDialog, self).__init__(parent)
         self.dataList = []
-        self.setupUi(self)
+        self.setupUi(self, screenDim)
         self.screenDim = screenDim
         self.document = QTextDocument()
         #list that keeps track of only selected images
@@ -525,9 +525,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.show_report.connect(userLog)
         """
 
-    def do_hide(self):
-        pBarT = pBar(self.progressBar)
-        pBarT.start()
     """
     Updates the settings
     """
