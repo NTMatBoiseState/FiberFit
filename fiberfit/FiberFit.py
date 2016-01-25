@@ -554,8 +554,9 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
         pThread = myThread(self.sendProcessedImageCounter, self.progressBar, self.errorBrowser)
         pThread.update_values(self.uCut, self.lCut, self.angleInc, self.radStep, self.screenDim, self.dpi, self.filenames)
-        self.progressBar.show()
-        self.progressBar.setValue(0)
+        if (self.filenames.__len__() != 0):
+            self.progressBar.show()
+            self.progressBar.setValue(0)
         pThread.start()
 
 
