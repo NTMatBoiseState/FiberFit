@@ -586,6 +586,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.kLabel.setText("k = ")
             self.muLabel.setText("μ =  ")
             self.RLabel.setText(('R' + u"\u00B2") + " = ")
+            self.sigLabel.setText("σ = ")
             # clears canvas
             self.cleanCanvas()
             self.filenames.clear()
@@ -718,6 +719,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.kLabel.setText("k = ")
         self.muLabel.setText("μ =  ")
         self.RLabel.setText(('R' + u"\u00B2") + " = ")
+        self.sigLabel.setText("σ = ")
         # clears canvas
         self.cleanCanvas()
         # clears combo-box
@@ -729,7 +731,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         # resets current index
         self.currentIndex = 0
         self.do_run.emit()
-        self.do_update.emit(self.currentIndex)
+        #self.do_update.emit(self.currentIndex)
         self.removeTemp()
 
     """
@@ -842,9 +844,11 @@ class myThread(threading.Thread):
         processedImagesList = []
         count = 0
         toContinue = True
+        start = time.time()
+        print(start)
         for filename in self.filenames:
 
-            start = time.time()
+            #start = time.time()
 
             # Retrieve Figures from data analysis code
             try:
@@ -913,9 +917,13 @@ class myThread(threading.Thread):
             if (toContinue):
                 self.sig.emit(count, processedImage, processedImagesList)
         end = time.time()
+
+        print(end)
+        print(start)
         print(end - start)
         if toContinue:
             time.sleep(0.5)
+            self.bar.setWindowOpacity(0)
             self.bar.hide()
 def main():
     """
