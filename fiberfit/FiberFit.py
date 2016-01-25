@@ -589,6 +589,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.sigLabel.setText("σ = ")
             # clears canvas
             self.cleanCanvas()
+            self.progressBar.hide()
             self.filenames.clear()
             # clears combo-box
             self.selectImgBox.clear()
