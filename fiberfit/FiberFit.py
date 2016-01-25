@@ -612,6 +612,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         for name in filenames[0]:
             self.filenames.append(pathlib.Path(name))
         self.progressBar.setMaximum(len(filenames[0]))
+        self.currentIndex = 0
         self.do_run.emit()
 
 
@@ -636,6 +637,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             self.cleanCanvas()
         # fills canvas
         self.fillCanvas(self.imgList.__getitem__(self.currentIndex))
+        print("DID I EXCUTE RIGHT AMOUNT OF TIMES?")
         self.applyResizing()
         # started
         self.isStarted = True
@@ -644,6 +646,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         #  Setting progress bar business
         self.progressBar.setValue(count)
         self.progressBar.valueChanged.emit(self.progressBar.value())
+        self.currentIndex += 1
 
 
     """
