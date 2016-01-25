@@ -181,21 +181,31 @@ def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth):
     plt.ylabel('Normalized Intensity')
     plt.yticks(np.arange(0, max(normPower1) + .3, .5))
     plt.ylim([0, max(normPower1) + .3])
+    plt.subplots_adjust(left=0.6)
+    plt.tight_layout()
     cartDist.savefig('cartDist')
     plt.close()
 
+
+
     # Plot Lower Right - Distribution on a cartesian plane with appropriate shift with fig size 4
+
     cartDist4 = plt.figure(figsize=(figSize, figSize))  # Creates a figure containing cartesian distribution.
+    ax = cartDist4.add_subplot(111)
     h2 = plt.bar((theta1RadFinal1 * 180 / pi), normPower1, edgecolor = 'k', color = 'k')
     plt.xticks(np.arange(-180, 180, 45))
     plt.xlim([t - 100, t + 100])
     p_act = fitted_func(theta1RadFinal1, kappa)
     h3, = plt.plot(theta1RadFinal1 * 180 / pi, p_act, linewidth=3)
+    ax.text(.5,.9,'centered title',
+        horizontalalignment='center',
+        transform=ax.transAxes)
     plt.title('Fiber Distribution')
     plt.xlabel('Angle (°)')
     plt.ylabel('Normalized Intensity')
     plt.yticks(np.arange(0, max(normPower1) + .3, .5))
     plt.ylim([0, max(normPower1) + .3])
+    plt.tight_layout()
     cartDist4.savefig('cartDist4')
     plt.close()
 

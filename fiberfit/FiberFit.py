@@ -373,10 +373,10 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
         </html>
         """.format(name=model.filename.stem, th=round(model.th, 2), k=round(model.k, 2), R2=round(model.R2, 2),
                    sig = round(model.sig[0], 2),
-                   encodedOrgImg=model.orgImgEncoded4.translate('bn\''),
-                   encodedLogScl=model.logSclEncoded4.translate('bn\''),
-                   encodedAngDist=model.angDistEncoded4.translate('bn\''),
-                   encodedCartDist=model.cartDistEncoded4.translate('bn\''),
+                   encodedOrgImg=model.orgImgEncoded.translate('bn\''),
+                   encodedLogScl=model.logSclEncoded.translate('bn\''),
+                   encodedAngDist=model.angDistEncoded.translate('bn\''),
+                   encodedCartDist=model.cartDistEncoded.translate('bn\''),
                    date=model.timeStamp)
             return html
         else:
