@@ -537,20 +537,20 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
 
     def runner(self):
-        for filename in self.filenames:
-                  # Retrieve Figures from data analysis code
-            try:
-                sig, k, th, R2, angDist, angDist4, cartDist, cartDist4, logScl, logScl4, orgImg, orgImg4, figWidth, figHeigth = computerVision_BP.process_image(filename,
-                                                                                                     self.uCut,
-                                                                                                     self.lCut, self.angleInc,
-                                                                                                     self.radStep, self.screenDim,
-                                                                                                     self.dpi)
-            except TypeError:
-                self.errorBrowser.show()
-            except ValueError:
-                self.errorBrowser.show()
-            except OSError:
-                self.errorBrowser.show()
+        # for filename in self.filenames:
+        #           # Retrieve Figures from data analysis code
+        #     try:
+        #         sig, k, th, R2, angDist, cartDist, logScl, orgImg,  figWidth, figHeigth = computerVision_BP.process_image(filename,
+        #                                                                                              self.uCut,
+        #                                                                                              self.lCut, self.angleInc,
+        #                                                                                              self.radStep, self.screenDim,
+        #                                                                                              self.dpi)
+        #     except TypeError:
+        #         self.errorBrowser.show()
+        #     except ValueError:
+        #         self.errorBrowser.show()
+        #     except OSError:
+        #         self.errorBrowser.show()
 
         pThread = myThread(self.sendProcessedImageCounter, self.progressBar, self.errorBrowser)
         pThread.update_values(self.uCut, self.lCut, self.angleInc, self.radStep, self.screenDim, self.dpi, self.filenames)
@@ -843,9 +843,12 @@ class myThread(threading.Thread):
         count = 0
         toContinue = True
         for filename in self.filenames:
+
+            start = time.time()
+
             # Retrieve Figures from data analysis code
             try:
-                sig, k, th, R2, angDist, angDist4, cartDist, cartDist4, logScl, logScl4, orgImg, orgImg4, figWidth, figHeigth = computerVision_BP.process_image(filename,
+                sig, k, th, R2, angDist,  cartDist, logScl,  orgImg,  figWidth, figHeigth = computerVision_BP.process_image(filename,
                                                                                                self.uCut,
                                                                                                self.lCut, self.angleInc,
                                                                                                self.radStep, self.screenDim,
@@ -860,11 +863,11 @@ class myThread(threading.Thread):
                 cartDistEncoded = base64.encodebytes(open('cartDist.png', 'rb').read()).decode('utf-8')
                 logSclEncoded = base64.encodebytes(open('logScl.png', 'rb').read()).decode('utf-8')
                 orgImgEncoded = base64.encodebytes(open('orgImg.png', 'rb').read()).decode('utf-8')
-
-                angDistEncoded4 = base64.encodebytes(open('angDist4.png', 'rb').read()).decode('utf-8')
-                cartDistEncoded4 = base64.encodebytes(open('cartDist4.png', 'rb').read()).decode('utf-8')
-                logSclEncoded4 = base64.encodebytes(open('logScl4.png', 'rb').read()).decode('utf-8')
-                orgImgEncoded4 = base64.encodebytes(open('orgImg4.png', 'rb').read()).decode('utf-8')
+                #
+                # angDistEncoded4 = base64.encodebytes(open('angDist4.png', 'rb').read()).decode('utf-8')
+                # cartDistEncoded4 = base64.encodebytes(open('cartDist4.png', 'rb').read()).decode('utf-8')
+                # logSclEncoded4 = base64.encodebytes(open('logScl4.png', 'rb').read()).decode('utf-8')
+                # orgImgEncoded4 = base64.encodebytes(open('orgImg4.png', 'rb').read()).decode('utf-8')
 
                 # Creates an object
                 processedImage = img_model.ImgModel(
@@ -875,37 +878,42 @@ class myThread(threading.Thread):
                     R2=R2,
                     orgImg=orgImg,
                     orgImgEncoded=orgImgEncoded,
-                    orgImg4=orgImg4,
-                    orgImgEncoded4 = orgImgEncoded4,
+                   # orgImg4=orgImg4,
+                   # orgImgEncoded4 = orgImgEncoded4,
                     logScl=logScl,
                     logSclEncoded=logSclEncoded,
-                    logScl4 = logScl4,
-                    logSclEncoded4 = logSclEncoded4,
+                   # logScl4 = logScl4,
+                   # logSclEncoded4 = logSclEncoded4,
                     angDist=angDist,
                     angDistEncoded=angDistEncoded,
-                    angDist4 = angDist4,
-                    angDistEncoded4 = angDistEncoded4,
+                   # angDist4 = angDist4,
+                   # angDistEncoded4 = angDistEncoded4,
                     cartDist=cartDist,
                     cartDistEncoded=cartDistEncoded,
-                    cartDist4 = cartDist4,
-                    cartDistEncoded4 = cartDistEncoded4,
+                   # cartDist4 = cartDist4,
+                   # cartDistEncoded4 = cartDistEncoded4,
                     timeStamp= datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
 
                 processedImagesList.append(processedImage)
                 count += 1
 
             except TypeError:
+                print("typeerror")
                 self.errorBrowser.show()
                 toContinue = False
             except ValueError:
+                print("ValueError")
                 self.errorBrowser.show()
                 toContinue = False
             except OSError:
+                print("OSErrro")
                 self.errorBrowser.show()
                 toContinue = False
 
             if (toContinue):
                 self.sig.emit(count, processedImage, processedImagesList)
+        end = time.time()
+        print(end - start)
         if toContinue:
             time.sleep(0.5)
             self.bar.hide()
