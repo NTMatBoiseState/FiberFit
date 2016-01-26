@@ -566,7 +566,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def do_show_report(self):
         if (self.isStarted):
-            self.make_report.emit(self.imgList[self.currentIndex])
+            self.make_report.emit(self.imgList[self.currentIndex-1])
 
     """
     Calculates dimensions of the screen.
