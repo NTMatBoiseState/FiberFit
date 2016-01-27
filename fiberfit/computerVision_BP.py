@@ -172,7 +172,7 @@ def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth):
     cartDist = plt.figure(figsize=(figWidth, figHeigth))  # Creates a figure containing cartesian distribution.
 
     h2 = plt.bar((theta1RadFinal1 * 180 / pi), normPower1, edgecolor = 'k', color = 'k')
-    plt.xticks(np.arange(-180, 180, 45))
+    plt.xticks(np.arange(-360, 360, 45))
     plt.xlim([t - 100, t + 100])
     p_act = fitted_func(theta1RadFinal1, kappa)
     h3, = plt.plot(theta1RadFinal1 * 180 / pi, p_act, linewidth=3)
