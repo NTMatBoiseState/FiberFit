@@ -181,7 +181,7 @@ def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth):
     plt.ylabel('Normalized Intensity')
     plt.yticks(np.arange(0, max(normPower1) + .3, .5))
     plt.ylim([0, max(normPower1) + .3])
-    plt.subplots_adjust(left=0.6)
+    #plt.subplots_adjust(left=0.6)
     # plt.tight_layout()
     cartDist.savefig('cartDist')
     plt.close()

@@ -33,6 +33,7 @@ from PyQt5.QtWidgets import QDesktopWidget
 from fiberfit import export_window
 
 
+
 class ErrorDialog(QDialog, ErrorDialog.Ui_ErrorDialog):
     def __init__(self, parent=None, screenDim = None):
         super(ErrorDialog, self).__init__(parent)
@@ -454,6 +455,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     sendProcessedImagesList = pyqtSignal(list, list, OrderedSet, float, float, float, float)
     #  For pbar
     sendProcessedImageCounter = pyqtSignal(int, img_model.ImgModel, list)
+    #  Error sig
+    sendErrorSig = pyqtSignal(list, int)
 
     """
     Initializes all instance variables a.k.a attributes of a class.
@@ -519,6 +522,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.progressBar.setMinimum(0)
         self.sendProcessedImageCounter.connect(self.processImages)
 
+        self.sendErrorSig.connect(self.handleError)
+
         """This is to gain better insight into Slots and Signals.
         def userLog(int):
             print("User requested reported for image: {}".format(int))
@@ -534,6 +539,17 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.lCut = lCut
         self.angleInc = angleInc
         self.radStep = radStep
+
+    @pyqtSlot(list, int)
+    def handleError(self, files, index):
+        self.errorBrowser.label.setText("""ERROR:
+
+Sorry, unfortunately, this file - {name} can not be processed.
+
+The specifications are as follow: an image must have 8-bit image depth, or, equivalently, gray color space and must be in .jpeg and .png formats.
+""".format(name=files[index]))
+        self.errorBrowser.show()
+        self.progressBar.hide()
 
 
     def runner(self):
@@ -552,12 +568,12 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         #     except OSError:
         #         self.errorBrowser.show()
 
-        pThread = myThread(self.sendProcessedImageCounter, self.progressBar, self.errorBrowser)
+        pThread = myThread(self.sendProcessedImageCounter, self.sendErrorSig, self.progressBar, self.errorBrowser)
         pThread.update_values(self.uCut, self.lCut, self.angleInc, self.radStep, self.screenDim, self.dpi, self.filenames)
         if (self.filenames.__len__() != 0):
             self.progressBar.show()
             self.progressBar.setValue(0)
-        pThread.start()
+        a = pThread.start()
 
 
     """
@@ -823,7 +839,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 class myThread(threading.Thread):
 
 
-    def __init__(self, sig, bar, errorBrowser):
+    def __init__(self, sig, errorSig, bar, errorBrowser):
         super(myThread, self).__init__()
         self.uCut = 0
         self.lCut = 0
@@ -835,6 +851,8 @@ class myThread(threading.Thread):
         self.filenames = []
         self.bar = bar
         self.errorBrowser = errorBrowser
+        self.errorSig = errorSig
+
 
     def update_values(self, uCut, lCut, angleInc, radStep, screenDim, dpi, filenames):
         self.lCut = lCut
@@ -908,19 +926,22 @@ class myThread(threading.Thread):
 
             except TypeError:
                 print("typeerror")
-                self.errorBrowser.show()
+
                 toContinue = False
             except ValueError:
                 print("ValueError")
-                self.errorBrowser.show()
+
                 toContinue = False
             except OSError:
-                print("OSErrro")
-                self.errorBrowser.show()
-                toContinue = False
+                print("OSErrro in thread")
 
-            if (toContinue):
-                self.sig.emit(count, processedImage, processedImagesList)
+                toContinue = False
+            finally:
+                if (toContinue):
+                    self.sig.emit(count, processedImage, processedImagesList)
+                else:
+                    print("I am in else")
+                    self.errorSig.emit(self.filenames, count)
         end = time.time()
 
         print(end)
