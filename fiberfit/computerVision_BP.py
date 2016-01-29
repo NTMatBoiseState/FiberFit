@@ -182,7 +182,7 @@ def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth):
     plt.yticks(np.arange(0, max(normPower1) + .3, .5))
     plt.ylim([0, max(normPower1) + .3])
     plt.subplots_adjust(left=0.6)
-    plt.tight_layout()
+    # plt.tight_layout()
     cartDist.savefig('cartDist')
     plt.close()
 
@@ -221,8 +221,11 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
     #  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #  SIMPLE FFT
     #  %%%%%%%%%%%%%%%%%%%%%E%%%%%%%%%%%%%%%%
-    figWidth = 0.1 * screenDim.width()/dpi
-    figHeigth = 0.1 * screenDim.width()/dpi
+    #figWidth = 0.1 * screenDim.width()/dpi
+    #figHeigth = 0.1 * screenDim.width()/dpi
+
+    figWidth = 4.5
+    figHeigth = 4.5
 
     im = scipy.ndimage.imread(fname=str(name))
     

@@ -655,7 +655,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """
 
     def applyResizing(self):
-        self.resize(0.3 * self.screenDim.width(), 0.7 *self.screenDim.height())
+        self.resize(0.7 * self.screenDim.height(), 0.8 *self.screenDim.height())
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
                                            QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
