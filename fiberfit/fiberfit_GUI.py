@@ -50,7 +50,7 @@ class Ui_MainWindow(object):
 
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName("progressBar")
-        self.midGrid.addWidget(self.progressBar, 0, 2, 1, 1)
+
         self.progressBar.hide()
 
         spacerItem0 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
@@ -127,8 +127,64 @@ class Ui_MainWindow(object):
         self.topGrid = QtWidgets.QGridLayout()
         self.topGrid.setObjectName("topGrid")
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.topGrid.addItem(spacerItem3, 0, 5, 1, 1)
+        self.topGrid.addItem(spacerItem3, 0, 6, 1, 1)
+        #self.topGrid.addWidget(self.progressBar, 0, 5, 1, 1)
+
+
+        # self.verticalLayout = QtWidgets.QHBoxLayout()
+        # self.verticalLayout.setObjectName("verticalLayout")
+        # self.verticalLayout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
+        # # self.progressBar = QtWidgets.QProgressBar(self.widget)
+        # # self.progressBa.setProperty("value", 24)
+        # # self.progressBar_2.setObjectName("progressBar_2")
+        # self.verticalLayout.addWidget(self.progressBar)
+        # spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        # self.verticalLayout.addItem(spacerItem3)
+        # self.topGrid.addLayout(self.verticalLayout, 0, 5, 1, 1)
+
+        # self.widget = QtWidgets.QWidget(self.centralwidget)
+        # self.widget.setObjectName("widget")
+        # self.topGrid = QtWidgets.QGridLayout(self.widget)
+        # self.topGrid.setContentsMargins(0, 0, 0, 0)
+        # self.topGrid.setObjectName("topGrid")
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
+
+
+
+        self.barWidget = QtWidgets.QWidget()
+        self.barWidget.setObjectName("barWidget")
+        self.barWidget.setSizePolicy(sizePolicy)
+        self.gridPLayout = QtWidgets.QGridLayout(self.barWidget)
+        self.gridPLayout.setContentsMargins(0, 0, 0, 0)
+        self.gridPLayout.setObjectName("gridLayout")
+        # self.progressBar = QtWidgets.QProgressBar(self.barWidget)
+        # sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        # sizePolicy.setHorizontalStretch(0)
+        # sizePolicy.setVerticalStretch(0)
+        # sizePolicy.setHeightForWidth(self.progressBar.sizePolicy().hasHeightForWidth())
+        # self.progressBar.setSizePolicy(sizePolicy)
+        # self.progressBar.setProperty("value", 24)
+        # self.progressBar.setObjectName("progressBar")
+        self.gridPLayout.addWidget(self.progressBar, 0, 0, 1, 1)
+        self.topGrid.addWidget(self.barWidget, 0, 5, 1, 1)
+
+
         self.clearButton = QtWidgets.QPushButton(self.centralwidget)
+
+
+
+
+
+
+
+
+
+
+
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -176,7 +232,7 @@ class Ui_MainWindow(object):
         self.loadButton.setText("")
 
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(self.find_data_file('open.png')), QtGui.QIcon.Normal, QtGui.QIcon.Off)    
+        icon2.addPixmap(QtGui.QPixmap(self.find_data_file('open.png')), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         #icon2.addPixmap(QtGui.QPixmap("images/open.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.loadButton.setIcon(icon2)
         self.loadButton.setIconSize(QtCore.QSize(50, 50))
