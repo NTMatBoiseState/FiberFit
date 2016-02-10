@@ -454,9 +454,9 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     do_update = pyqtSignal(int)
     sendProcessedImagesList = pyqtSignal(list, list, OrderedSet, float, float, float, float)
     #  For pbar
-    sendProcessedImageCounter = pyqtSignal(int, img_model.ImgModel, list)
+    sendProcessedImageCounter = pyqtSignal(int, img_model.ImgModel, list, int)
     #  Error sig
-    sendErrorSig = pyqtSignal(list, int)
+    sendErrorSig = pyqtSignal(list, int, int)
 
     """
     Initializes all instance variables a.k.a attributes of a class.
@@ -540,14 +540,21 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.angleInc = angleInc
         self.radStep = radStep
 
-    @pyqtSlot(list, int)
-    def handleError(self, files, index):
-        self.errorBrowser.label.setText("""ERROR:
+    @pyqtSlot(list, int, int)
+    def handleError(self, files, index, identifier):
+        if identifier == 0:
+            self.errorBrowser.label.setText("""ERROR:
 
 Sorry, unfortunately, this file - {name} can not be processed.
 
 The specifications are as follow: an image must have 8-bit image depth, or, equivalently, gray color space and must be in .jpeg and .png formats.
 """.format(name=files[index]))
+        else:
+            self.errorBrowser.label.setText("""ERROR:
+Sorry, unfortunately, the setting you selected are out of input domain for FiberFit.
+Please go back to "Settings" and change some values.
+            """
+                                            )
         self.errorBrowser.show()
         self.progressBar.hide()
 
@@ -582,7 +589,7 @@ The specifications are as follow: an image must have 8-bit image depth, or, equi
 
     def do_show_report(self):
         if (self.isStarted):
-            self.make_report.emit(self.imgList[self.currentIndex-1])
+            self.make_report.emit(self.imgList[self.currentIndex%self.filenames.__len__()])
 
     """
     Calculates dimensions of the screen.
@@ -638,8 +645,8 @@ The specifications are as follow: an image must have 8-bit image depth, or, equi
     Technical: Creates img_model objects that encapsulate all of the useful data.
     """
 
-    @pyqtSlot(int, img_model.ImgModel, list)
-    def processImages(self, count, processedImage, processedImagesList):
+    @pyqtSlot(int, img_model.ImgModel, list, int)
+    def processImages(self, count, processedImage, processedImagesList, isLast):
         # Ordered Set
         if processedImage in self.imgList:
             self.imgList.remove(processedImage)
@@ -664,6 +671,9 @@ The specifications are as follow: an image must have 8-bit image depth, or, equi
         self.progressBar.setValue(count)
         self.progressBar.valueChanged.emit(self.progressBar.value())
         self.currentIndex += 1
+        if (isLast == 1):
+            self.currentIndex -= 1
+            print("I AM LAST!")
 
 
     """
@@ -671,7 +681,7 @@ The specifications are as follow: an image must have 8-bit image depth, or, equi
     """
 
     def applyResizing(self):
-        self.resize(0.7 * self.screenDim.height(), 0.8 *self.screenDim.height())
+        self.resize(0.7 * self.screenDim.height(), 0.9 *self.screenDim.height())
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
                                            QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -868,7 +878,9 @@ class myThread(threading.Thread):
         count = 0
         toContinue = True
         start = time.time()
+        isZeroException = 0
         print(start)
+        isLast = 0
         for filename in self.filenames:
 
             #start = time.time()
@@ -923,6 +935,9 @@ class myThread(threading.Thread):
 
                 processedImagesList.append(processedImage)
                 count += 1
+                if (count == len(self.filenames)):
+                    isLast = 1
+
 
             except TypeError:
                 print("typeerror")
@@ -934,14 +949,22 @@ class myThread(threading.Thread):
                 toContinue = False
             except OSError:
                 print("OSErrro in thread")
-
                 toContinue = False
+
+            except ZeroDivisionError:
+                toContinue = False
+                isZeroException = 1
+
+            except:
+                toContinue = False
+                isZeroException = 1
+
             finally:
                 if (toContinue):
-                    self.sig.emit(count, processedImage, processedImagesList)
+                    self.sig.emit(count, processedImage, processedImagesList, isLast)
                 else:
                     print("I am in else")
-                    self.errorSig.emit(self.filenames, count)
+                    self.errorSig.emit(self.filenames, count, isZeroException)
         end = time.time()
 
         print(end)
