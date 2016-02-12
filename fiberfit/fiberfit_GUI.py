@@ -32,6 +32,12 @@ class Ui_MainWindow(object):
         self.selectImgBox.setMaximumSize(QtCore.QSize(170, 16777215))
         self.selectImgBox.setObjectName("selectImgBox")
         self.midGrid.addWidget(self.selectImgBox, 0, 0, 1, 1)
+
+        #font = QtGui.QFont()
+        #font.setFamily("Times New Roman")
+        #font.setPointSize(20)
+
+
           #  Progress bar
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
                                            QtWidgets.QSizePolicy.MinimumExpanding)

@@ -36,6 +36,9 @@ from fiberfit import helpers  # XXX: Changed here
 
 figSize = 4.5
 
+csfont = {'fontname':'Times New Roman'}
+
+
 def process_histogram(PabsFlip, N1, uCut, lCut, angleInc, radStep):
     # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #           Create orientation Histogram         %
@@ -115,7 +118,7 @@ def process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth):
     plt.polar(th * pi / 180, r_line, color='r', linewidth=3)
     plt.yticks(np.arange(.5, max(MirnormPower), .5))
     angDist.savefig('angDist')
-    plt.title('Fiber Orientation', y = 1.08)
+    plt.title('Fiber Orientation', y = 1.08, **csfont)
     plt.close()
 
     # # Plot Lower Left - Polar plot of angular distribution with size of 4.5
@@ -176,13 +179,13 @@ def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth):
     plt.xlim([t - 100, t + 100])
     p_act = fitted_func(theta1RadFinal1, kappa)
     h3, = plt.plot(theta1RadFinal1 * 180 / pi, p_act, linewidth=3)
-    plt.title('Fiber Distribution')
-    plt.xlabel('Angle (°)')
-    plt.ylabel('Normalized Intensity')
+    plt.title('Fiber Distribution', **csfont)
+    plt.xlabel('Angle (°)', **csfont)
+    plt.ylabel('Normalized Intensity', **csfont)
     plt.yticks(np.arange(0, max(normPower1) + .3, .5))
     plt.ylim([0, max(normPower1) + .3])
     #plt.subplots_adjust(left=0.6)
-    # plt.tight_layout()
+    # plt.tight_layout(ds)
     cartDist.savefig('cartDist')
     plt.close()
 
