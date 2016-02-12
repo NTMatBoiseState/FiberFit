@@ -729,7 +729,10 @@ Please go back to "Settings" and change some values.
         self.figureLayout.addWidget(self.logSclCanvas, 0, 1)
         self.figureLayout.addWidget(self.angDistCanvas, 1, 0)
         self.figureLayout.addWidget(self.cartDistCanvas, 1, 1)
-
+        self.figureLayout.itemAtPosition(0, 1).widget().setToolTip("FFT Power Spectrum")
+        self.figureLayout.itemAtPosition(0, 0).widget().setToolTip("Analyzed Image")
+        self.figureLayout.itemAtPosition(1, 0).widget().setToolTip("Fiber Orientation")
+        self.figureLayout.itemAtPosition(1, 1).widget().setToolTip("FFT Power Spectrum")
     """
     Helps to process an image from using a Combo Box.
     @param: img to be processed

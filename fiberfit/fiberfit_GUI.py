@@ -33,15 +33,9 @@ class Ui_MainWindow(object):
         self.selectImgBox.setObjectName("selectImgBox")
         self.midGrid.addWidget(self.selectImgBox, 0, 0, 1, 1)
 
-        #font = QtGui.QFont()
-        #font.setFamily("Times New Roman")
-        #font.setPointSize(20)
-
-
           #  Progress bar
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
                                            QtWidgets.QSizePolicy.MinimumExpanding)
-
 
         self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
 
@@ -129,6 +123,7 @@ class Ui_MainWindow(object):
         self.figureWidget.setObjectName("figureWidget")
         self.figureLayout = QtWidgets.QGridLayout(self.figureWidget)
         self.figureLayout.setObjectName("figureLayout")
+
         self.gridLayout.addWidget(self.figureWidget, 2, 0, 1, 1)
         self.topGrid = QtWidgets.QGridLayout()
         self.topGrid.setObjectName("topGrid")
