@@ -53,7 +53,7 @@ class Ui_MainWindow(object):
 
         self.progressBar.hide()
 
-        spacerItem0 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        spacerItem0 = QtWidgets.QSpacerItem(180, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.midGrid.addItem(spacerItem0, 0, 3, 1, 1)
 
         self.sigLabel = QtWidgets.QLabel(self.centralwidget)
@@ -62,6 +62,8 @@ class Ui_MainWindow(object):
         font.setPointSize(20)
         self.sigLabel.setFont(font)
         self.sigLabel.setObjectName("sigLabel")
+
+        self.sigLabel.setToolTip("Standard Deviation Of Fiber Distribution")
         self.midGrid.addWidget(self.sigLabel, 0, 10, 1, 1)
 
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -75,6 +77,13 @@ class Ui_MainWindow(object):
         self.RLabel.setFont(font)
         self.RLabel.setTextFormat(QtCore.Qt.AutoText)
         self.RLabel.setObjectName("RLabel")
+
+
+        #tip = QtWidgets.QToolTip()
+        #tip.showText("Goodness of Fit")
+        #tip.setFont("Times New Roman")
+        #self.RLabel.setToolTip(tip)
+        self.RLabel.setToolTip("Goodness of Fit")
         self.midGrid.addWidget(self.RLabel, 0, 4, 1, 1)
 
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -87,6 +96,7 @@ class Ui_MainWindow(object):
         font.setPointSize(20)
         self.muLabel.setFont(font)
         self.muLabel.setObjectName("muLabel")
+        self.muLabel.setToolTip("Mean Orientation")
         self.midGrid.addWidget(self.muLabel, 0, 6, 1, 1)
 
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -101,6 +111,7 @@ class Ui_MainWindow(object):
         self.kLabel.setFont(font)
         self.kLabel.setTextFormat(QtCore.Qt.AutoText)
         self.kLabel.setObjectName("kLabel")
+        self.kLabel.setToolTip("Fiber Dispersion")
         self.midGrid.addWidget(self.kLabel, 0, 8, 1, 1)
         
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -328,8 +339,8 @@ class Ui_MainWindow(object):
         self.RLabel.setText(_translate("MainWindow", ('R'+u"\u00B2"+" = ")))
         self.kLabel.setText(_translate("MainWindow", "k = "))
         self.muLabel.setText(_translate("MainWindow", "μ ="))
-        self.nextButton.setText(_translate("MainWindow", "Next →"))
-        self.prevButton.setText(_translate("MainWindow", "← Previous"))
+        self.nextButton.setText(_translate("MainWindow", "→"))
+        self.prevButton.setText(_translate("MainWindow", "←"))
         self.menuFiberfit.setTitle(_translate("MainWindow", "Fiberfit"))
         self.sigLabel.setText(_translate("MainWindow", "σ = "))
 

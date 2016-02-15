@@ -36,7 +36,8 @@ from fiberfit import helpers  # XXX: Changed here
 
 figSize = 4.5
 
-csfont = {'fontname':'Times New Roman'}
+csfont = {'fontname':'Times New Roman',
+           'size':'16'}
 
 
 def process_histogram(PabsFlip, N1, uCut, lCut, angleInc, radStep):
@@ -189,8 +190,6 @@ def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth):
     cartDist.savefig('cartDist')
     plt.close()
 
-
-
     # # Plot Lower Right - Distribution on a cartesian plane with appropriate shift with fig size 4
     #
     # cartDist4 = plt.figure(figsize=(figSize, figSize))  # Creates a figure containing cartesian distribution.
@@ -226,7 +225,6 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
     #  %%%%%%%%%%%%%%%%%%%%%E%%%%%%%%%%%%%%%%
     #figWidth = 0.1 * screenDim.width()/dpi
     #figHeigth = 0.1 * screenDim.width()/dpi
-
     figWidth = 4.5
     figHeigth = 4.5
 
