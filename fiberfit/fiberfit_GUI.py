@@ -53,7 +53,7 @@ class Ui_MainWindow(object):
 
         self.progressBar.hide()
 
-        spacerItem0 = QtWidgets.QSpacerItem(180, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        spacerItem0 = QtWidgets.QSpacerItem(0.08*int(width.__str__()), 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.midGrid.addItem(spacerItem0, 0, 3, 1, 1)
 
         self.sigLabel = QtWidgets.QLabel(self.centralwidget)
