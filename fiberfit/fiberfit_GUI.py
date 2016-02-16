@@ -86,7 +86,9 @@ class Ui_MainWindow(object):
         self.RLabel.setToolTip("Goodness of Fit")
         self.midGrid.addWidget(self.RLabel, 0, 4, 1, 1)
 
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        wWidth = 0.04*int(width.__str__())
+
+        spacerItem1 = QtWidgets.QSpacerItem(0.04*int(width.__str__()), 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.midGrid.addItem(spacerItem1, 0, 5, 1, 1)
 
         # mu label
@@ -99,7 +101,7 @@ class Ui_MainWindow(object):
         self.muLabel.setToolTip("Mean Orientation")
         self.midGrid.addWidget(self.muLabel, 0, 6, 1, 1)
 
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(wWidth, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.midGrid.addItem(spacerItem2, 0, 7, 1, 1)
 
         #k label
@@ -114,7 +116,7 @@ class Ui_MainWindow(object):
         self.kLabel.setToolTip("Fiber Dispersion")
         self.midGrid.addWidget(self.kLabel, 0, 8, 1, 1)
         
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem3 = QtWidgets.QSpacerItem(wWidth, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.midGrid.addItem(spacerItem3, 0, 9, 1, 1)
         
 
@@ -138,7 +140,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.figureWidget, 2, 0, 1, 1)
         self.topGrid = QtWidgets.QGridLayout()
         self.topGrid.setObjectName("topGrid")
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem3 = QtWidgets.QSpacerItem(wWidth, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.topGrid.addItem(spacerItem3, 0, 6, 1, 1)
         #self.topGrid.addWidget(self.progressBar, 0, 5, 1, 1)
 
