@@ -454,7 +454,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     do_update = pyqtSignal(int)
     sendProcessedImagesList = pyqtSignal(list, list, OrderedSet, float, float, float, float)
     #  For pbar
-    sendProcessedImageCounter = pyqtSignal(int, img_model.ImgModel, list, int)
+    sendProcessedImageCounter = pyqtSignal(int, img_model.ImgModel, list, int, int)
     #  Error sig
     sendErrorSig = pyqtSignal(list, int, int)
 
@@ -479,6 +479,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.logSclCanvas = None
         self.angDistCanvas = None
         self.cartDistCanvas = None
+        self.runtime = 0
         # Pops up a dialog with
         self.dialogTextBrowser = ReportDialog(self, self.screenDim)
         self.settingsBrowser = SettingsWindow(self, self.screenDim)
@@ -624,6 +625,7 @@ Please go back to "Settings" and change some values.
             self.imgList.clear()
             # resets current index
             self.currentIndex = 0
+            print("TOTAL it took {n} seconds.".format(n = self.runtime))
 
     """
     Allows user to select image to use.
@@ -645,8 +647,8 @@ Please go back to "Settings" and change some values.
     Technical: Creates img_model objects that encapsulate all of the useful data.
     """
 
-    @pyqtSlot(int, img_model.ImgModel, list, int)
-    def processImages(self, count, processedImage, processedImagesList, isLast):
+    @pyqtSlot(int, img_model.ImgModel, list, int, int)
+    def processImages(self, count, processedImage, processedImagesList, isLast, time):
         # Ordered Set
         if processedImage in self.imgList:
             self.imgList.remove(processedImage)
@@ -671,6 +673,7 @@ Please go back to "Settings" and change some values.
         self.progressBar.setValue(count)
         self.progressBar.valueChanged.emit(self.progressBar.value())
         self.currentIndex += 1
+        self.runtime += time
         if (isLast == 1):
             self.currentIndex -= 1
             print("I AM LAST!")
@@ -890,7 +893,7 @@ class myThread(threading.Thread):
 
             # Retrieve Figures from data analysis code
             try:
-                sig, k, th, R2, angDist,  cartDist, logScl,  orgImg,  figWidth, figHeigth = computerVision_BP.process_image(filename,
+                sig, k, th, R2, angDist,  cartDist, logScl,  orgImg,  figWidth, figHeigth, runtime = computerVision_BP.process_image(filename,
                                                                                                self.uCut,
                                                                                                self.lCut, self.angleInc,
                                                                                                self.radStep, self.screenDim,
@@ -964,7 +967,7 @@ class myThread(threading.Thread):
 
             finally:
                 if (toContinue):
-                    self.sig.emit(count, processedImage, processedImagesList, isLast)
+                    self.sig.emit(count, processedImage, processedImagesList, isLast, runtime)
                 else:
                     print("I am in else")
                     self.errorSig.emit(self.filenames, count, isZeroException)

@@ -17,6 +17,7 @@ import scipy.optimize
 import scipy.integrate
 import scipy.stats
 import math
+import time
 import glob
 from pylab import *
 from pandas import DataFrame
@@ -225,6 +226,10 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
     #  %%%%%%%%%%%%%%%%%%%%%E%%%%%%%%%%%%%%%%
     #figWidth = 0.1 * screenDim.width()/dpi
     #figHeigth = 0.1 * screenDim.width()/dpi
+
+    start_time = time.time()
+
+
     figWidth = 4.5
     figHeigth = 4.5
 
@@ -317,8 +322,9 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
     f = -0.07693
     x = k[0]
     sig = math.exp(b*x) + c*math.exp(d*x) + e*exp(f*x)
-
-    return sig, k[0], t_final, rValue**2, angDist, cartDist, logScale, originalImage, figWidth, figHeigth
+    end_time = time.time()
+    print("It took {n} seconds".format(n=end_time-start_time))
+    return sig, k[0], t_final, rValue**2, angDist, cartDist, logScale, originalImage, figWidth, figHeigth, (end_time-start_time)
 
 
 def pol2cart(theta, radius):
