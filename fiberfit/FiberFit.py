@@ -31,8 +31,9 @@ from PyQt5.QtGui import QTextDocument
 import os
 from PyQt5.QtWidgets import QDesktopWidget
 from fiberfit import export_window
-
-
+import random
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
 
 class ErrorDialog(QDialog, ErrorDialog.Ui_ErrorDialog):
     def __init__(self, parent=None, screenDim = None):
@@ -474,6 +475,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.isStarted = False
         self.filenames = []
         self.firstOne = True
+        # dir
+        self.directory = ""
         # Canvases to display the figures.
         self.imgCanvas = None
         self.logSclCanvas = None
@@ -576,7 +579,16 @@ Please go back to "Settings" and change some values.
         #     except OSError:
         #         self.errorBrowser.show()
 
-        pThread = myThread(self.sendProcessedImageCounter, self.sendErrorSig, self.progressBar, self.errorBrowser)
+        directory = "temp"
+        isCreated = False
+        while not isCreated:
+            randomNum = random.randint(0, 100000000) # 10,000,000
+            self.directory = directory+randomNum.__str__()
+            if not os.path.exists(directory):
+                os.makedirs(self.directory)
+                isCreated = True
+
+        pThread = myThread(self.sendProcessedImageCounter, self.sendErrorSig, self.progressBar, self.errorBrowser, self.directory)
         pThread.update_values(self.uCut, self.lCut, self.angleInc, self.radStep, self.screenDim, self.dpi, self.filenames)
         if (self.filenames.__len__() != 0):
             self.progressBar.show()
@@ -723,10 +735,32 @@ Please go back to "Settings" and change some values.
 
     def fillCanvas(self, img):
         # updates canvases
-        self.imgCanvas = FigureCanvas(img.orgImg)
-        self.logSclCanvas = FigureCanvas(img.logScl)
-        self.angDistCanvas = FigureCanvas(img.angDist)
-        self.cartDistCanvas = FigureCanvas(img.cartDist)
+        self.imgCanvas = QtWidgets.QLabel()
+        w = self.imgCanvas.height()
+        h = self.imgCanvas.width()
+        #use full ABSOLUTE path to the image, not relative
+        self.imgCanvas.setPixmap(QPixmap(self.directory + "/orgImg.png").scaled(w,h,Qt.KeepAspectRatio, Qt.FastTransformation))
+        self.imgCanvas.setScaledContents(True)
+
+
+
+        self.logSclCanvas = QtWidgets.QLabel()
+        self.logSclCanvas.setPixmap(QPixmap(self.directory + "/logScl.png").scaled(w,h,Qt.KeepAspectRatio, Qt.FastTransformation))
+        self.logSclCanvas.setScaledContents(True)
+
+        self.angDistCanvas = QtWidgets.QLabel()
+        self.angDistCanvas.setPixmap(QPixmap(self.directory + "/angDist.png").scaled(w,h,Qt.KeepAspectRatio, Qt.FastTransformation))
+        self.angDistCanvas.setScaledContents(True)
+
+
+        self.cartDistCanvas = QtWidgets.QLabel()
+        self.cartDistCanvas.setPixmap(QPixmap(self.directory +"/cartDist.png").scaled(w,h,Qt.KeepAspectRatio, Qt.FastTransformation))
+        self.cartDistCanvas.setScaledContents(True)
+
+        #self.imgCanvas = FigureCanvas(img.orgImg)
+        #self.logSclCanvas = FigureCanvas(img.logScl)
+        #self.angDistCanvas = FigureCanvas(img.angDist)
+        #self.cartDistCanvas = FigureCanvas(img.cartDist)
         # adds them to layout
         self.figureLayout.addWidget(self.imgCanvas, 0, 0)
         self.figureLayout.addWidget(self.logSclCanvas, 0, 1)
@@ -855,7 +889,7 @@ Please go back to "Settings" and change some values.
 class myThread(threading.Thread):
 
 
-    def __init__(self, sig, errorSig, bar, errorBrowser):
+    def __init__(self, sig, errorSig, bar, errorBrowser, dir):
         super(myThread, self).__init__()
         self.uCut = 0
         self.lCut = 0
@@ -868,6 +902,7 @@ class myThread(threading.Thread):
         self.bar = bar
         self.errorBrowser = errorBrowser
         self.errorSig = errorSig
+        self.directory = dir
 
 
     def update_values(self, uCut, lCut, angleInc, radStep, screenDim, dpi, filenames):
@@ -897,17 +932,18 @@ class myThread(threading.Thread):
                                                                                                self.uCut,
                                                                                                self.lCut, self.angleInc,
                                                                                                self.radStep, self.screenDim,
-                                                                                               self.dpi)
+                                                                                               self.dpi,
+                                                                                               self.directory)
 
                 # Starting from Python3, there is a distinctin between bytes and str. Thus, I can't use
                 # methods of str on bytes. However I need to do that in order to properly encode the image
                 # into b64. The main thing is that bytes-way produces some improper characters that mess up
                 # the decoding process. Hence, decode(utf-8) translates bytes into str.
 
-                angDistEncoded = base64.encodebytes(open('angDist.png', 'rb').read()).decode('utf-8')
-                cartDistEncoded = base64.encodebytes(open('cartDist.png', 'rb').read()).decode('utf-8')
-                logSclEncoded = base64.encodebytes(open('logScl.png', 'rb').read()).decode('utf-8')
-                orgImgEncoded = base64.encodebytes(open('orgImg.png', 'rb').read()).decode('utf-8')
+                angDistEncoded = base64.encodebytes(open(self.directory + "/" + 'angDist.png', 'rb').read()).decode('utf-8')
+                cartDistEncoded = base64.encodebytes(open(self.directory + "/" + 'cartDist.png', 'rb').read()).decode('utf-8')
+                logSclEncoded = base64.encodebytes(open(self.directory + "/" + 'logScl.png', 'rb').read()).decode('utf-8')
+                orgImgEncoded = base64.encodebytes(open(self.directory + "/" +  'orgImg.png', 'rb').read()).decode('utf-8')
                 #
                 # angDistEncoded4 = base64.encodebytes(open('angDist4.png', 'rb').read()).decode('utf-8')
                 # cartDistEncoded4 = base64.encodebytes(open('cartDist4.png', 'rb').read()).decode('utf-8')
@@ -990,7 +1026,6 @@ def main():
 
     fft_app.show()
     sys.exit(app.exec_())
-
 
 if __name__ == "__main__":
     main()
