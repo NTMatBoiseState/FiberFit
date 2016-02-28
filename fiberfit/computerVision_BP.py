@@ -97,7 +97,7 @@ def process_histogram(PabsFlip, N1, uCut, lCut, angleInc, radStep):
     return normPower, theta1RadFinal
 
 
-def process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth):
+def process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth, dir):
     # Combine data into [XY] to fit to an ellipse
     Mirtheta1RadFinal1 = np.concatenate([theta1RadFinal.T, (theta1RadFinal + np.pi).T])
     MirnormPower = np.concatenate([normPower.T, normPower.T])
@@ -122,7 +122,7 @@ def process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth):
     plt.polar(Mirtheta1RadFinal1, MirnormPower, color ='k', linewidth=2)
     plt.polar(th * pi / 180, r_line, color='r', linewidth=3)
     plt.yticks(np.arange(.5, max(MirnormPower), .5), **ticksfont)
-    angDist.savefig('angDist')
+    angDist.savefig(dir+'angDist')
     plt.xticks(**ticksfont)
     plt.title('Fiber Orientation', y = 1.08, **csfont)
     plt.close()
@@ -146,7 +146,7 @@ def process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth):
     return t, angDist
 
 
-def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth):
+def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth, dir):
     t_final_rad = t_final * pi / 180
 
     def fitted_func(thetas, c):
@@ -192,7 +192,7 @@ def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth):
     plt.ylim([0, max(normPower1) + .3])
     #plt.subplots_adjust(left=0.6)
     # plt.tight_layout(ds)
-    cartDist.savefig('cartDist')
+    cartDist.savefig(dir + 'cartDist')
     plt.close()
 
     # # Plot Lower Right - Distribution on a cartesian plane with appropriate shift with fig size 4
@@ -221,7 +221,7 @@ def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth):
     return kappa, cartDist, rValue
 
 
-def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
+def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi, directory):
     # %
     #  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     #  FFT // POWER SPECTRUM // ANGULAR DISTRIBUTION
@@ -231,6 +231,7 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
     #figWidth = 0.1 * screenDim.width()/dpi
     #figHeigth = 0.1 * screenDim.width()/dpi
 
+    dir = directory + "/"
     start_time = time.time()
 
 
@@ -238,7 +239,7 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
     figHeigth = 4.5
 
     im = scipy.ndimage.imread(fname=str(name))
-    
+
     m, n = im.shape
 
     # Remove a row and column if the dimension of the image is odd
@@ -255,7 +256,7 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
     originalImage.add_axes(ax)
     plt.imshow(im, cmap='gray', aspect='auto')
     plt.axis('off')
-    originalImage.savefig('orgImg')
+    originalImage.savefig(dir + 'orgImg')
     plt.close()
 
     # # Plot Upper left - Original Image with size 4
@@ -288,7 +289,7 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
     logScale.add_axes(ax)
     plt.axis('off')
     plt.imshow(log(PabsFlip), cmap='gray', aspect='auto')
-    logScale.savefig('logScl')
+    logScale.savefig(dir + 'logScl')
     plt.close()
 
     # # Plot Upper Right - Power Spectrum on logrithmic scale
@@ -307,10 +308,10 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi):
     normPower, theta1RadFinal = process_histogram(PabsFlip, N1, uCut, lCut, angleInc, radStep)
 
     # theta and angular distribution are getting retrieved.
-    t_final, angDist = process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth)
+    t_final, angDist = process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth, dir)
 
     # k and cartesian distrubution are getting retrieved.
-    k, cartDist, rValue = process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth)
+    k, cartDist, rValue = process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth, dir)
 
     # Rounding results for Title of Figure
     krnd = math.ceil(k * 1000) / 1000
@@ -388,3 +389,5 @@ def orientation(A):
     #     import timeit
     #     runtime = timeit.timeit(main, number=1)
     #     print(runtime)
+
+
