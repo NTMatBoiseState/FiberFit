@@ -739,22 +739,22 @@ Please go back to "Settings" and change some values.
         w = self.imgCanvas.height()
         h = self.imgCanvas.width()
         #use full ABSOLUTE path to the image, not relative
-        self.imgCanvas.setPixmap(QPixmap(self.directory + "/orgImg.png").scaled(w,h,Qt.KeepAspectRatio, Qt.FastTransformation))
+        self.imgCanvas.setPixmap(QPixmap(self.directory + "/orgImg.png").scaled(300,400,Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.imgCanvas.setScaledContents(True)
 
 
 
         self.logSclCanvas = QtWidgets.QLabel()
-        self.logSclCanvas.setPixmap(QPixmap(self.directory + "/logScl.png").scaled(w,h,Qt.KeepAspectRatio, Qt.FastTransformation))
+        self.logSclCanvas.setPixmap(QPixmap(self.directory + "/logScl.png").scaled(300,400,Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.logSclCanvas.setScaledContents(True)
 
         self.angDistCanvas = QtWidgets.QLabel()
-        self.angDistCanvas.setPixmap(QPixmap(self.directory + "/angDist.png").scaled(w,h,Qt.KeepAspectRatio, Qt.FastTransformation))
+        self.angDistCanvas.setPixmap(QPixmap(self.directory + "/angDist.png").scaled(300,400,Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.angDistCanvas.setScaledContents(True)
 
 
         self.cartDistCanvas = QtWidgets.QLabel()
-        self.cartDistCanvas.setPixmap(QPixmap(self.directory +"/cartDist.png").scaled(w,h,Qt.KeepAspectRatio, Qt.FastTransformation))
+        self.cartDistCanvas.setPixmap(QPixmap(self.directory +"/cartDist.png").scaled(300,400,Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.cartDistCanvas.setScaledContents(True)
 
         #self.imgCanvas = FigureCanvas(img.orgImg)
