@@ -540,12 +540,14 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def initialize(self):
         directory = "temp"
         isCreated = False
-        while not isCreated:
+        while isCreated == False:
             randomNum = random.randint(0, 100000000) # 10,000,000
             self.directory = directory+randomNum.__str__()
+            print("I created dir!")
             if not os.path.exists(directory):
                 os.makedirs(self.directory)
                 isCreated = True
+                print("wtf....")
 
     """
     Updates the settings
@@ -892,6 +894,15 @@ Please go back to "Settings" and change some values.
                 self.currentIndex = self.imgList.index(image)
 
 
+    def closeEvent(self, event):
+        delete_dir(self.directory)
+
+
+    def delete_dir(dir):
+        import shutil
+        shutil.rmtree(dir)
+
+
 class myThread(threading.Thread):
 
 
@@ -1032,9 +1043,18 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
     fft_app = fft_mainWindow()
     fft_app.receiveDim()
-
+    #delete_dir(dir)
     fft_app.show()
     sys.exit(app.exec_())
+
+def closeEvent(self, event, dir):
+    delete_dir(dir)
+
+
+def delete_dir(dir):
+    import shutil
+    shutil.rmtree(dir)
+
 
 if __name__ == "__main__":
     main()
