@@ -1,6 +1,7 @@
 #!usr/local/bin/python3
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import QFont
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog, screenDim):
@@ -90,12 +91,13 @@ class Ui_Dialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Settings", "Settings"))
-        self.topDescr.setText(_translate("Dialog", "Band - Pass Filter Settings: Input fiber width -the frequency will be calculated using f = N/(2*t), where N is the image dimension. "))
-        self.upperLabel.setText(_translate("Dialog", "Upper Cutoff Width (Smaller Thickness): \n"
+        #self.topDescr.setFont(QFont('SansSerif', 10, 'bold'))
+        self.topDescr.setText(_translate("Dialog", "<b>Band - Pass Filter Settings</b>:\nInput fiber width -the frequency will be calculated using f = N/(2*t), where N is the image dimension. "))
+        self.upperLabel.setText(_translate("Dialog", "Upper Cutoff (Smaller Thickness): \n"
 "\n"
-"Lower Cutoff Width (Larger Thickness): "))
-        self.bottomDescr.setText(_translate("Dialog", "Summation Increment Settings: \n"
-"Input the increment for angle summation and the number of radii to include in summation"))
+"Lower Cutoff (Larger Thickness): "))
+        self.bottomDescr.setText(_translate("Dialog", "<b>Summation Increment Settings: \n</b>"
+"\nInput the increment for angle summation (degrees) and the interpolation increment for radial summation (pixels)."))
         self.bottomLabel.setText(_translate("Dialog", "Angle Increment: \n"
 "\n"
 "Radial Step Size: "))
