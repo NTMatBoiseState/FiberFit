@@ -35,6 +35,7 @@ from fiberfit import export_window
 import random
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
+import shutil
 
 class ErrorDialog(QDialog, ErrorDialog.Ui_ErrorDialog):
     def __init__(self, parent=None, screenDim = None):
@@ -477,7 +478,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.filenames = []
         self.firstOne = True
         # dir
-        self.directory = ""
+        self.directory = None
         # Canvases to display the figures.
         self.imgCanvas = None
         self.logSclCanvas = None
@@ -530,7 +531,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.number = 0 # I need it to be able to process multiple images.
 
         self.sendErrorSig.connect(self.handleError)
-        self.initialize()
+        # self.initialize()
 
         """This is to gain better insight into Slots and Signals.
         def userLog(int):
@@ -645,6 +646,9 @@ Please go back to "Settings" and change some values.
             self.imgList.clear()
             # resets current index
             self.currentIndex = 0
+            shutil.rmtree(self.directory)
+            self.directory = None
+            self.number = 0
             print("TOTAL it took {n} seconds.".format(n = self.runtime))
 
     """
@@ -652,6 +656,8 @@ Please go back to "Settings" and change some values.
     """
 
     def launch(self):
+        if (self.directory == None):
+            self.initialize()
         self.filenames = []
         dialog = QFileDialog()
         filenames = dialog.getOpenFileNames(self, '', None)  # creates a list of fileNames
@@ -896,12 +902,16 @@ Please go back to "Settings" and change some values.
 
 
     def closeEvent(self, event):
-        delete_dir(self.directory)
+        self.delete_dir(self.directory)
 
 
-    def delete_dir(dir):
+    def delete_dir(self, dir):
         import shutil
-        shutil.rmtree(dir)
+        try:
+            shutil.rmtree(dir)
+        except:
+            pass
+            # means direcotry has not been created. if usre opens an app and then immediately closes it.
 
 
 class myThread(threading.Thread):
@@ -1047,15 +1057,6 @@ def main():
     #delete_dir(dir)
     fft_app.show()
     sys.exit(app.exec_())
-
-def closeEvent(self, event, dir):
-    delete_dir(dir)
-
-
-def delete_dir(dir):
-    import shutil
-    shutil.rmtree(dir)
-
 
 if __name__ == "__main__":
     main()
