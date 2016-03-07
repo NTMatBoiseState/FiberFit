@@ -11,6 +11,7 @@ import threading
 import time
 from PyPDF2 import PdfFileMerger as merger
 
+
 matplotlib.use("Qt5Agg")  ## forces to use Qt5Agg so that Backends work
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from fiberfit import fiberfit_GUI
@@ -335,7 +336,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
     """
 
     def printerSetup(self):
-        self.printer.setPageSize(QPrinter.A4)
+        self.printer.setPageSize(QPrinter.Letter)
         self.printer.setOutputFormat(QPrinter.PdfFormat)
         self.printer.setFullPage(True)
         self.printer.setOutputFileName(str(self.savedfiles)+".pdf")
@@ -353,10 +354,10 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
                 <link type="text/css" rel="stylesheet" href="ntm_style.css"/>
             </head>
             <body>
-                <p> Image Name: {name} </p> <p> μ: {th} </p>
+                <p> Image Name: {name} </p> <p> μ: {th}° </p>
                 <p>k: {k} </p>
                 <p>R^2: {R2} </p>
-                <p>Sigma: {sig}</p>
+                <p>σ: {sig}°</p>
                 <br>
                 <table>
                     <tr>
@@ -959,10 +960,10 @@ class myThread(threading.Thread):
                 # into b64. The main thing is that bytes-way produces some improper characters that mess up
                 # the decoding process. Hence, decode(utf-8) translates bytes into str.
 
-                #angDistEncoded = base64.encodebytes(open(self.directory + "/" + 'angDist.png', 'rb').read()).decode('utf-8')
-                #cartDistEncoded = base64.encodebytes(open(self.directory + "/" + 'cartDist.png', 'rb').read()).decode('utf-8')
-                #logSclEncoded = base64.encodebytes(open(self.directory + "/" + 'logScl.png', 'rb').read()).decode('utf-8')
-                #orgImgEncoded = base64.encodebytes(open(self.directory + "/" +  'orgImg.png', 'rb').read()).decode('utf-8')
+                angDistEncoded = base64.encodebytes(open(self.directory + "/" + 'angDist_' + self.number.__str__() + '.png', 'rb').read()).decode('utf-8')
+                cartDistEncoded = base64.encodebytes(open(self.directory + "/" + 'cartDist_' + self.number.__str__() + '.png', 'rb').read()).decode('utf-8')
+                logSclEncoded = base64.encodebytes(open(self.directory + "/" + 'logScl_' + self.number.__str__() + '.png', 'rb').read()).decode('utf-8')
+                orgImgEncoded = base64.encodebytes(open(self.directory + "/" +  'orgImg_' + self.number.__str__() + '.png', 'rb').read()).decode('utf-8')
                 #
                 # angDistEncoded4 = base64.encodebytes(open('angDist4.png', 'rb').read()).decode('utf-8')
                 # cartDistEncoded4 = base64.encodebytes(open('cartDist4.png', 'rb').read()).decode('utf-8')
@@ -977,19 +978,19 @@ class myThread(threading.Thread):
                     th=th,
                     R2=R2,
                     orgImg=orgImg,
-                   # orgImgEncoded=orgImgEncoded,
+                    orgImgEncoded=orgImgEncoded,
                    # orgImg4=orgImg4,
                    # orgImgEncoded4 = orgImgEncoded4,
                     logScl=logScl,
-                   # logSclEncoded=logSclEncoded,
+                    logSclEncoded=logSclEncoded,
                    # logScl4 = logScl4,
                    # logSclEncoded4 = logSclEncoded4,
                     angDist=angDist,
-                   # angDistEncoded=angDistEncoded,
+                    angDistEncoded=angDistEncoded,
                    # angDist4 = angDist4,
                    # angDistEncoded4 = angDistEncoded4,
                     cartDist=cartDist,
-                   # cartDistEncoded=cartDistEncoded,
+                    cartDistEncoded=cartDistEncoded,
                    # cartDist4 = cartDist4,
                    # cartDistEncoded4 = cartDistEncoded4,
                     timeStamp= datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"),
