@@ -529,12 +529,23 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.number = 0 # I need it to be able to process multiple images.
 
         self.sendErrorSig.connect(self.handleError)
+        self.initialize()
 
         """This is to gain better insight into Slots and Signals.
         def userLog(int):
             print("User requested reported for image: {}".format(int))
         self.show_report.connect(userLog)
         """
+
+    def initialize(self):
+        directory = "temp"
+        isCreated = False
+        while not isCreated:
+            randomNum = random.randint(0, 100000000) # 10,000,000
+            self.directory = directory+randomNum.__str__()
+            if not os.path.exists(directory):
+                os.makedirs(self.directory)
+                isCreated = True
 
     """
     Updates the settings
@@ -581,14 +592,6 @@ Please go back to "Settings" and change some values.
         #     except OSError:
         #         self.errorBrowser.show()
 
-        directory = "temp"
-        isCreated = False
-        while not isCreated:
-            randomNum = random.randint(0, 100000000) # 10,000,000
-            self.directory = directory+randomNum.__str__()
-            if not os.path.exists(directory):
-                os.makedirs(self.directory)
-                isCreated = True
 
         pThread = myThread(self.sendProcessedImageCounter, self.sendErrorSig, self.progressBar, self.errorBrowser, self.directory, self.number)
         pThread.update_values(self.uCut, self.lCut, self.angleInc, self.radStep, self.screenDim, self.dpi, self.filenames)
@@ -980,7 +983,7 @@ class myThread(threading.Thread):
                    # cartDistEncoded4 = cartDistEncoded4,
                     timeStamp= datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"),
                     number= self.number)
-
+                self.number += 1
                 processedImagesList.append(processedImage)
                 count += 1
                 if (count == len(self.filenames)):
