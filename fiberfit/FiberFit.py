@@ -455,7 +455,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     do_update = pyqtSignal(int)
     sendProcessedImagesList = pyqtSignal(list, list, OrderedSet, float, float, float, float)
     #  For pbar
-    sendProcessedImageCounter = pyqtSignal(int, img_model.ImgModel, list, int, int)
+    sendProcessedImageCounter = pyqtSignal(int, img_model.ImgModel, list, int, int, int)
     #  Error sig
     sendErrorSig = pyqtSignal(list, int, int)
 
@@ -526,6 +526,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.progressBar.setMinimum(0)
         self.sendProcessedImageCounter.connect(self.processImages)
 
+        self.number = 0 # I need it to be able to process multiple images.
+
         self.sendErrorSig.connect(self.handleError)
 
         """This is to gain better insight into Slots and Signals.
@@ -588,7 +590,7 @@ Please go back to "Settings" and change some values.
                 os.makedirs(self.directory)
                 isCreated = True
 
-        pThread = myThread(self.sendProcessedImageCounter, self.sendErrorSig, self.progressBar, self.errorBrowser, self.directory)
+        pThread = myThread(self.sendProcessedImageCounter, self.sendErrorSig, self.progressBar, self.errorBrowser, self.directory, self.number)
         pThread.update_values(self.uCut, self.lCut, self.angleInc, self.radStep, self.screenDim, self.dpi, self.filenames)
         if (self.filenames.__len__() != 0):
             self.progressBar.show()
@@ -659,8 +661,9 @@ Please go back to "Settings" and change some values.
     Technical: Creates img_model objects that encapsulate all of the useful data.
     """
 
-    @pyqtSlot(int, img_model.ImgModel, list, int, int)
-    def processImages(self, count, processedImage, processedImagesList, isLast, time):
+    @pyqtSlot(int, img_model.ImgModel, list, int, int, int)
+    def processImages(self, count, processedImage, processedImagesList, isLast, time, number):
+        self.number = number
         # Ordered Set
         if processedImage in self.imgList:
             self.imgList.remove(processedImage)
@@ -739,22 +742,22 @@ Please go back to "Settings" and change some values.
         w = self.imgCanvas.height()
         h = self.imgCanvas.width()
         #use full ABSOLUTE path to the image, not relative
-        self.imgCanvas.setPixmap(QPixmap(self.directory + "/orgImg.png").scaled(300,400,Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.imgCanvas.setPixmap(QPixmap(self.directory + "/orgImg_" + img.number.__str__() + ".png").scaled(300,400,Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.imgCanvas.setScaledContents(True)
 
 
 
         self.logSclCanvas = QtWidgets.QLabel()
-        self.logSclCanvas.setPixmap(QPixmap(self.directory + "/logScl.png").scaled(300,400,Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.logSclCanvas.setPixmap(QPixmap(self.directory + "/logScl_" + img.number.__str__() + ".png").scaled(300,400,Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.logSclCanvas.setScaledContents(True)
 
         self.angDistCanvas = QtWidgets.QLabel()
-        self.angDistCanvas.setPixmap(QPixmap(self.directory + "/angDist.png").scaled(300,400,Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.angDistCanvas.setPixmap(QPixmap(self.directory + "/angDist_" + img.number.__str__() + ".png").scaled(300,400,Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.angDistCanvas.setScaledContents(True)
 
 
         self.cartDistCanvas = QtWidgets.QLabel()
-        self.cartDistCanvas.setPixmap(QPixmap(self.directory +"/cartDist.png").scaled(300,400,Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.cartDistCanvas.setPixmap(QPixmap(self.directory + "/cartDist_" + img.number.__str__() + ".png").scaled(300,400,Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.cartDistCanvas.setScaledContents(True)
 
         #self.imgCanvas = FigureCanvas(img.orgImg)
@@ -942,10 +945,10 @@ class myThread(threading.Thread):
                 # into b64. The main thing is that bytes-way produces some improper characters that mess up
                 # the decoding process. Hence, decode(utf-8) translates bytes into str.
 
-                angDistEncoded = base64.encodebytes(open(self.directory + "/" + 'angDist.png', 'rb').read()).decode('utf-8')
-                cartDistEncoded = base64.encodebytes(open(self.directory + "/" + 'cartDist.png', 'rb').read()).decode('utf-8')
-                logSclEncoded = base64.encodebytes(open(self.directory + "/" + 'logScl.png', 'rb').read()).decode('utf-8')
-                orgImgEncoded = base64.encodebytes(open(self.directory + "/" +  'orgImg.png', 'rb').read()).decode('utf-8')
+                #angDistEncoded = base64.encodebytes(open(self.directory + "/" + 'angDist.png', 'rb').read()).decode('utf-8')
+                #cartDistEncoded = base64.encodebytes(open(self.directory + "/" + 'cartDist.png', 'rb').read()).decode('utf-8')
+                #logSclEncoded = base64.encodebytes(open(self.directory + "/" + 'logScl.png', 'rb').read()).decode('utf-8')
+                #orgImgEncoded = base64.encodebytes(open(self.directory + "/" +  'orgImg.png', 'rb').read()).decode('utf-8')
                 #
                 # angDistEncoded4 = base64.encodebytes(open('angDist4.png', 'rb').read()).decode('utf-8')
                 # cartDistEncoded4 = base64.encodebytes(open('cartDist4.png', 'rb').read()).decode('utf-8')
@@ -960,22 +963,23 @@ class myThread(threading.Thread):
                     th=th,
                     R2=R2,
                     orgImg=orgImg,
-                    orgImgEncoded=orgImgEncoded,
+                   # orgImgEncoded=orgImgEncoded,
                    # orgImg4=orgImg4,
                    # orgImgEncoded4 = orgImgEncoded4,
                     logScl=logScl,
-                    logSclEncoded=logSclEncoded,
+                   # logSclEncoded=logSclEncoded,
                    # logScl4 = logScl4,
                    # logSclEncoded4 = logSclEncoded4,
                     angDist=angDist,
-                    angDistEncoded=angDistEncoded,
+                   # angDistEncoded=angDistEncoded,
                    # angDist4 = angDist4,
                    # angDistEncoded4 = angDistEncoded4,
                     cartDist=cartDist,
-                    cartDistEncoded=cartDistEncoded,
+                   # cartDistEncoded=cartDistEncoded,
                    # cartDist4 = cartDist4,
                    # cartDistEncoded4 = cartDistEncoded4,
-                    timeStamp= datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"))
+                    timeStamp= datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"),
+                    number= self.number)
 
                 processedImagesList.append(processedImage)
                 count += 1
@@ -983,29 +987,29 @@ class myThread(threading.Thread):
                     isLast = 1
 
 
-            except TypeError:
-                print("typeerror")
+            #except TypeError:
+             #   print("typeerror")
 
-                toContinue = False
+              #  toContinue = False
             except ValueError:
                 print("ValueError")
 
-                toContinue = False
-            except OSError:
-                print("OSErrro in thread")
-                toContinue = False
+                #toContinue = False
+            #except OSError:
+            #    print("OSErrro in thread")
+            #    toContinue = False
 
-            except ZeroDivisionError:
-                toContinue = False
-                isZeroException = 1
+            #except ZeroDivisionError:
+                #toContinue = False
+                #isZeroException = 1
 
-            except:
-                toContinue = False
-                isZeroException = 1
+            #except:
+            #    toContinue = False
+            #    isZeroException = 1
 
             finally:
                 if (toContinue):
-                    self.sig.emit(count, processedImage, processedImagesList, isLast, runtime)
+                    self.sig.emit(count, processedImage, processedImagesList, isLast, runtime, self.number)
                 else:
                     print("I am in else")
                     self.errorSig.emit(self.filenames, count, isZeroException)

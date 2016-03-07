@@ -122,7 +122,7 @@ def process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth, dir, number)
     plt.polar(Mirtheta1RadFinal1, MirnormPower, color ='k', linewidth=2)
     plt.polar(th * pi / 180, r_line, color='r', linewidth=3)
     plt.yticks(np.arange(.5, max(MirnormPower), .5), **ticksfont)
-    angDist.savefig(dir+'angDist_' + number)
+    angDist.savefig(dir+'angDist_' + number.__str__())
     plt.xticks(**ticksfont)
     plt.title('Fiber Orientation', y = 1.08, **csfont)
     plt.close()
@@ -192,7 +192,7 @@ def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth, dir, 
     plt.ylim([0, max(normPower1) + .3])
     #plt.subplots_adjust(left=0.6)
     # plt.tight_layout(ds)
-    cartDist.savefig(dir + 'cartDist_' + number)
+    cartDist.savefig(dir + 'cartDist_' + number.__str__())
     plt.close()
 
     # # Plot Lower Right - Distribution on a cartesian plane with appropriate shift with fig size 4
@@ -256,7 +256,7 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi, directory
     originalImage.add_axes(ax)
     plt.imshow(im, cmap='gray', aspect='auto')
     plt.axis('off')
-    originalImage.savefig(dir + 'orgImg_' + number)
+    originalImage.savefig(dir + 'orgImg_' + number.__str__())
     plt.close()
 
     # # Plot Upper left - Original Image with size 4
@@ -289,7 +289,7 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi, directory
     logScale.add_axes(ax)
     plt.axis('off')
     plt.imshow(log(PabsFlip), cmap='gray', aspect='auto')
-    logScale.savefig(dir + 'logScl_' + number)
+    logScale.savefig(dir + 'logScl_' + number.__str__())
     plt.close()
 
     # # Plot Upper Right - Power Spectrum on logrithmic scale
