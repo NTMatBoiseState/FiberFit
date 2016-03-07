@@ -889,7 +889,7 @@ Please go back to "Settings" and change some values.
 class myThread(threading.Thread):
 
 
-    def __init__(self, sig, errorSig, bar, errorBrowser, dir):
+    def __init__(self, sig, errorSig, bar, errorBrowser, dir, num):
         super(myThread, self).__init__()
         self.uCut = 0
         self.lCut = 0
@@ -903,6 +903,7 @@ class myThread(threading.Thread):
         self.errorBrowser = errorBrowser
         self.errorSig = errorSig
         self.directory = dir
+        self.number = num
 
 
     def update_values(self, uCut, lCut, angleInc, radStep, screenDim, dpi, filenames):
@@ -933,7 +934,8 @@ class myThread(threading.Thread):
                                                                                                self.lCut, self.angleInc,
                                                                                                self.radStep, self.screenDim,
                                                                                                self.dpi,
-                                                                                               self.directory)
+                                                                                               self.directory,
+                                                                                               self.number)
 
                 # Starting from Python3, there is a distinctin between bytes and str. Thus, I can't use
                 # methods of str on bytes. However I need to do that in order to properly encode the image
