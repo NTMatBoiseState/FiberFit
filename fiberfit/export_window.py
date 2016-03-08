@@ -57,7 +57,7 @@ class Ui_Dialog(object):
         self.radio_append.setObjectName("radio_append")
         self.verticalLayout.addWidget(self.radio_append)
 
-
+        self.checkBox_summary.setChecked(True)
 
         self.gridLayout.addLayout(self.verticalLayout, 1, 0, 2, 2)
         spacerItem1 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)

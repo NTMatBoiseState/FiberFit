@@ -159,6 +159,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
        # self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.saveas)
         self.do_print.connect(self.print)
         self.rejected.connect(self.resetOptions)
+        self.topLogicHandler()
 
     def resetOptions(self):
         #self.checkBox_report.setChecked(False)
