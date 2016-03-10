@@ -36,6 +36,7 @@ import random
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 import shutil
+from fiberfit import MyException
 
 class ErrorDialog(QDialog, ErrorDialog.Ui_ErrorDialog):
     def __init__(self, parent=None, screenDim = None):
@@ -571,12 +572,15 @@ Sorry, unfortunately, this file - {name} can not be processed.
 
 The specifications are as follow: an image must have 8-bit image depth, or, equivalently, gray color space and must be in .jpeg and .png formats.
 """.format(name=files[index]))
-        else:
+        elif identifier == 1:
             self.errorBrowser.label.setText("""ERROR:
 Sorry, unfortunately, the setting you selected are out of input domain for FiberFit.
 Please go back to "Settings" and change some values.
             """
                                             )
+        else:
+            self.errorBrowser.label.setText("""ERROR:
+            Image must be square.""")
         self.errorBrowser.show()
         self.progressBar.hide()
 
@@ -1013,25 +1017,29 @@ class myThread(threading.Thread):
                     isLast = 1
 
 
-            #except TypeError:
-             #   print("typeerror")
+            except MyException:
+                toContinue = False
+                isZeroException = 2 # 2 stands for my exception
 
-              #  toContinue = False
+            except TypeError:
+                print("typeerror")
+
+                toContinue = False
             except ValueError:
                 print("ValueError")
 
-                #toContinue = False
-            #except OSError:
-            #    print("OSErrro in thread")
-            #    toContinue = False
+                toContinue = False
+            except OSError:
+                print("OSErrro in thread")
+                toContinue = False
 
-            #except ZeroDivisionError:
-                #toContinue = False
-                #isZeroException = 1
+            except ZeroDivisionError:
+                toContinue = False
+                isZeroException = 1
 
-            #except:
-            #    toContinue = False
-            #    isZeroException = 1
+            except:
+                toContinue = False
+                isZeroException = 1
 
             finally:
                 if (toContinue):

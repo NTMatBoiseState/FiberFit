@@ -35,6 +35,8 @@ import matplotlib.pyplot as plt
 from fiberfit.EllipseDirectFit import*  # XXX: Changed here
 from fiberfit import helpers  # XXX: Changed here
 
+from fiberfit import MyException
+
 figSize = 4.5
 
 csfont = {'fontname':'Times New Roman',
@@ -241,6 +243,9 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi, directory
     im = scipy.ndimage.imread(fname=str(name))
 
     m, n = im.shape
+
+    if (m != n):
+        raise MyException("Error: image must be square")
 
     # Remove a row and column if the dimension of the image is odd
     if (m % 2 == 1):
