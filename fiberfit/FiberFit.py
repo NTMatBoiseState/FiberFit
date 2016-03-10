@@ -669,7 +669,7 @@ Please go back to "Settings" and change some values.
         for name in filenames[0]:
             self.filenames.append(pathlib.Path(name))
         self.progressBar.setMaximum(len(filenames[0]))
-        self.currentIndex = 0
+        #self.currentIndex = 0
         self.do_run.emit()
 
 
@@ -707,7 +707,7 @@ Please go back to "Settings" and change some values.
         self.currentIndex += 1
         self.runtime += time
         if (isLast == 1):
-            self.currentIndex -= 1
+            #self.currentIndex -= 1
             print("I AM LAST!")
 
 
