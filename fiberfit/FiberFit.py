@@ -1016,10 +1016,9 @@ class myThread(threading.Thread):
                 if (count == len(self.filenames)):
                     isLast = 1
 
-
-            except MyException:
-                toContinue = False
-                isZeroException = 2 # 2 stands for my exception
+            except MyException.MyError:
+                toContinue = False;
+                isZeroException = 2
 
             except TypeError:
                 print("typeerror")
