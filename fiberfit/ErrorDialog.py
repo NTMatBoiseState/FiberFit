@@ -20,6 +20,7 @@ class Ui_ErrorDialog(object):
         self.gridLayout_2 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_3)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.label = QtWidgets.QLabel(self.scrollAreaWidgetContents_3)
+        self.label.setWordWrap(True)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -48,8 +49,4 @@ class Ui_ErrorDialog(object):
         _translate = QtCore.QCoreApplication.translate
         ErrorDialog.setWindowTitle(_translate("ErrorDialog", "Error"))
         self.label.setText(_translate("ErrorDialog",
-"""ERROR:
-
-Sorry, unfortunately, this image can not be processed.
-
-The specifications are as follow: an image must have 8-bit image depth, or, equivalently, gray color space and must be in .jpeg and .png formats."""))
+"ERROR: Sorry, unfortunately, this image can not be processed. The specifications are as follow: an image must have 8-bit image depth, or, equivalently, gray color space and must be in .jpeg and .png formats."))
