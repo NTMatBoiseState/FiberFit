@@ -40,7 +40,7 @@ from fiberfit import MyException
 figSize = 4.5
 
 csfont = {'fontname':'Times New Roman',
-           'size':'16',
+           'size':'14',
          }
 
 ticksfont = {'fontname':'Times New Roman'}
@@ -123,10 +123,19 @@ def process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth, dir, number)
     r_line = np.concatenate([r_line, r_line])
     plt.polar(Mirtheta1RadFinal1, MirnormPower, color ='k', linewidth=2)
     plt.polar(th * pi / 180, r_line, color='r', linewidth=3)
-    plt.yticks(np.arange(.5, max(MirnormPower), .5), **ticksfont)
-    angDist.savefig(dir+'angDist_' + number.__str__())
+
+    if (max(MirnormPower)<2):
+        inc = 0.5
+    elif (max(MirnormPower)<5):
+        inc = 1
+    elif max(MirnormPower)<20:
+        inc = 5
+    else:
+        inc = 10
+    plt.yticks(np.arange(inc, max(MirnormPower), inc), **ticksfont)
     plt.xticks(**ticksfont)
     plt.title('Fiber Orientation', y = 1.08, **csfont)
+    angDist.savefig(dir+'angDist_' + number.__str__(), bbox_inches='tight')
     plt.close()
 
     # # Plot Lower Left - Polar plot of angular distribution with size of 4.5
@@ -190,11 +199,20 @@ def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth, dir, 
     plt.title('Fiber Distribution', **csfont)
     plt.xlabel('Angle (°)', **csfont)
     plt.ylabel('Normalized Intensity', **csfont)
-    plt.yticks(np.arange(0, max(normPower1) + .3, .5), **ticksfont)
+
+    if (max(normPower)<2):
+        inc = 0.5
+    elif (max(normPower)<5):
+        inc = 1
+    elif (max(normPower)<20):
+        inc = 5
+    else:
+        inc = 10
+    plt.yticks(np.arange(0, max(normPower1) + .3, inc), **ticksfont)
     plt.ylim([0, max(normPower1) + .3])
     #plt.subplots_adjust(left=0.6)
     # plt.tight_layout(ds)
-    cartDist.savefig(dir + 'cartDist_' + number.__str__())
+    cartDist.savefig(dir + 'cartDist_' + number.__str__(), bbox_inches='tight')
     plt.close()
 
     # # Plot Lower Right - Distribution on a cartesian plane with appropriate shift with fig size 4
