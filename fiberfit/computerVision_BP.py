@@ -134,7 +134,7 @@ def process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth, dir, number)
         inc = 10
     plt.yticks(np.arange(inc, max(MirnormPower), inc), **ticksfont)
     plt.xticks(**ticksfont)
-    plt.title('Fiber Orientation', y = 1.08, **csfont)
+    #plt.title('Fiber Orientation', y = 1.08, **csfont)
     angDist.savefig(dir+'angDist_' + number.__str__(), bbox_inches='tight')
     plt.close()
 
@@ -196,7 +196,7 @@ def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth, dir, 
     plt.xlim([t - 100, t + 100])
     p_act = fitted_func(theta1RadFinal1, kappa)
     h3, = plt.plot(theta1RadFinal1 * 180 / pi, p_act, linewidth=3)
-    plt.title('Fiber Distribution', **csfont)
+    #plt.title('Fiber Distribution', **csfont)
     plt.xlabel('Angle (°)', **csfont)
     plt.ylabel('Normalized Intensity', **csfont)
 

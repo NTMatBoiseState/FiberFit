@@ -566,12 +566,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     @pyqtSlot(list, int, int)
     def handleError(self, files, index, identifier):
         if identifier == 0:
-            self.errorBrowser.label.setText("""ERROR:
-
-Sorry, unfortunately, this file - {name} can not be processed.
-
-The specifications are as follow: an image must have 8-bit image depth, or, equivalently, gray color space and must be in .jpeg and .png formats.
-""".format(name=files[index]))
+            self.errorBrowser.label.setText("ERROR: Sorry, unfortunately, this file - {name} can not be processed. The specifications are as follow: an image must have 8-bit image depth, or, equivalently, gray color space and must be in .jpeg and .png formats.".format(name=files[index]))
         elif identifier == 1:
             self.errorBrowser.label.setText("""ERROR:
 Sorry, unfortunately, the setting you selected are out of input domain for FiberFit.
@@ -579,8 +574,7 @@ Please go back to "Settings" and change some values.
             """
                                             )
         else:
-            self.errorBrowser.label.setText("""ERROR:
-            Image must be square.""")
+            self.errorBrowser.label.setText("ERROR: Image must be square.")
         self.errorBrowser.show()
         self.progressBar.hide()
 
@@ -788,8 +782,8 @@ Please go back to "Settings" and change some values.
         self.figureLayout.addWidget(self.cartDistCanvas, 1, 1)
         self.figureLayout.itemAtPosition(0, 1).widget().setToolTip("FFT Power Spectrum")
         self.figureLayout.itemAtPosition(0, 0).widget().setToolTip("Analyzed Image")
-        self.figureLayout.itemAtPosition(1, 0).widget().setToolTip("Fiber Orientation")
-        self.figureLayout.itemAtPosition(1, 1).widget().setToolTip("Fiber Distribution")
+        self.figureLayout.itemAtPosition(1, 0).widget().setToolTip("Red Line = Fiber Orientation")
+        self.figureLayout.itemAtPosition(1, 1).widget().setToolTip("Blue Line = Fiber Distribution")
     """
     Helps to process an image from using a Combo Box.
     @param: img to be processed
