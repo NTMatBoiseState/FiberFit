@@ -7,7 +7,7 @@ from __future__ import division
 # except ImportError:
 #     from smop.runtime import *
 
-from helpers import debug
+from src.fiberfit_model.helpers import debug
 
 
 def EllipseDirectFit(XY):

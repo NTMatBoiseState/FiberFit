@@ -26,15 +26,15 @@ import inspect
 # except ImportError:
 #     from smop.runtime import *
 
-from fiberfit.EllipseDirectFit import *  # XXX: Changed here
-from fiberfit.helpers import *
-from helpers import debug
+from src.fiberfit_model.EllipseDirectFit import *  # XXX: Changed here
+from src.fiberfit_model.helpers import *
+from src.fiberfit_model.helpers import debug
 
 import sys
 import matplotlib
 
 matplotlib.use("Qt5Agg")  ## forces to use Qt5Agg so that Backends workfrom fiberfit import fiberfit_GUI
-from fiberfit import computerVision_BP
+from src.fiberfit_model import computerVision_BP
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.Qt import *

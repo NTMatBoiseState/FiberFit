@@ -350,6 +350,5 @@ class Ui_MainWindow(object):
         if getattr(sys, 'frozen', False):
             datadir = os.path.dirname(sys.executable)
         else:
-            datadir = os.path.dirname('images/' + filename)
+            datadir = os.path.dirname('resources/images/' + filename)
         return os.path.join(datadir, filename)
-    

@@ -6,7 +6,7 @@
 # from __future__ import absolute_import
 
 import matplotlib
-#matplotlib.use('Qt5Agg')
+# matplotlib.use('Qt5Agg')
 
 import numpy as np
 
@@ -32,10 +32,9 @@ import matplotlib.pyplot as plt
 # except ImportError:
 #     from smop.runtime import *
 
-from EllipseDirectFit import*  # XXX: Changed here
-import helpers  # XXX: Changed here
-
-import MyException
+from src.fiberfit_model.EllipseDirectFit import*  # XXX: Changed here
+from src.fiberfit_model import helpers  # XXX: Changed here
+from src.fiberfit_control.support import my_exception as MyException
 
 figSize = 4.5
 
@@ -260,15 +259,8 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi, directory
 
 
     im = scipy.ndimage.imread(fname=str(name))
-    print("**************")
 
-    #try:
     m, n = im.shape
-    #except ValueError:
-        #print(str(m))
-        #print(str(n))
-        #raise MyException.MyError("Error: image must be square")
-
 
     if (m != n):
         print(str(m))
@@ -416,13 +408,3 @@ def orientation(A):
     t_New = angle * 180 / np.pi
 
     return (t_New)
-
-    # def main():
-    #     process_image('/Users/azatulepbergenov/PycharmProjects/fiberfit/test/Norm Test Image_90_0.2_90.02_0.2_0.38892.png', 2, 32, 1, 0.5, (0, 20, 1420, 2460), 72)
-    #
-    # if __name__ == '__main__':
-    #     import timeit
-    #     runtime = timeit.timeit(main, number=1)
-    #     print(runtime)
-
-
