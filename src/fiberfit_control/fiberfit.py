@@ -1,6 +1,9 @@
 #!/usr/local/bin/python3
 
 """This is a control part of the GUI application"""
+
+
+"3rd party imports: "
 import pathlib
 import sys
 import csv
@@ -10,33 +13,33 @@ from PyQt5 import QtWebKitWidgets
 import threading
 import time
 from PyPDF2 import PdfFileMerger as merger
-
-
-matplotlib.use("Qt5Agg")  ## forces to use Qt5Agg so that Backends work
+matplotlib.use("Qt5Agg")  # forces to use Qt5Agg so that Backends work
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-import fiberfit_GUI
-import computerVision_BP
 from PyQt5 import QtWidgets
 from PyQt5.Qt import *
 from PyQt5.QtWidgets import QFileDialog  # In order to select a file
-import img_model
 from orderedset import OrderedSet
 import base64
 from PyQt5.QtPrintSupport import QPrinter
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QDialogButtonBox, QDialog
-import SettingsDialog
-import ExportDialog
-import ErrorDialog
 from PyQt5.QtGui import QTextDocument
 import os
 from PyQt5.QtWidgets import QDesktopWidget
-import export_window
 import random
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 import shutil
-import MyException
+
+"custom file imports"
+from src.fiberfit_gui import export_window
+from src.fiberfit_control.support import my_exception as MyException
+from src.fiberfit_gui import fiberfit_GUI
+from src.fiberfit_model import computerVision_BP
+from src.fiberfit_control.support import img_model
+from src.fiberfit_gui import settings_dialog as SettingsDialog
+from src.fiberfit_gui import export_dialog as ExportDialog
+from src.fiberfit_gui import error_dialog as ErrorDialog
 
 class ErrorDialog(QDialog, ErrorDialog.Ui_ErrorDialog):
     def __init__(self, parent=None, screenDim = None):
