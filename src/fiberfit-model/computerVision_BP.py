@@ -32,10 +32,10 @@ import matplotlib.pyplot as plt
 # except ImportError:
 #     from smop.runtime import *
 
-from fiberfit.EllipseDirectFit import*  # XXX: Changed here
-from fiberfit import helpers  # XXX: Changed here
+from EllipseDirectFit import*  # XXX: Changed here
+import helpers  # XXX: Changed here
 
-from fiberfit import MyException
+import MyException
 
 figSize = 4.5
 

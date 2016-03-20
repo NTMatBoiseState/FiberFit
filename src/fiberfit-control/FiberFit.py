@@ -14,29 +14,29 @@ from PyPDF2 import PdfFileMerger as merger
 
 matplotlib.use("Qt5Agg")  ## forces to use Qt5Agg so that Backends work
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from fiberfit import fiberfit_GUI
-from fiberfit import computerVision_BP
+import fiberfit_GUI
+import computerVision_BP
 from PyQt5 import QtWidgets
 from PyQt5.Qt import *
 from PyQt5.QtWidgets import QFileDialog  # In order to select a file
-from fiberfit import img_model
+import img_model
 from orderedset import OrderedSet
 import base64
 from PyQt5.QtPrintSupport import QPrinter
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QDialogButtonBox, QDialog
-from fiberfit import SettingsDialog
-from fiberfit import ExportDialog
-from fiberfit import ErrorDialog
+import SettingsDialog
+import ExportDialog
+import ErrorDialog
 from PyQt5.QtGui import QTextDocument
 import os
 from PyQt5.QtWidgets import QDesktopWidget
-from fiberfit import export_window
+import export_window
 import random
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 import shutil
-from fiberfit import MyException
+import MyException
 
 class ErrorDialog(QDialog, ErrorDialog.Ui_ErrorDialog):
     def __init__(self, parent=None, screenDim = None):
