@@ -44,7 +44,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.progressBar.sizePolicy().hasHeightForWidth())
 
         self.progressBar.setSizePolicy(sizePolicy)
-
+        self.progressBar.setMinimum(0)
         self.progressBar.setMinimumSize(QtCore.QSize(50, 0))
         self.progressBar.setMaximumSize(QtCore.QSize(50, 20))
 

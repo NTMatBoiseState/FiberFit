@@ -34,19 +34,47 @@ from src.fiberfit_control.support import settings
 from src.fiberfit_control.support import error
 from src.fiberfit_control.support import report
 
-"""
-Main window of the application
-"""
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
-    show_report = pyqtSignal(int)
-    make_report = pyqtSignal(img_model.ImgModel)
-    do_run = pyqtSignal()
-    do_update = pyqtSignal(int)
-    sendProcessedImagesList = pyqtSignal(list, list, OrderedSet, float, float, float, float)
-    #  For pbar
-    sendProcessedImageCounter = pyqtSignal(int, img_model.ImgModel, list, int, int, int)
-    #  Error sig
-    sendErrorSig = pyqtSignal(list, int, int)
+
+    """Controller part of the application.
+
+    This class is reponsible for gluing parts from the model and gui together. It calls computerVision_BP
+    functions to analyze images passed from the user.
+
+    Utilizes various PyQt5 libraries to make a gui. Uses src.fiberfit_gui.fiberfity_GUI code to create its ui.
+
+    Attributes:
+        signals:
+            go_export: sends an img_model to src.fiberfit_control.support.report
+            go_run: signals starting of the thread
+            go_update: signals to update labels and populate combo box
+            send_data_to_report: sends data to src.fiberfit_control.support_report
+            go_process_iamges: signals to do final touches after image was processed by the computerVision_BP
+            send_error: signals that something went wrong
+        vars:
+            dataList: contains a list of already processed images. helps src.fiberfit_control.support.report remember
+                which images have already been processed.
+            screenDim: (w,h) of the screen
+            dpi: dots-per-inch of the screen
+            selected_files: target files that user selected
+            current_index: index of currently selected image
+            settings_browser: a settings QDialog
+            error_browser: error QDialog
+            runtime: measures time taken to perform computerVision_BP
+            is_resized: indicates if user already resized image to his/her preference
+            is_started: shows whether program analyzed an image already or not
+            run_counter: how many rounds the program ran (useful when needed to name saved png images)
+    """
+
+    go_export = pyqtSignal(img_model.ImgModel)
+    go_run = pyqtSignal()
+    # Args: int index of the image in the imgList
+    go_update = pyqtSignal(int)
+    # Args:
+    send_data_to_report = pyqtSignal(list, list, OrderedSet, float, float, float, float)
+    # Args:
+    go_process_images = pyqtSignal(int, img_model.ImgModel, list, int, int, int)
+    send_error = pyqtSignal(list, int, int)
 
     """
     Initializes all instance variables a.k.a attributes of a class.
@@ -54,100 +82,34 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
     def __init__(self, Parent=None):
         super(fft_mainWindow, self).__init__()
-        # screen dim
-        self.screenDim, self.dpi = self.receiveDim()
         self.imgList = OrderedSet()
-        self.csvIndex = 0
+        """"""
+        # Stuff I looked at
+
         self.dataList = []
-        self.setupUi(self, self.screenDim.height(), self.screenDim.width())
-        self.currentIndex = 0
-        self.isStarted = False
-        self.filenames = []
-        self.firstOne = True
-        # dir
-        self.directory = None
-        # Canvases to display the figures.
-        self.imgCanvas = None
-        self.logSclCanvas = None
-        self.angDistCanvas = None
-        self.cartDistCanvas = None
+        self.selected_files = []
+        self.current_index = 0
         self.runtime = 0
-        self.isResized = False
-        # Pops up a dialog with
-        self.dialogTextBrowser = report.ReportDialog(self, self.screenDim)
+        self.is_resized = False
+        self.is_started = False
+        self.saved_images_dir_name = ""
+        self.run_counter = 0 # I need it to be able to process multiple images.
         self.settingsBrowser = settings.SettingsWindow(self, self.screenDim)
         self.errorBrowser = error.ErrorDialog(self, self.screenDim)
-        # Settings
-        self.uCut = float(self.settingsBrowser.ttopField.text())
-        self.lCut = float(self.settingsBrowser.tbottomField.text())
-        self.angleInc = float(self.settingsBrowser.btopField.text())
-        self.radStep = float(self.settingsBrowser.bbottomField.text())
-        # dataList for export
-        self.dataList = []
-        # All the events happen below
-        self.startButton.clicked.connect(self.start)
-        self.nextButton.clicked.connect(self.nextImage)
-        self.prevButton.clicked.connect(self.prevImage)
+        self.report_dialog = report.ReportDialog(self, self.screenDim)
 
-        self.loadButton.clicked.connect(self.launch)
+        self.screenDim, self.dpi = self.receiveDim()
+        self.setupUi(self, self.screenDim.height(), self.screenDim.width())
+        # model settings
+        self.u_cut = float(self.settingsBrowser.ttopField.text())
+        self.l_cut = float(self.settingsBrowser.tbottomField.text())
+        self.angle_inc = float(self.settingsBrowser.btopField.text())
+        self.rad_step = float(self.settingsBrowser.bbottomField.text())
 
-        self.do_update.connect(self.populateComboBox)
-        self.do_update.connect(self.setupLabels)
-
-        self.clearButton.clicked.connect(self.clear)
-        self.exportButton.clicked.connect(lambda i: self.show_report.emit(self.currentIndex))
-
-        # self.make_report.connect(self.dialogTextBrowser.printerSetup)
-        self.show_report.connect(self.do_show_report)
-        self.make_report.connect(self.dialogTextBrowser.do_test)
-
-        # sends export data sets
-        self.sendProcessedImagesList.connect(self.dialogTextBrowser.receiver)
-
-        self.settingsButton.clicked.connect(self.settingsBrowser.do_change)
-        self.settingsBrowser.sendValues.connect(self.updateValues)
-
-        # sends off a signal containing string.
-        # Conveniently the string will be the name of the file.
-        self.selectImgBox.activated[str].connect(self.changeState)
-
-        # pbar
-        self.do_run.connect(self.runner)
-        self.progressBar.setMinimum(0)
-        self.sendProcessedImageCounter.connect(self.processImages)
-
-        self.number = 0 # I need it to be able to process multiple images.
-
-        self.sendErrorSig.connect(self.handleError)
-        # self.initialize()
-
-        """This is to gain better insight into Slots and Signals.
-        def userLog(int):
-            print("User requested reported for image: {}".format(int))
-        self.show_report.connect(userLog)
-        """
-
-    def initialize(self):
-        directory = "temp"
-        isCreated = False
-        while isCreated == False:
-            randomNum = random.randint(0, 100000000) # 10,000,000
-            self.directory = directory+randomNum.__str__()
-            print("I created dir!")
-            if not os.path.exists(directory):
-                os.makedirs(self.directory)
-                isCreated = True
-                print("wtf....")
-
-    """
-    Updates the settings
-    """
-    @pyqtSlot(float, float, float, float)
-    def updateValues(self, uCut, lCut, angleInc, radStep):
-        self.uCut = uCut
-        self.lCut = lCut
-        self.angleInc = angleInc
-        self.radStep = radStep
+        self.img_canvas = None
+        self.log_scl_canvas = None
+        self.ang_dist_canvas = None
+        self.cart_dist_canvas = None
 
     @pyqtSlot(list, int, int)
     def handleError(self, files, index, identifier):
@@ -175,74 +137,53 @@ Please go back to "Settings" and change some values.
 
 
     def runner(self):
-        # for filename in self.filenames:
-        #           # Retrieve Figures from data analysis code
-        #     try:
-        #         sig, k, th, R2, angDist, cartDist, logScl, orgImg,  figWidth, figHeigth = computerVision_BP.process_image(filename,
-        #                                                                                              self.uCut,
-        #                                                                                              self.lCut, self.angleInc,
-        #                                                                                              self.radStep, self.screenDim,
-        #                                                                                              self.dpi)
-        #     except TypeError:
-        #         self.errorBrowser.show()
-        #     except ValueError:
-        #         self.errorBrowser.show()
-        #     except OSError:
-        #         self.errorBrowser.show()
-
-
-        pThread = myThread(self.sendProcessedImageCounter, self.sendErrorSig, self.progressBar, self.errorBrowser, self.directory, self.number)
-        pThread.update_values(self.uCut, self.lCut, self.angleInc, self.radStep, self.screenDim, self.dpi, self.filenames)
-        if (self.filenames.__len__() != 0):
+        pThread = myThread(self.go_process_images, self.send_error, self.progressBar, self.errorBrowser, self.saved_images_dir_name, self.run_counter)
+        pThread.update_values(self.u_cut, self.l_cut, self.angle_inc, self.rad_step, self.screenDim, self.dpi, self.selected_files)
+        if (self.selected_files.__len__() != 0):
             self.progressBar.show()
             self.progressBar.setValue(0)
-        a = pThread.start()
-
+        pThread.start()
 
     """
     Function that signals to show the report.
     """
-
-    def do_show_report(self):
-        if (self.isStarted):
-            self.make_report.emit(self.imgList[self.currentIndex%self.filenames.__len__()])
-
-    """
-    Calculates dimensions of the screen.
-    """
-
-    def receiveDim(self):
-        screenDim = QDesktopWidget().availableGeometry()
-        screen = QtWidgets.QApplication.primaryScreen()
-        dpi = screen.logicalDotsPerInch()
-        return screenDim, dpi
+    @pyqtSlot()
+    def export(self):
+        if (self.is_started):
+            self.go_export.emit(self.imgList[self.current_index % self.selected_files.__len__()])
 
     """
     Clears out canvas.
     """
 
+    def coeff_labels_set_text(self, text, num = None):
+        if num is not None:
+            self.setupLabels(num)
+        else:
+            self.kLabel.setText("k = " + text)
+            self.muLabel.setText("μ =  " + text)
+            self.RLabel.setText(('R' + u"\u00B2") + " = " + text)
+            self.sigLabel.setText("σ = " + text)
+
     def clear(self):
-        if (self.isStarted):
-            self.kLabel.setText("k = ")
-            self.muLabel.setText("μ =  ")
-            self.RLabel.setText(('R' + u"\u00B2") + " = ")
-            self.sigLabel.setText("σ = ")
+        if (self.is_started):
+            self.coeff_labels_set_text(text="", num=None)
             # clears canvas
             self.cleanCanvas()
             self.progressBar.hide()
-            self.filenames.clear()
+            self.selected_files.clear()
             # clears combo-box
             self.selectImgBox.clear()
             # resets isStarted
-            self.isStarted = False
+            self.is_started = False
             self.dataList.clear()
             # empties all images
             self.imgList.clear()
             # resets current index
-            self.currentIndex = 0
-            shutil.rmtree(self.directory)
-            self.directory = None
-            self.number = 0
+            self.current_index = 0
+            shutil.rmtree(self.saved_images_dir_name)
+            self.saved_images_dir_name = None
+            self.run_counter = 0
             print("TOTAL it took {n} seconds.".format(n = self.runtime))
 
     """
@@ -250,16 +191,16 @@ Please go back to "Settings" and change some values.
     """
 
     def launch(self):
-        if (self.directory == None):
-            self.initialize()
-        self.filenames = []
+        if (self.saved_images_dir_name == None):
+            self.create_temp_dir()
+        self.selected_files = []
         dialog = QFileDialog()
         filenames = dialog.getOpenFileNames(self, '', None)  # creates a list of fileNames
         for name in filenames[0]:
-            self.filenames.append(pathlib.Path(name))
+            self.selected_files.append(pathlib.Path(name))
         self.progressBar.setMaximum(len(filenames[0]))
         #self.currentIndex = 0
-        self.do_run.emit()
+        self.go_run.emit()
 
 
     """
@@ -269,10 +210,11 @@ Please go back to "Settings" and change some values.
 
     @pyqtSlot(int, img_model.ImgModel, list, int, int, int)
     def processImages(self, count, processedImage, processedImagesList, isLast, time, number):
-        self.number = number
+        self.run_counter = number
         # Ordered Set
         if processedImage in self.imgList:
             print("Before removing : " + str(self.imgList.__len__()))
+
             self.imgList.remove(processedImage)
             print("After removing : " + str(self.imgList.__len__()))
             self.imgList.add(processedImage)
@@ -281,32 +223,32 @@ Please go back to "Settings" and change some values.
         else:
             self.imgList.add(processedImage)
             print("I addded this image")
-        self.sendProcessedImagesList.emit(processedImagesList, self.dataList, self.imgList, self.uCut, self.lCut, self.radStep,
-                                          self.angleInc)
+        self.send_data_to_report.emit(processedImagesList, self.dataList, self.imgList, self.u_cut, self.l_cut, self.rad_step,
+                                      self.angle_inc)
 
-        if self.isStarted:
+        if self.is_started:
             # removes/deletes all canvases
             self.cleanCanvas()
         # fills canvas
         print("FOFODF" + str(self.imgList.__len__()))
-        print("SODSD" + str(self.currentIndex))
+        print("SODSD" + str(self.current_index))
         try:
-            self.fillCanvas(self.imgList.__getitem__(self.currentIndex))
+            self.fillCanvas(self.imgList.__getitem__(self.current_index))
         except IndexError:
-            self.currentIndex -= 1
-            self.fillCanvas(self.imgList.__getitem__(self.currentIndex))
+            self.current_index -= 1
+            self.fillCanvas(self.imgList.__getitem__(self.current_index))
         print("DID I EXCUTE RIGHT AMOUNT OF TIMES?")
-        if (not self.isResized):
+        if (not self.is_resized):
             self.applyResizing()
-            self.isResized = True
+            self.is_resized = True
         # started
-        self.isStarted = True
-        self.do_update.emit(self.currentIndex)
-        self.removeTemp()
+        self.is_started = True
+        self.go_update.emit(self.current_index)
+       # self.removeTemp()
         #  Setting progress bar business
         self.progressBar.setValue(count)
         self.progressBar.valueChanged.emit(self.progressBar.value())
-        self.currentIndex += 1
+        self.current_index += 1
         self.runtime += time
         if (isLast == 1):
             #self.currentIndex -= 1
@@ -335,21 +277,21 @@ Please go back to "Settings" and change some values.
         self.selectImgBox.clear()
         for element in self.imgList:
             self.selectImgBox.addItem(element.filename.stem)
-        self.selectImgBox.setCurrentIndex(self.currentIndex)
+        self.selectImgBox.setCurrentIndex(self.current_index)
 
     """
     Cleans the canvas.
     """
 
     def cleanCanvas(self):
-        self.figureLayout.removeWidget(self.angDistCanvas)
-        self.figureLayout.removeWidget(self.cartDistCanvas)
-        self.figureLayout.removeWidget(self.logSclCanvas)
-        self.figureLayout.removeWidget(self.imgCanvas)
-        self.angDistCanvas.deleteLater()
-        self.cartDistCanvas.deleteLater()
-        self.imgCanvas.deleteLater()
-        self.logSclCanvas.deleteLater()
+        self.figureLayout.removeWidget(self.ang_dist_canvas)
+        self.figureLayout.removeWidget(self.cart_dist_canvas)
+        self.figureLayout.removeWidget(self.log_scl_canvas)
+        self.figureLayout.removeWidget(self.img_canvas)
+        self.ang_dist_canvas.deleteLater()
+        self.cart_dist_canvas.deleteLater()
+        self.img_canvas.deleteLater()
+        self.log_scl_canvas.deleteLater()
 
     """
     Fills the canvas.
@@ -357,52 +299,44 @@ Please go back to "Settings" and change some values.
 
     def fillCanvas(self, img):
         # updates canvases
-        self.imgCanvas = QtWidgets.QLabel()
-        w = self.imgCanvas.height()
-        h = self.imgCanvas.width()
-        #use full ABSOLUTE path to the image, not relative
-        self.imgCanvas.setPixmap(QPixmap(self.directory + "/orgImg_" + img.number.__str__() + ".png").scaled(300,400,Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        self.imgCanvas.setScaledContents(True)
-        self.imgCanvas.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
 
+        self.img_canvas = QtWidgets.QLabel()
+        self.img_canvas.setPixmap(QPixmap(self.saved_images_dir_name + "/orgImg_" + img.number.__str__() + ".png").scaled(300, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.img_canvas.setScaledContents(True)
+        self.img_canvas.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
 
+        self.log_scl_canvas = QtWidgets.QLabel()
+        self.log_scl_canvas.setPixmap(QPixmap(self.saved_images_dir_name + "/logScl_" + img.number.__str__() + ".png").scaled(300, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.log_scl_canvas.setScaledContents(True)
+        self.log_scl_canvas.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
 
-        self.logSclCanvas = QtWidgets.QLabel()
-        self.logSclCanvas.setPixmap(QPixmap(self.directory + "/logScl_" + img.number.__str__() + ".png").scaled(300,400,Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        self.logSclCanvas.setScaledContents(True)
-        self.logSclCanvas.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        self.ang_dist_canvas = QtWidgets.QLabel()
+        self.ang_dist_canvas.setPixmap(QPixmap(self.saved_images_dir_name + "/angDist_" + img.number.__str__() + ".png").scaled(300, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.ang_dist_canvas.setScaledContents(True)
+        self.ang_dist_canvas.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
 
-        self.angDistCanvas = QtWidgets.QLabel()
-        self.angDistCanvas.setPixmap(QPixmap(self.directory + "/angDist_" + img.number.__str__() + ".png").scaled(300,400,Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        self.angDistCanvas.setScaledContents(True)
-        self.angDistCanvas.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        self.cart_dist_canvas = QtWidgets.QLabel()
+        self.cart_dist_canvas.setPixmap(QPixmap(self.saved_images_dir_name + "/cartDist_" + img.number.__str__() + ".png").scaled(300, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.cart_dist_canvas.setScaledContents(True)
+        self.cart_dist_canvas.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
 
-        self.cartDistCanvas = QtWidgets.QLabel()
-        self.cartDistCanvas.setPixmap(QPixmap(self.directory + "/cartDist_" + img.number.__str__() + ".png").scaled(300,400,Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        self.cartDistCanvas.setScaledContents(True)
-        self.cartDistCanvas.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
-
-
-        #self.imgCanvas = FigureCanvas(img.orgImg)
-        #self.logSclCanvas = FigureCanvas(img.logScl)
-        #self.angDistCanvas = FigureCanvas(img.angDist)
-        #self.cartDistCanvas = FigureCanvas(img.cartDist)
         # adds them to layout
-        self.figureLayout.addWidget(self.imgCanvas, 0, 0)
-        self.figureLayout.addWidget(self.logSclCanvas, 0, 1)
-        self.figureLayout.addWidget(self.angDistCanvas, 1, 0)
-        self.figureLayout.addWidget(self.cartDistCanvas, 1, 1)
+        self.figureLayout.addWidget(self.img_canvas, 0, 0)
+        self.figureLayout.addWidget(self.log_scl_canvas, 0, 1)
+        self.figureLayout.addWidget(self.ang_dist_canvas, 1, 0)
+        self.figureLayout.addWidget(self.cart_dist_canvas, 1, 1)
         self.figureLayout.itemAtPosition(0, 1).widget().setToolTip("FFT Power Spectrum")
         self.figureLayout.itemAtPosition(0, 0).widget().setToolTip("Analyzed Image")
         self.figureLayout.itemAtPosition(1, 0).widget().setToolTip("Red Line = Fiber Orientation")
         self.figureLayout.itemAtPosition(1, 1).widget().setToolTip("Blue Line = Fiber Distribution")
+
     """
     Helps to process an image from using a Combo Box.
     @param: img to be processed
     """
 
     def processImagesFromComboBox(self, img):
-        if self.isStarted:
+        if self.is_started:
             self.cleanCanvas()
         self.fillCanvas(img)
 
@@ -412,7 +346,6 @@ Please go back to "Settings" and change some values.
 
     def start(self):
         # Processes selected images; sets up the labels and fills selectImgBox with references to images.
-        # TODO: Make an exception to catch IndexError, and pop the window with appropriate message.
         self.kLabel.setText("k = ")
         self.muLabel.setText("μ =  ")
         self.RLabel.setText(('R' + u"\u00B2") + " = ")
@@ -422,33 +355,14 @@ Please go back to "Settings" and change some values.
         # clears combo-box
         self.selectImgBox.clear()
         # resets isStarted
-        self.isStarted = False
+        self.is_started = False
         # empties all images
         self.imgList.clear()
         # resets current index
-        self.currentIndex = 0
-        self.do_run.emit()
+        self.current_index = 0
+        self.go_run.emit()
         #self.do_update.emit(self.currentIndex)
         self.removeTemp()
-
-    """
-    Removes files in temp directory. Prevents memory leak.
-    """
-
-    def removeTemp(self):
-        # TODO: fix bug so that it does remove images only when they are selected.
-        files = []
-        files.append('angDist.png')
-        files.append('orgImg.png')
-        files.append('cartDist.png')
-        files.append('logScl.png')
-        files.append('angDist4.png')
-        files.append('orgImg4.png')
-        files.append('cartDist4.png')
-        files.append('logScl4.png')
-        for filename in files:
-            if os.path.isfile(filename):
-                os.remove(filename)
 
     """
     Sets up appropriate labels depending on which image is selected.
@@ -468,14 +382,14 @@ Please go back to "Settings" and change some values.
     """
 
     def nextImage(self):
-        if (self.isStarted):
+        if (self.is_started):
             # updates current index
-            self.currentIndex = (self.currentIndex + 1) % len(self.imgList)
-            image = self.imgList.__getitem__(self.currentIndex)
+            self.current_index = (self.current_index + 1) % len(self.imgList)
+            image = self.imgList.__getitem__(self.current_index)
             self.cleanCanvas()
             self.fillCanvas(image)
-            self.setupLabels((self.currentIndex))
-            self.selectImgBox.setCurrentIndex(self.currentIndex)
+            self.setupLabels((self.current_index))
+            self.selectImgBox.setCurrentIndex(self.current_index)
 
     """
     Scrolls to previous image.
@@ -484,22 +398,59 @@ Please go back to "Settings" and change some values.
     """
 
     def prevImage(self):
-        if (self.isStarted):
+        if (self.is_started):
             # updates current index
-            self.currentIndex = (self.currentIndex - 1) % len(self.imgList)
-            image = self.imgList.__getitem__(self.currentIndex)
+            self.current_index = (self.current_index - 1) % len(self.imgList)
+            image = self.imgList.__getitem__(self.current_index)
             self.cleanCanvas()
             self.fillCanvas(image)
-            self.setupLabels(self.currentIndex)
-            self.selectImgBox.setCurrentIndex(self.currentIndex)
+            self.setupLabels(self.current_index)
+            self.selectImgBox.setCurrentIndex(self.current_index)
 
-    """
-    Slot for Combo Box's activated() signal. Searches for image and displays it onto
-    canvas.
-    Note, O(n) because of performing a search for image.
-    """
+
+
+    """Stuff I looked at"""
+
+    @pyqtSlot(float, float, float, float)
+    def updateValues(self, uCut, lCut, angleInc, radStep):
+        """Updates settings per user's selection.
+        :param uCut: upper cut
+        :param lCut: lower cut
+        :param angleInc: angle increment
+        :param radStep: radial step
+        :return: void
+        """
+        self.u_cut = uCut
+        self.l_cut = lCut
+        self.angle_inc = angleInc
+        self.rad_step = radStep
+
+    def connect_signals_to_slots(self):
+        """Helper function to connect emitted signals to appropriate slots
+        """
+        self.send_data_to_report.connect(self.report_dialog.receiver)
+        self.go_export.connect(self.report_dialog.do_test)
+        self.go_run.connect(self.runner)
+        self.go_update.connect(self.populateComboBox)
+        self.go_update.connect(self.setupLabels)
+        self.send_error.connect(self.handleError)
+        self.go_process_images.connect(self.processImages)
+        self.settingsBrowser.sendValues.connect(self.updateValues)
+
+        self.exportButton.clicked.connect(self.export)
+        self.startButton.clicked.connect(self.start)
+        self.nextButton.clicked.connect(self.nextImage)
+        self.prevButton.clicked.connect(self.prevImage)
+        self.loadButton.clicked.connect(self.launch)
+        self.clearButton.clicked.connect(self.clear)
+        self.settingsButton.clicked.connect(self.settingsBrowser.do_change)
+        self.selectImgBox.activated[str].connect(self.changeState)
 
     def changeState(self, filename):
+        """Changes image according to user's selection via combo box.
+        :param filename: name of which image to change state to
+        :return: void
+        """
         # find img
         for image in self.imgList:
             if image.filename.stem == filename:
@@ -509,11 +460,34 @@ Please go back to "Settings" and change some values.
                 self.muLabel.setText("μ = " + str(round(image.th, 2)))
                 self.RLabel.setText(('R' + u"\u00B2") + " = " + str(round(image.R2, 2)))
                 # sets current index to the index of the found image.
-                self.currentIndex = self.imgList.index(image)
+                self.current_index = self.imgList.index(image)
 
+    def create_temp_dir(self):
+        """Creates a directory to where app would dump all the processed images for canvases.
+        Note, 10,000,000 is a hardcoded value (I realize it), but for intended purposes, it
+        is okay. The goal was to make sure that the user doesn't have this directory already created in system.
+        :return: void
+        """
+        directory = "temp"
+        isCreated = False
+        while not isCreated:
+            randomNum = random.randint(0, 100000000) # 10,000,000
+            self.saved_images_dir_name = directory + randomNum.__str__()
+            if not os.path.exists(directory):
+                os.makedirs(self.saved_images_dir_name)
+                isCreated = True
+
+    def receiveDim(self):
+        """Calculates dimensions of the screen.
+        :return: void
+        """
+        screenDim = QDesktopWidget().availableGeometry()
+        screen = QtWidgets.QApplication.primaryScreen()
+        dpi = screen.logicalDotsPerInch()
+        return screenDim, dpi
 
     def closeEvent(self, event):
-        self.delete_dir(self.directory)
+        self.delete_dir(self.saved_images_dir_name)
 
 
     def delete_dir(self, dir):
@@ -522,11 +496,9 @@ Please go back to "Settings" and change some values.
             shutil.rmtree(dir)
         except:
             pass
-            # means direcotry has not been created. if usre opens an app and then immediately closes it.
-
+            # means directory has not been created. if usre opens an app and then immediately closes it.
 
 class myThread(threading.Thread):
-
 
     def __init__(self, sig, errorSig, bar, errorBrowser, dir, num):
         super(myThread, self).__init__()
@@ -668,7 +640,6 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
     fft_app = fft_mainWindow()
     fft_app.receiveDim()
-    #delete_dir(dir)
     fft_app.show()
     sys.exit(app.exec_())
 
