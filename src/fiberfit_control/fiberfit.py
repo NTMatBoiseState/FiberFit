@@ -97,7 +97,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.run_counter = 0 # I need it to be able to process multiple images.
         self.settingsBrowser = settings.SettingsWindow(self, self.screenDim)
         self.errorBrowser = error.ErrorDialog(self, self.screenDim)
-        self.report_dialog = report.ReportDialog(self, self.screenDim)
+        self.report_dialog = report.ReportDialog(self, self, self.screenDim)
 
 
         # model settings

@@ -1,7 +1,7 @@
 from src.fiberfit_gui import export_window
 from src.fiberfit_control.support import img_model
 
-from PyQt5.QtWidgets import QDialogButtonBox, QDialog
+from PyQt5.QtWidgets import QDialogButtonBox, QDialog, QFileDialog
 from PyQt5.QtGui import QTextDocument
 from PyQt5.QtPrintSupport import QPrinter
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
@@ -9,6 +9,8 @@ from PyPDF2 import PdfFileMerger as merger
 from PyQt5 import QtWebKitWidgets
 import csv
 from orderedset import OrderedSet
+import pathlib
+import os
 
 class ReportDialog(QDialog, export_window.Ui_Dialog):
     """ Summary of ReportDialog.
@@ -29,9 +31,10 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
     do_excel = pyqtSignal()
     sendDataList = pyqtSignal(list)
 
-    def __init__(self, parent=None, screenDim=None):
+    def __init__(self, fft_mainWindow,parent=None, screenDim=None):
 
         super(ReportDialog, self).__init__(parent)
+        self.fft_mainWindow=fft_mainWindow
         self.dataList = []
         self.setupUi(self, screenDim)
         self.screenDim = screenDim
@@ -182,7 +185,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
             a = csv.writer(csvfile)
             a.writerow(['Name', 'LowerCut', 'UpperCut', 'RadialStep', 'AngleIncrement', 'Sig', 'Mu', 'K', 'R^2', 'Time'])
             a.writerows(self.dataList)
-        fft_mainWindow.dataList = self.dataList
+        self.fft_mainWindow.dataList = self.dataList
 
     """
     Pops out a dialog allowing user to select where to save the image.
