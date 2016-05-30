@@ -85,21 +85,21 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.imgList = OrderedSet()
         """"""
         # Stuff I looked at
-
+        self.screenDim, self.dpi = self.receiveDim()
+        self.setupUi(self, self.screenDim.height(), self.screenDim.width())
         self.dataList = []
         self.selected_files = []
         self.current_index = 0
         self.runtime = 0
         self.is_resized = False
         self.is_started = False
-        self.saved_images_dir_name = ""
+        self.saved_images_dir_name = ''
         self.run_counter = 0 # I need it to be able to process multiple images.
         self.settingsBrowser = settings.SettingsWindow(self, self.screenDim)
         self.errorBrowser = error.ErrorDialog(self, self.screenDim)
         self.report_dialog = report.ReportDialog(self, self.screenDim)
 
-        self.screenDim, self.dpi = self.receiveDim()
-        self.setupUi(self, self.screenDim.height(), self.screenDim.width())
+
         # model settings
         self.u_cut = float(self.settingsBrowser.ttopField.text())
         self.l_cut = float(self.settingsBrowser.tbottomField.text())
@@ -110,6 +110,8 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.log_scl_canvas = None
         self.ang_dist_canvas = None
         self.cart_dist_canvas = None
+
+        self.connect_signals_to_slots()
 
     @pyqtSlot(list, int, int)
     def handleError(self, files, index, identifier):
@@ -139,7 +141,7 @@ Please go back to "Settings" and change some values.
     def runner(self):
         pThread = myThread(self.go_process_images, self.send_error, self.progressBar, self.errorBrowser, self.saved_images_dir_name, self.run_counter)
         pThread.update_values(self.u_cut, self.l_cut, self.angle_inc, self.rad_step, self.screenDim, self.dpi, self.selected_files)
-        if (self.selected_files.__len__() != 0):
+        if self.selected_files.__len__() != 0:
             self.progressBar.show()
             self.progressBar.setValue(0)
         pThread.start()
@@ -182,16 +184,15 @@ Please go back to "Settings" and change some values.
             # resets current index
             self.current_index = 0
             shutil.rmtree(self.saved_images_dir_name)
-            self.saved_images_dir_name = None
+            self.saved_images_dir_name = ''
             self.run_counter = 0
-            print("TOTAL it took {n} seconds.".format(n = self.runtime))
 
     """
     Allows user to select image to use.
     """
 
     def launch(self):
-        if (self.saved_images_dir_name == None):
+        if self.saved_images_dir_name == '':
             self.create_temp_dir()
         self.selected_files = []
         dialog = QFileDialog()
@@ -476,6 +477,7 @@ Please go back to "Settings" and change some values.
             if not os.path.exists(directory):
                 os.makedirs(self.saved_images_dir_name)
                 isCreated = True
+                print("directoryu created!")
 
     def receiveDim(self):
         """Calculates dimensions of the screen.
@@ -517,7 +519,7 @@ class myThread(threading.Thread):
         self.number = num
 
 
-    def update_values(self, uCut, lCut, angleInc, radStep, screenDim, dpi, filenames):
+    def update_values(self,uCut,lCut,angleInc,radStep,screenDim,dpi,filenames):
         self.lCut = lCut
         self.uCut = uCut
         self.angleInc = angleInc
@@ -532,7 +534,6 @@ class myThread(threading.Thread):
         toContinue = True
         start = time.time()
         isZeroException = 0
-        print(start)
         isLast = 0
         for filename in self.filenames:
             toContinue = True
@@ -547,7 +548,7 @@ class myThread(threading.Thread):
                                                                                                self.dpi,
                                                                                                self.directory,
                                                                                                self.number)
-
+                print("I made passsed tryed")
                 # Starting from Python3, there is a distinctin between bytes and str. Thus, I can't use
                 # methods of str on bytes. However I need to do that in order to properly encode the image
                 # into b64. The main thing is that bytes-way produces some improper characters that mess up
@@ -625,10 +626,6 @@ class myThread(threading.Thread):
                     print("I am in else")
                     self.errorSig.emit(self.filenames, count, isZeroException)
         end = time.time()
-
-        print(end)
-        print(start)
-        print(end - start)
         if toContinue:
             time.sleep(0.5)
             self.bar.setWindowOpacity(0)

@@ -257,17 +257,11 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi, directory
     figWidth = 4.5
     figHeigth = 4.5
 
-
     im = scipy.ndimage.imread(fname=str(name))
-
     m, n = im.shape
 
-    if (m != n):
-        print(str(m))
-        print(str(n))
-        print("ERROR")
+    if m != n:
         raise MyException.MyError("Error: image must be square")
-
 
     # Remove a row and column if the dimension of the image is odd
     if (m % 2 == 1):
@@ -283,9 +277,13 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi, directory
     originalImage.add_axes(ax)
     plt.imshow(im, cmap='gray', aspect='auto')
     plt.axis('off')
+    print("BEFORE SAVEFIG")
+    # TODO: dir is empty????
+    print(dir + 'orgImg_' + number.__str__())
     originalImage.savefig(dir + 'orgImg_' + number.__str__())
+    print("AFTER SAVEFIG")
     plt.close()
-
+    print("SAVED???")
     # # Plot Upper left - Original Image with size 4
     # originalImage4 = plt.figure(frameon=False, figsize=(figSize, figSize))
     # # Makes it so the image fits entire dedicated space.
@@ -345,7 +343,7 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi, directory
     thrnd = math.ceil(t_final * 1000) / 1000
     krnd = math.trunc(krnd * 100) / 100
     thrnd = math.trunc(thrnd * 100) / 100
-
+    print("MADE IT HERE?")
     a = 32.02
     b= -12.43
     c = 47.06
