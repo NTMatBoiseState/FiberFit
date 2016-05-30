@@ -99,7 +99,6 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.errorBrowser = error.ErrorDialog(self, self.screenDim)
         self.report_dialog = report.ReportDialog(self, self, self.screenDim)
 
-
         # model settings
         self.u_cut = float(self.settingsBrowser.ttopField.text())
         self.l_cut = float(self.settingsBrowser.tbottomField.text())
@@ -117,9 +116,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     def handleError(self, files, index, identifier):
         if identifier == 0:
             self.errorBrowser.label.setText("""ERROR:
-
             Sorry, unfortunately, this file - {name} can not be processed.
-
             Please make sure that the image has 8-bit image depth,or, equivalently, gray color space and verify that you are using one of the approved file formats: pdf, png, tif, gif, or bmp."""
                                             .format(name=files[index]))
         elif identifier == 1:
@@ -137,11 +134,10 @@ Please go back to "Settings" and change some values.
         self.errorBrowser.show()
         self.progressBar.hide()
 
-
     def runner(self):
         pThread = myThread(self.go_process_images, self.send_error, self.progressBar, self.errorBrowser, self.saved_images_dir_name, self.run_counter)
         pThread.update_values(self.u_cut, self.l_cut, self.angle_inc, self.rad_step, self.screenDim, self.dpi, self.selected_files)
-        if self.selected_files.__len__() != 0:
+        if len(self.selected_files) != 0:
             self.progressBar.show()
             self.progressBar.setValue(0)
         pThread.start()
@@ -214,16 +210,10 @@ Please go back to "Settings" and change some values.
         self.run_counter = number
         # Ordered Set
         if processedImage in self.imgList:
-            print("Before removing : " + str(self.imgList.__len__()))
-
             self.imgList.remove(processedImage)
-            print("After removing : " + str(self.imgList.__len__()))
             self.imgList.add(processedImage)
-            print("After addubg : " + str(self.imgList.__len__()))
-            #self.currentIndex -= 1
         else:
             self.imgList.add(processedImage)
-            print("I addded this image")
         self.send_data_to_report.emit(processedImagesList, self.dataList, self.imgList, self.u_cut, self.l_cut, self.rad_step,
                                       self.angle_inc)
 
@@ -231,30 +221,22 @@ Please go back to "Settings" and change some values.
             # removes/deletes all canvases
             self.cleanCanvas()
         # fills canvas
-        print("FOFODF" + str(self.imgList.__len__()))
-        print("SODSD" + str(self.current_index))
         try:
             self.fillCanvas(self.imgList.__getitem__(self.current_index))
         except IndexError:
             self.current_index -= 1
             self.fillCanvas(self.imgList.__getitem__(self.current_index))
-        print("DID I EXCUTE RIGHT AMOUNT OF TIMES?")
         if (not self.is_resized):
             self.applyResizing()
             self.is_resized = True
         # started
         self.is_started = True
         self.go_update.emit(self.current_index)
-       # self.removeTemp()
         #  Setting progress bar business
         self.progressBar.setValue(count)
         self.progressBar.valueChanged.emit(self.progressBar.value())
         self.current_index += 1
         self.runtime += time
-        if (isLast == 1):
-            #self.currentIndex -= 1
-            print("I AM LAST!")
-
 
     """
     Makes so that screen can be resized after the images loaded.
@@ -532,13 +514,10 @@ class myThread(threading.Thread):
         processedImagesList = []
         count = 0
         toContinue = True
-        start = time.time()
         isZeroException = 0
         isLast = 0
         for filename in self.filenames:
             toContinue = True
-            #start = time.time()
-
             # Retrieve Figures from data analysis code
             try:
                 sig, k, th, R2, angDist,  cartDist, logScl,  orgImg,  figWidth, figHeigth, runtime = computerVision_BP.process_image(filename,
@@ -558,13 +537,7 @@ class myThread(threading.Thread):
                 cartDistEncoded = base64.encodebytes(open(self.directory + "/" + 'cartDist_' + self.number.__str__() + '.png', 'rb').read()).decode('utf-8')
                 logSclEncoded = base64.encodebytes(open(self.directory + "/" + 'logScl_' + self.number.__str__() + '.png', 'rb').read()).decode('utf-8')
                 orgImgEncoded = base64.encodebytes(open(self.directory + "/" +  'orgImg_' + self.number.__str__() + '.png', 'rb').read()).decode('utf-8')
-                #
-                # angDistEncoded4 = base64.encodebytes(open('angDist4.png', 'rb').read()).decode('utf-8')
-                # cartDistEncoded4 = base64.encodebytes(open('cartDist4.png', 'rb').read()).decode('utf-8')
-                # logSclEncoded4 = base64.encodebytes(open('logScl4.png', 'rb').read()).decode('utf-8')
-                # orgImgEncoded4 = base64.encodebytes(open('orgImg4.png', 'rb').read()).decode('utf-8')
 
-                # Creates an object
                 processedImage = img_model.ImgModel(
                     filename=filename,
                     sig = sig,
@@ -573,28 +546,19 @@ class myThread(threading.Thread):
                     R2=R2,
                     orgImg=orgImg,
                     orgImgEncoded=orgImgEncoded,
-                   # orgImg4=orgImg4,
-                   # orgImgEncoded4 = orgImgEncoded4,
                     logScl=logScl,
                     logSclEncoded=logSclEncoded,
-                   # logScl4 = logScl4,
-                   # logSclEncoded4 = logSclEncoded4,
                     angDist=angDist,
                     angDistEncoded=angDistEncoded,
-                   # angDist4 = angDist4,
-                   # angDistEncoded4 = angDistEncoded4,
                     cartDist=cartDist,
                     cartDistEncoded=cartDistEncoded,
-                   # cartDist4 = cartDist4,
-                   # cartDistEncoded4 = cartDistEncoded4,
-                    timeStamp= datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"),
-                    number= self.number)
+                    timeStamp=datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p"),
+                    number=self.number)
                 self.number += 1
                 processedImagesList.append(processedImage)
                 count += 1
-                if (count == len(self.filenames)):
+                if count == len(self.filenames):
                     isLast = 1
-
             except MyException.MyError:
                 toContinue = False;
                 isZeroException = 2
@@ -615,17 +579,12 @@ class myThread(threading.Thread):
                 toContinue = False
                 isZeroException = 1
 
-            #except:
-            #    toContinue = False
-            #    isZeroException = 1
-
             finally:
                 if (toContinue):
                     self.sig.emit(count, processedImage, processedImagesList, isLast, runtime, self.number)
                 else:
                     print("I am in else")
                     self.errorSig.emit(self.filenames, count, isZeroException)
-        end = time.time()
         if toContinue:
             time.sleep(0.5)
             self.bar.setWindowOpacity(0)
