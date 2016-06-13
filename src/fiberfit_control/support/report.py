@@ -74,23 +74,15 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
         self.radio_append.toggled.connect(self.toggleHandler)
 
         self.buttonBox.button(QDialogButtonBox.Ok).clicked.connect(self.exportHandler)
-       # self.saveBox.button(QDialogButtonBox.SaveAll).clicked.connect(self.saveas)
-       # self.saveBox.button(QDialogButtonBox.Save).clicked.connect(self.saveas)
         self.do_print.connect(self.print)
         self.rejected.connect(self.resetOptions)
         self.topLogicHandler()
 
     def resetOptions(self):
-        #self.checkBox_report.setChecked(False)
         self.checkBox_summary.setChecked(False)
-        #self.radio_none.setChecked(True)
-        #self.radio_none.setEnabled(False)
         self.radio_append.setChecked(True)
         self.radio_multiple.setChecked(False)
         self.radio_single.setChecked(False)
-        #self.radio_single.setEnabled(False)
-        #self.radio_multiple.setEnabled(False)
-        #self.radio_append.setEnabled(False)
 
     def exportHandler(self):
         if self.isSummary and self.isReport is False:
@@ -119,8 +111,6 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
             if (not self.checkBox_summary.isChecked()):
                 self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
 
-       #  print("Status: " + str(self.reportOption))
-
     def topLogicHandler(self):
         if self.checkBox_summary.isChecked():
             self.isSummary = True
@@ -130,10 +120,6 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
             if (self.radio_none.isChecked()):
                 self.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
 
-
-    """Makes excel spreadsheet.
-    """
-    # TODO: Need to work here!
     @pyqtSlot()
     def exportExcel(self):
         if self.dataList.__len__() == 0:
@@ -148,7 +134,6 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
                  self.wholeList[0].k,
                  self.wholeList[0].R2,
                  self.wholeList[0].timeStamp])
-        # temp = self.list
         temp = []
         for i in range(0, self.wholeList.__len__()):
             temp.append(self.wholeList[i])
@@ -187,46 +172,35 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
             a.writerows(self.dataList)
         self.fft_mainWindow.dataList = self.dataList
 
-    """
-    Pops out a dialog allowing user to select where to save the image.
-    """
     def saveas(self):
+        """
+        Pops out a dialog allowing user to select where to save the image.
+        """
         dialog = QFileDialog()
         if (self.reportOption == 0):
             self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export", self.currentModel.filename.stem)[0])
-            #  print(self.savedfiles)
             self.close()
-
         elif (self.reportOption == 1):
             self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export",
-                                                                  "Image Name")[
-                                               0])
+                                                                  "Image Name")[0])
             self.close()
         elif (self.reportOption == 2):
             self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export",
-                                                                  "Report")[
-                                               0])
-            # print(self.savedfiles)
+                                                                  "Report")[0])
             self.close()
         if (self.isSummary and not self.isReport):
             self.savedfiles = pathlib.Path(dialog.getSaveFileName(self, "Export",
-                                                                  "SummaryTable")[
-                                               0])
-        # print("Did I make it here?")
-        # print(str(self.isReport))
+                                                                  "SummaryTable")[0])
         self.printerSetup()
         if (self.isReport == True):
             self.do_print.emit()
-        #    print("EMITTED!")
         if self.isSummary == True:
             self.do_excel.emit()
 
-
-    """
-    Checks which button sent a signal. Based on that it either prints all images or just a single specific image.
-    """
-
     def print(self):
+        """
+        Checks which button sent a signal. Based on that it either prints all images or just a single specific image.
+        """
         if (self.reportOption == 1):
             for model in self.wholeList:
                 self.document.setHtml(self.createHtml(model, forPrinting=True))
@@ -252,21 +226,20 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
             out = open(name, "wb")
             self.merger.write(out)
             self.merger.close()
-    """
-    Sets up default instructions for printer.
-    """
 
     def printerSetup(self):
+        """
+        Sets up default instructions for printer.
+        """
         self.printer.setPageSize(QPrinter.Letter)
         self.printer.setOutputFormat(QPrinter.PdfFormat)
         self.printer.setFullPage(True)
         self.printer.setOutputFileName(str(self.savedfiles)+".pdf")
 
-    """
-    Creates html-based report that shows the basic information about the sample.
-    """
-
     def createHtml(self, model, forPrinting):
+        """
+        Creates html-based report that shows the basic information about the sample.
+        """
         # for printing
         if forPrinting:
             html = """
