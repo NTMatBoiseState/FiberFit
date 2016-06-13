@@ -2,7 +2,6 @@
 
 """This is a control part of the GUI application"""
 
-
 "3rd party imports: "
 import pathlib
 import sys
@@ -26,7 +25,6 @@ from PyQt5.QtCore import Qt
 import shutil
 
 "custom file imports"
-from src.fiberfit_control.support import my_exception as MyException
 from src.fiberfit_gui import fiberfit_GUI
 from src.fiberfit_model import computerVision_BP
 from src.fiberfit_control.support import img_model
@@ -34,8 +32,8 @@ from src.fiberfit_control.support import settings
 from src.fiberfit_control.support import error
 from src.fiberfit_control.support import report
 
-class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
 
+class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """Controller part of the application.
 
     This class is reponsible for gluing parts from the model and gui together. It calls computerVision_BP

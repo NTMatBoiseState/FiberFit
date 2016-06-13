@@ -34,7 +34,6 @@ import matplotlib.pyplot as plt
 
 from src.fiberfit_model.EllipseDirectFit import*  # XXX: Changed here
 from src.fiberfit_model import helpers  # XXX: Changed here
-from src.fiberfit_control.support import my_exception as MyException
 
 figSize = 4.5
 

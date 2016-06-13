@@ -276,62 +276,22 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
                    encodedCartDist=model.cartDistEncoded.translate('bn\''),
                    date=model.timeStamp)
             return html
-        else:
-           # for display
-            html = """
-            <html>
-                <head>
-                    <link type="text/css" rel="stylesheet" href="ntm_style.css"/>
-                </head>
-                <body>
-                    <p> Image Name: {name} </p> <p> μ: {th} </p>
-                    <p>k: {k} </p>
-                    <p>R^2: {R2} </p>
-                    <p>Sig: {sig}</p>
-                    <br>
-                    <table>
-                        <tr>
-                            <td> <img src = "data:image/png;base64,{encodedOrgImg}" width = "{width}", height = "{heigth}" /></td>
-                            <td> <img src ="data:image/png;base64,{encodedLogScl}" width = "{width}", height = "{heigth}"/></td>
-                        </tr>
-                        <tr>
-                            <td> <img src = "data:image/png;base64,{encodedAngDist}" width = "{width}", height = "{heigth}" /></td>
-                            <td> <img src = "data:image/png;base64,{encodedCartDist}" width = "{width}", height = "{heigth}" /></td>
-                        </tr>
-                    </table>
-                    <p>
-                        {date}
-                    </p>
-                </body>
-            </html>
-            """.format(name=model.filename.stem, th=round(model.th, 2), k=round(model.k, 2), R2=round(model.R2, 2),
-                   sig = round(model.sig[0], 2),
-                   encodedOrgImg=model.orgImgEncoded.translate('bn\''),
-                   encodedLogScl=model.logSclEncoded.translate('bn\''),
-                   encodedAngDist=model.angDistEncoded.translate('bn\''),
-                   encodedCartDist=model.cartDistEncoded.translate('bn\''),
-                   width = (0.1*self.screenDim.width()).__str__(),
-                   heigth = (0.1*self.screenDim.width()).__str__(),
-                   date=model.timeStamp)
-            return html
-
-    """
-    Makes report for an image that was active when user pressed Export button.
-    """
 
     @pyqtSlot(img_model.ImgModel)
     def do_test(self, model):
+        """
+        Makes report for an image that was active when user pressed Export button.
+        """
         self.webView.setHtml(self.createHtml(model, False))
         self.document.setHtml(self.createHtml(model, True))
         self.currentModel = model
         self.show()
 
-    """
-    Received an information from FiberFit applicatin with necessary report data.
-    """
-
     @pyqtSlot(list, list, OrderedSet, float, float, float, float)
     def receiver(self, selectedImgs, dataList, imgList, uCut, lCut, radStep, angleInc):
+        """
+        Received an information from FiberFit applicatin with necessary report data.
+        """
         self.dataList = dataList
         self.list = selectedImgs
         self.wholeList = imgList
