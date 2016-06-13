@@ -562,23 +562,15 @@ class myThread(threading.Thread):
             except MyException.MyError:
                 toContinue = False;
                 isZeroException = 2
-
             except TypeError:
-                print("typeerror")
-
                 toContinue = False
             except ValueError:
-                print("ValueError")
-
                 toContinue = False
             except OSError:
-                print("OSErrro in thread")
                 toContinue = False
-
             except ZeroDivisionError:
                 toContinue = False
                 isZeroException = 1
-
             finally:
                 if (toContinue):
                     self.sig.emit(count, processedImage, processedImagesList, isLast, runtime, self.number)
