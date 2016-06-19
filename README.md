@@ -18,8 +18,9 @@ their respective sites to get instructions on how to install those libraries (e.
 * [pandas] (http://pandas.pydata.org/)
 * [Ordered Set] (http://orderedset.readthedocs.io/en/latest/installation.html)
 
-After you've installed required software above, run the following from ```src/fiberfit_control/```
- 1. python fiberfit.py
+After you've installed required software above, run the following from ```fiberfit``` directory:
+ 1. export PYTHONPATH='.'
+ 1. python src/fiberfit_control/fiberfit.py
 
 ## Get Started
 TODO: include get started documentation from NTM drive
