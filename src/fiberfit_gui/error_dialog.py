@@ -1,13 +1,20 @@
-#!usr/local/bin/python3
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_ErrorDialog(object):
+    """
+    Defines the view of the ErrorDialog, which pops out whenever there were any irregularities in the application.
+    """
     def setupUi(self, ErrorDialog, screenDim):
+        """
+        Creates all of the graphical user interface components.
+        :param ErrorDialog: instance of error.ErrorDialog
+        :param screenDim: dimensions of a screen
+        :return: none
+        """
         ErrorDialog.setObjectName("ErrorDialog")
         ErrorDialog.setEnabled(True)
         ErrorDialog.resize(0.3 * screenDim.width(), 0.15 * screenDim.height())
-        print(str(0.3*screenDim.width()))
         ErrorDialog.setMinimumSize(QtCore.QSize(0.12 * screenDim.width(), 0.12 * screenDim.height()))
         ErrorDialog.setMaximumSize(QtCore.QSize(0.9 * screenDim.width(), 0.9 * screenDim.height()))
         self.gridLayout = QtWidgets.QGridLayout(ErrorDialog)
@@ -42,11 +49,15 @@ class Ui_ErrorDialog(object):
         self.gridLayout_2.addWidget(self.label)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents_3)
         self.gridLayout.addWidget(self.scrollArea)
-
         self.retranslateUi(ErrorDialog)
         QtCore.QMetaObject.connectSlotsByName(ErrorDialog)
 
     def retranslateUi(self, ErrorDialog):
+        """
+        Sets up appropriate text values for the UI.
+        :param ErrorDialog: instance of error.ErrorDialog
+        :return: none
+        """
         _translate = QtCore.QCoreApplication.translate
         ErrorDialog.setWindowTitle(_translate("ErrorDialog", "Error"))
         self.label.setText(_translate("ErrorDialog",

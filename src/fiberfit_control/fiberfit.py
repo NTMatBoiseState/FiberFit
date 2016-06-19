@@ -74,14 +74,12 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     go_process_images = pyqtSignal(int, img_model.ImgModel, list, int, int, int)
     send_error = pyqtSignal(list, int, int)
 
-    """
-    Initializes all instance variables a.k.a attributes of a class.
-    """
-
     def __init__(self, Parent=None):
+        """
+        Initializes all instance variables a.k.a attributes of a class.
+        """
         super(fft_mainWindow, self).__init__()
         self.imgList = OrderedSet()
-        """"""
         # Stuff I looked at
         self.screenDim, self.dpi = self.receiveDim()
         self.setupUi(self, self.screenDim.height(), self.screenDim.width())
@@ -92,7 +90,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.is_resized = False
         self.is_started = False
         self.saved_images_dir_name = ''
-        self.run_counter = 0 # I need it to be able to process multiple images.
+        self.run_counter = 0  # I need it to be able to process multiple images.
         self.settingsBrowser = settings.SettingsWindow(self, self.screenDim)
         self.errorBrowser = error.ErrorDialog(self, self.screenDim)
         self.report_dialog = report.ReportDialog(self, self, self.screenDim)
@@ -140,17 +138,13 @@ Please go back to "Settings" and change some values.
             self.progressBar.setValue(0)
         pThread.start()
 
-    """
-    Function that signals to show the report.
-    """
     @pyqtSlot()
     def export(self):
+        """
+        Function that signals to show the report.
+        """
         if (self.is_started):
             self.go_export.emit(self.imgList[self.current_index % self.selected_files.__len__()])
-
-    """
-    Clears out canvas.
-    """
 
     def coeff_labels_set_text(self, text, num = None):
         if num is not None:
@@ -162,6 +156,9 @@ Please go back to "Settings" and change some values.
             self.sigLabel.setText("σ = " + text)
 
     def clear(self):
+        """
+        Clears out canvas.
+        """
         if (self.is_started):
             self.coeff_labels_set_text(text="", num=None)
             # clears canvas
@@ -181,11 +178,10 @@ Please go back to "Settings" and change some values.
             self.saved_images_dir_name = ''
             self.run_counter = 0
 
-    """
-    Allows user to select image to use.
-    """
-
     def launch(self):
+        """
+        Allows user to select image to use.
+        """
         if self.saved_images_dir_name == '':
             self.create_temp_dir()
         self.selected_files = []
@@ -197,14 +193,12 @@ Please go back to "Settings" and change some values.
         #self.currentIndex = 0
         self.go_run.emit()
 
-
-    """
-    Processes selected images. Displays it onto a canvas.
-    Technical: Creates img_model objects that encapsulate all of the useful data.
-    """
-
     @pyqtSlot(int, img_model.ImgModel, list, int, int, int)
     def processImages(self, count, processedImage, processedImagesList, isLast, time, number):
+        """
+        Processes selected images. Displays it onto a canvas.
+        Technical: Creates img_model objects that encapsulate all of the useful data.
+        """
         self.run_counter = number
         # Ordered Set
         if processedImage in self.imgList:
@@ -480,6 +474,7 @@ Please go back to "Settings" and change some values.
             pass
             # means directory has not been created. if usre opens an app and then immediately closes it.
 
+
 class myThread(threading.Thread):
 
     def __init__(self, sig, errorSig, bar, errorBrowser, dir, num):
@@ -497,7 +492,6 @@ class myThread(threading.Thread):
         self.errorSig = errorSig
         self.directory = dir
         self.number = num
-
 
     def update_values(self,uCut,lCut,angleInc,radStep,screenDim,dpi,filenames):
         self.lCut = lCut
@@ -557,9 +551,6 @@ class myThread(threading.Thread):
                 count += 1
                 if count == len(self.filenames):
                     isLast = 1
-            except MyException.MyError:
-                toContinue = False;
-                isZeroException = 2
             except TypeError:
                 toContinue = False
             except ValueError:
@@ -573,7 +564,6 @@ class myThread(threading.Thread):
                 if (toContinue):
                     self.sig.emit(count, processedImage, processedImagesList, isLast, runtime, self.number)
                 else:
-                    print("I am in else")
                     self.errorSig.emit(self.filenames, count, isZeroException)
         if toContinue:
             time.sleep(0.5)
