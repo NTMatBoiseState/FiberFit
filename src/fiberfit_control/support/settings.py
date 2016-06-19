@@ -2,7 +2,12 @@ from PyQt5.QtWidgets import QDialogButtonBox, QDialog
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from src.fiberfit_gui import settings_dialog as SettingsDialog
 
+
 class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
+    """
+    Class that contains the scientific parameter input to computerVision algorithm
+    """
+    # below are the default parameters for FiberFit
     genUCut = 2.0
     genLCut = 32.0
     genAngInc = 1.0
@@ -18,21 +23,19 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
         self.setupDefaultValues()
         self.rejected.connect(self.reset_changes)
 
-    """
-    Resets changes to the last saved changes.
-    """
-
     def reset_changes(self):
+        """
+        Resets changes to the last saved changes.
+        """
         self.ttopField.setText(self.valuesStack[self.valuesStack.__len__() - 1][0].__str__())
         self.tbottomField.setText(self.valuesStack[self.valuesStack.__len__() - 1][1].__str__())
         self.btopField.setText(self.valuesStack[self.valuesStack.__len__() - 1][2].__str__())
         self.bbottomField.setText(self.valuesStack[self.valuesStack.__len__() - 1][3].__str__())
 
-    """
-    Sets up default settings.
-    """
-
     def setupDefaultValues(self):
+        """
+        Sets up default settings.
+        """
         self.ttopField.setText(self.genUCut.__str__())
         self.tbottomField.setText(self.genLCut.__str__())
         self.btopField.setText(self.genAngInc.__str__())
@@ -40,6 +43,9 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
 
     @pyqtSlot()
     def make_change(self):
+        """
+        Read the input values from the text fields and sends them to fiberfit.py as a signal
+        """
         uCut = float(self.ttopField.text())
         lCut = float(self.tbottomField.text())
         angleInc = float(self.btopField.text())
@@ -49,4 +55,7 @@ class SettingsWindow(QDialog, SettingsDialog.Ui_Dialog):
 
     @pyqtSlot()
     def do_change(self):
+        """
+        This is a slot that's connected to Settings button of the main UI.
+        """
         self.exec_()
