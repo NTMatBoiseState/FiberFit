@@ -1,10 +1,19 @@
-#!usr/local/bin/python3
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import QFont
+
 
 class Ui_Dialog(object):
+    """
+    Defines the view of the Settings dialog, which pops out when the Settings button was pressed.
+    """
     def setupUi(self, Dialog, screenDim):
+        """
+        Sets up all of the GUI components of the Settings dialog.
+        Created by PyQt5 UI code generator 5.4
+        :param Dialog: instance of settings.SettingsWindow
+        :param screenDim: dimensions of the screen
+        :return: none
+
+        """
         Dialog.setObjectName("Dialog")
         Dialog.resize(0.12 * screenDim.width(), 0.65 * screenDim.height())
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(Dialog)
@@ -28,7 +37,6 @@ class Ui_Dialog(object):
         self.tfieldFrame = QtWidgets.QFrame(self.upperFrame)
         self.tfieldFrame.setMinimumSize(QtCore.QSize(70, 80))
         self.tfieldFrame.setMaximumSize(QtCore.QSize(70, 80))
-        #self.tfieldFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.tfieldFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.tfieldFrame.setObjectName("tfieldFrame")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.tfieldFrame)
@@ -49,7 +57,6 @@ class Ui_Dialog(object):
         self.bottomDescr.setObjectName("bottomDescr")
         self.verticalLayout_3.addWidget(self.bottomDescr)
         self.bottomFrame = QtWidgets.QFrame(Dialog)
-        #self.bottomFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.bottomFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.bottomFrame.setObjectName("bottomFrame")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.bottomFrame)
@@ -82,16 +89,20 @@ class Ui_Dialog(object):
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Reset|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.verticalLayout_3.addWidget(self.buttonBox)
-
         self.retranslateUi(Dialog)
         self.buttonBox.accepted.connect(Dialog.accept)
         self.buttonBox.rejected.connect(Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
+        """
+        Sets up appropriate text values for the UI.
+        :param Dialog: instance of settings.SettingsWindow
+        :return: none
+
+        """
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Settings", "Settings"))
-        #self.topDescr.setFont(QFont('SansSerif', 10, 'bold'))
         self.topDescr.setText(_translate("Dialog", "<b>Band-Pass Filter Settings</b>:\nInput fiber width -the frequency will be calculated using f = N/(2*t), where N is the image dimension. "))
         self.upperLabel.setText(_translate("Dialog", "Upper Cutoff (Smaller Thickness): \n"
 "\n"
