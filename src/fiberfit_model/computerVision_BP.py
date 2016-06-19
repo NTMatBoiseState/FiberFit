@@ -1,15 +1,5 @@
-#!usr/local/bin/python3
-
-# from __future__ import print_function
-# from __future__ import unicode_literals
-# from __future__ import division
-# from __future__ import absolute_import
-
 import matplotlib
-# matplotlib.use('Qt5Agg')
-
 import numpy as np
-
 import scipy
 import scipy.ndimage
 import scipy.interpolate
@@ -24,31 +14,29 @@ from pandas import DataFrame
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 
-# from matplotlib.patches import Ellipse
-
-# from __future__ import division
-# try:
-#     from runtime import *
-# except ImportError:
-#     from smop.runtime import *
-
-from src.fiberfit_model.EllipseDirectFit import*  # XXX: Changed here
-from src.fiberfit_model import helpers  # XXX: Changed here
+from src.fiberfit_model.EllipseDirectFit import*
+from src.fiberfit_model import helpers
 
 figSize = 4.5
 
+# cs font and ticksfont is used to style the matplotlib figures
 csfont = {'fontname':'Times New Roman',
            'size':'14',
          }
-
 ticksfont = {'fontname':'Times New Roman'}
 
-
 def process_histogram(PabsFlip, N1, uCut, lCut, angleInc, radStep):
-    # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #           Create orientation Histogram         %
-    #    Sum pixel intensity along different angles  %
-    # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    """
+    Create orientation Histogram
+    Sum pixel intensity along different angles
+    :param PabsFlip:
+    :param N1:
+    :param uCut: upper-cut parameter from the settings.SettingsWindow
+    :param lCut: lower-cut parameter form the settings.SettingsWindow
+    :param angleInc: angle-increment from the
+    :param radStep: radial-step
+    :return:
+    """
     n1 = np.round(N1 / 2) - 1
     freq = np.arange(-n1, n1 + 1, 1)
     x, y = freq, freq
@@ -85,19 +73,24 @@ def process_histogram(PabsFlip, N1, uCut, lCut, angleInc, radStep):
     num = len(theta1Rad)
     PowerYFinal = PowerY[0:num // 2]
     theta1RadFinal = theta1Rad[0:num // 2]
-    # theta1DegFinal = theta1Deg[0:num/2]
 
     power_area = np.trapz(PowerYFinal, theta1RadFinal)
     normPower = PowerYFinal / power_area
 
-    # % Elliptical Method to find orientation (EllipseDirectFit.m)
-    # Determine mean location using elliptic method (EllipseDirectFit.m)
-    # num_angles=length(theta1DegFinal)
-
+    # TODO: Ask Rici what those are
     return normPower, theta1RadFinal
 
 
 def process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth, dir, number):
+    """
+    :param normPower:
+    :param theta1RadFinal:
+    :param figWidth: width of the figure
+    :param figHeigth: height of the figure
+    :param dir: full path to the directory where one wants to store the intermediate images
+    :param number:
+    :return:
+    """
     # Combine data into [XY] to fit to an ellipse
     Mirtheta1RadFinal1 = np.concatenate([theta1RadFinal.T, (theta1RadFinal + np.pi).T])
     MirnormPower = np.concatenate([normPower.T, normPower.T])
@@ -132,30 +125,22 @@ def process_ellipse(normPower, theta1RadFinal, figWidth, figHeigth, dir, number)
         inc = 10
     plt.yticks(np.arange(inc, max(MirnormPower), inc), **ticksfont)
     plt.xticks(**ticksfont)
-    #plt.title('Fiber Orientation', y = 1.08, **csfont)
     angDist.savefig(dir+'angDist_' + number.__str__(), bbox_inches='tight')
     plt.close()
-
-    # # Plot Lower Left - Polar plot of angular distribution with size of 4.5
-    # angDist4 = plt.figure(figsize=(figSize, figSize))  # Creates a figure containing angular distribution.
-    # r_line = np.arange(0, max(MirnormPower) + .5, .5)
-    # th = np.zeros(len(r_line))
-    # for i in range(0, len(r_line)):
-    #     th[i] = t
-    # th = np.concatenate([th, (th + 180)])
-    # r_line = np.concatenate([r_line, r_line])
-    # plt.polar(Mirtheta1RadFinal1, MirnormPower, color ='k', linewidth=2)
-    # plt.polar(th * pi / 180, r_line, color='r', linewidth=3)
-    # plt.yticks(np.arange(.5, max(MirnormPower), .5))
-    # plt.title('Fiber Orientation', y = 1.08)
-    # angDist4.savefig('angDist4')
-    # plt.close()
-
-
     return t, angDist
 
 
 def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth, dir, number):
+    """
+    :param t_final:
+    :param theta1RadFinal:
+    :param normPower:
+    :param figWidth:
+    :param figHeigth:
+    :param dir:
+    :param number:
+    :return:
+    """
     t_final_rad = t_final * pi / 180
 
     def fitted_func(thetas, c):
@@ -208,59 +193,35 @@ def process_kappa(t_final, theta1RadFinal, normPower, figWidth, figHeigth, dir, 
         inc = 10
     plt.yticks(np.arange(0, max(normPower1) + .3, inc), **ticksfont)
     plt.ylim([0, max(normPower1) + .3])
-    #plt.subplots_adjust(left=0.6)
-    # plt.tight_layout(ds)
     cartDist.savefig(dir + 'cartDist_' + number.__str__(), bbox_inches='tight')
     plt.close()
-
-    # # Plot Lower Right - Distribution on a cartesian plane with appropriate shift with fig size 4
-    #
-    # cartDist4 = plt.figure(figsize=(figSize, figSize))  # Creates a figure containing cartesian distribution.
-    # ax = cartDist4.add_subplot(111)
-    # h2 = plt.bar((theta1RadFinal1 * 180 / pi), normPower1, edgecolor = 'k', color = 'k')
-    # plt.xticks(np.arange(-180, 180, 45))
-    # plt.xlim([t - 100, t + 100])
-    # p_act = fitted_func(theta1RadFinal1, kappa)
-    # h3, = plt.plot(theta1RadFinal1 * 180 / pi, p_act, linewidth=3)
-    # ax.text(.5,.9,'centered title',
-    #     horizontalalignment='center',
-    #     transform=ax.transAxes)
-    # plt.title('Fiber Distribution')
-    # plt.xlabel('Angle (°)')
-    # plt.ylabel('Normalized Intensity')
-    # plt.yticks(np.arange(0, max(normPower1) + .3, .5))
-    # plt.ylim([0, max(normPower1) + .3])
-    # plt.tight_layout()
-    # cartDist4.savefig('cartDist4')
-    # plt.close()
-
-
     slope, intercept, rValue, pValue, stderr = scipy.stats.linregress(p_act, normPower1)
     return kappa, cartDist, rValue
 
 
 def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi, directory, number):
-    # %
-    #  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #  FFT // POWER SPECTRUM // ANGULAR DISTRIBUTION
-    #  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    #  SIMPLE FFT
-    #  %%%%%%%%%%%%%%%%%%%%%E%%%%%%%%%%%%%%%%
-    #figWidth = 0.1 * screenDim.width()/dpi
-    #figHeigth = 0.1 * screenDim.width()/dpi
-
+    """
+    FFT // POWER SPECTRUM // ANGULAR DISTRIBUTION
+    SIMPLE FFT
+    :param name:
+    :param uCut:
+    :param lCut:
+    :param angleInc:
+    :param radStep:
+    :param screenDim:
+    :param dpi:
+    :param directory:
+    :param number:
+    :return:
+    """
     dir = directory + "/"
     start_time = time.time()
-
 
     figWidth = 4.5
     figHeigth = 4.5
 
     im = scipy.ndimage.imread(fname=str(name))
     m, n = im.shape
-
-    if m != n:
-        raise MyException.MyError("Error: image must be square")
 
     # Remove a row and column if the dimension of the image is odd
     if (m % 2 == 1):
@@ -276,24 +237,8 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi, directory
     originalImage.add_axes(ax)
     plt.imshow(im, cmap='gray', aspect='auto')
     plt.axis('off')
-    print("BEFORE SAVEFIG")
-    # TODO: dir is empty????
-    print(dir + 'orgImg_' + number.__str__())
     originalImage.savefig(dir + 'orgImg_' + number.__str__())
-    print("AFTER SAVEFIG")
     plt.close()
-    print("SAVED???")
-    # # Plot Upper left - Original Image with size 4
-    # originalImage4 = plt.figure(frameon=False, figsize=(figSize, figSize))
-    # # Makes it so the image fits entire dedicated space.
-    # ax = plt.Axes(originalImage, [0., 0., 1., 1.])
-    # ax.set_axis_off()
-    # originalImage.add_axes(ax)
-    # plt.imshow(im, cmap='gray', aspect='auto')
-    # plt.axis('off')
-    # originalImage.savefig('orgImg4')
-    # plt.close()
-
     fft_result = np.fft.fft2(im)
     Fshift = np.fft.fftshift(fft_result)
     Pabs = np.abs(Fshift) ** 2
@@ -315,20 +260,7 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi, directory
     plt.imshow(log(PabsFlip), cmap='gray', aspect='auto')
     logScale.savefig(dir + 'logScl_' + number.__str__())
     plt.close()
-
-    # # Plot Upper Right - Power Spectrum on logrithmic scale
-    # logScale4 = plt.figure(frameon=False, figsize=(figSize, figSize))
-    # # Makes it so the image fits entire dedicated space.
-    # ax = plt.Axes(logScale, [0., 0., 1., 1.])
-    # ax.set_axis_off()
-    # logScale.add_axes(ax)
-    # plt.axis('off')
-    # plt.imshow(log(PabsFlip), cmap='gray', aspect='auto')
-    # logScale.savefig('logScl4')
-    # plt.close()
-
     M, N1 = im.shape
-
     normPower, theta1RadFinal = process_histogram(PabsFlip, N1, uCut, lCut, angleInc, radStep)
 
     # theta and angular distribution are getting retrieved.
@@ -342,7 +274,6 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi, directory
     thrnd = math.ceil(t_final * 1000) / 1000
     krnd = math.trunc(krnd * 100) / 100
     thrnd = math.trunc(thrnd * 100) / 100
-    print("MADE IT HERE?")
     a = 32.02
     b= -12.43
     c = 47.06
@@ -352,7 +283,6 @@ def process_image(name, uCut, lCut, angleInc, radStep, screenDim, dpi, directory
     x = k[0]
     sig = math.exp(b*x) + c*math.exp(d*x) + e*exp(f*x)
     end_time = time.time()
-    print("It took {n} seconds".format(n=end_time-start_time))
     return sig, k[0], t_final, rValue**2, angDist, cartDist, logScale, originalImage, figWidth, figHeigth, (end_time-start_time)
 
 
