@@ -230,11 +230,10 @@ Please go back to "Settings" and change some values.
         self.current_index += 1
         self.runtime += time
 
-    """
-    Makes so that screen can be resized after the images loaded.
-    """
-
     def applyResizing(self):
+        """
+        Makes so that screen can be resized after the images loaded.
+        """
         self.resize(0.7 * self.screenDim.height(), 0.8 *self.screenDim.height())
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
                                            QtWidgets.QSizePolicy.Expanding)
@@ -243,22 +242,20 @@ Please go back to "Settings" and change some values.
         sizePolicy.setHeightForWidth(self.figureWidget.sizePolicy().hasHeightForWidth())
         self.figureWidget.setSizePolicy(sizePolicy)
 
-    """
-    Populates combox box with the names.
-    """
-
     @pyqtSlot()
     def populateComboBox(self):
+        """
+        Populates combox box with the names.
+        """
         self.selectImgBox.clear()
         for element in self.imgList:
             self.selectImgBox.addItem(element.filename.stem)
         self.selectImgBox.setCurrentIndex(self.current_index)
 
-    """
-    Cleans the canvas.
-    """
-
     def cleanCanvas(self):
+        """
+        Deletes the figure widget (i.e. cleans the canvas)
+        """
         self.figureLayout.removeWidget(self.ang_dist_canvas)
         self.figureLayout.removeWidget(self.cart_dist_canvas)
         self.figureLayout.removeWidget(self.log_scl_canvas)
@@ -268,11 +265,11 @@ Please go back to "Settings" and change some values.
         self.img_canvas.deleteLater()
         self.log_scl_canvas.deleteLater()
 
-    """
-    Fills the canvas.
-    """
-
     def fillCanvas(self, img):
+        """
+        Fills the canvas with the FFT-processed results based on the img.
+        :param img: img to be processed
+        """
         # updates canvases
 
         self.img_canvas = QtWidgets.QLabel()
@@ -305,21 +302,19 @@ Please go back to "Settings" and change some values.
         self.figureLayout.itemAtPosition(1, 0).widget().setToolTip("Red Line = Fiber Orientation")
         self.figureLayout.itemAtPosition(1, 1).widget().setToolTip("Blue Line = Fiber Distribution")
 
-    """
-    Helps to process an image from using a Combo Box.
-    @param: img to be processed
-    """
-
     def processImagesFromComboBox(self, img):
+        """
+        Helps to process an image from using a Combo Box.
+        :param img: image to be processed
+        """
         if self.is_started:
             self.cleanCanvas()
         self.fillCanvas(img)
 
-    """
-    Starts the application.
-    """
-
     def start(self):
+        """
+        Prepares applications to start.
+        """
         # Processes selected images; sets up the labels and fills selectImgBox with references to images.
         self.kLabel.setText("k = ")
         self.muLabel.setText("μ =  ")
@@ -336,27 +331,25 @@ Please go back to "Settings" and change some values.
         # resets current index
         self.current_index = 0
         self.go_run.emit()
-        #self.do_update.emit(self.currentIndex)
         self.removeTemp()
-
-    """
-    Sets up appropriate labels depending on which image is selected.
-    """
 
     @pyqtSlot(int)
     def setupLabels(self, num):
+        """
+        Sets up appropriate labels depending on which image is selected.
+        :param num: index of the image currently displayed in the figure widget.
+        """
         self.sigLabel.setText("σ = " + str(round(self.imgList.__getitem__(num).sig[0], 2)))
         self.kLabel.setText("k = " + str(round(self.imgList.__getitem__(num).k, 2)))
         self.muLabel.setText("μ = " + str(round(self.imgList.__getitem__(num).th, 2)))
         self.RLabel.setText(('R' + u"\u00B2") + " = " + str(round(self.imgList.__getitem__(num).R2, 2)))
 
-    """
-    Scrolls to next image.
-    Uses a circular array as an underlying data structure. Main advantage is
-    access by index; that is eliminate unnecessary search for item.
-    """
-
     def nextImage(self):
+        """
+        Scrolls to next image.
+        Uses a circular array as an underlying data structure. Main advantage is
+        access by index; that is eliminate unnecessary search for item.
+        """
         if (self.is_started):
             # updates current index
             self.current_index = (self.current_index + 1) % len(self.imgList)
@@ -366,13 +359,12 @@ Please go back to "Settings" and change some values.
             self.setupLabels((self.current_index))
             self.selectImgBox.setCurrentIndex(self.current_index)
 
-    """
-    Scrolls to previous image.
-    Uses a circular array as an underlying data structure. Main advantage is
-    access by index; that is eliminate unnecessary search for item.
-    """
-
     def prevImage(self):
+        """
+        Scrolls to previous image.
+        Uses a circular array as an underlying data structure. Main advantage is
+        access by index; that is eliminate unnecessary search for item.
+        """
         if (self.is_started):
             # updates current index
             self.current_index = (self.current_index - 1) % len(self.imgList)
