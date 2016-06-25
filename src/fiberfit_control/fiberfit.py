@@ -32,7 +32,6 @@ from src.fiberfit_control.support import settings
 from src.fiberfit_control.support import error
 from src.fiberfit_control.support import report
 
-
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """Controller part of the application.
 
