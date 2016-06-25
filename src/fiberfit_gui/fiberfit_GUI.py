@@ -23,7 +23,7 @@ class Ui_MainWindow(object):
         MainWindow.setMinimumSize(QtCore.QSize(0, 0))
         MainWindow.setMaximumSize(QtCore.QSize(10000, 10000))
         MainWindow.setAutoFillBackground(False)
-        # central widget is the widget that contains 4 figures from the FiberFit UI
+
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -89,9 +89,11 @@ class Ui_MainWindow(object):
         self.RLabel.setObjectName("RLabel")
         self.RLabel.setToolTip("Goodness of Fit")
         self.midGrid.addWidget(self.RLabel, 0, 4, 1, 1)
-        wWidth = 0.04*int(width.__str__())
+
+        spacer_width = 0.04*int(width.__str__())
         spacerItem1 = QtWidgets.QSpacerItem(0.04*int(width.__str__()), 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.midGrid.addItem(spacerItem1, 0, 5, 1, 1)
+
         # mu label
         self.muLabel = QtWidgets.QLabel(self.centralwidget)
         font = QtGui.QFont()
@@ -101,8 +103,10 @@ class Ui_MainWindow(object):
         self.muLabel.setObjectName("muLabel")
         self.muLabel.setToolTip("Mean Orientation")
         self.midGrid.addWidget(self.muLabel, 0, 6, 1, 1)
-        spacerItem2 = QtWidgets.QSpacerItem(wWidth, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+
+        spacerItem2 = QtWidgets.QSpacerItem(spacer_width, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.midGrid.addItem(spacerItem2, 0, 7, 1, 1)
+
         #k label
         self.kLabel = QtWidgets.QLabel(self.centralwidget)
         font = QtGui.QFont()
@@ -114,9 +118,12 @@ class Ui_MainWindow(object):
         self.kLabel.setObjectName("kLabel")
         self.kLabel.setToolTip("Fiber Dispersion")
         self.midGrid.addWidget(self.kLabel, 0, 8, 1, 1)
-        spacerItem3 = QtWidgets.QSpacerItem(wWidth, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+
+        spacerItem3 = QtWidgets.QSpacerItem(spacer_width, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.midGrid.addItem(spacerItem3, 0, 9, 1, 1)
         self.gridLayout.addLayout(self.midGrid, 1, 0, 1, 1)
+
+        # figure widget is the widget that contains 4 figures from the FiberFit UI
         self.figureWidget = QtWidgets.QWidget(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
                                            QtWidgets.QSizePolicy.MinimumExpanding)
@@ -128,22 +135,30 @@ class Ui_MainWindow(object):
         self.figureLayout = QtWidgets.QGridLayout(self.figureWidget)
         self.figureLayout.setObjectName("figureLayout")
         self.gridLayout.addWidget(self.figureWidget, 2, 0, 1, 1)
+
         self.topGrid = QtWidgets.QGridLayout()
         self.topGrid.setObjectName("topGrid")
-        spacerItem3 = QtWidgets.QSpacerItem(wWidth, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+
+        spacerItem3 = QtWidgets.QSpacerItem(spacer_width, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.topGrid.addItem(spacerItem3, 0, 6, 1, 1)
+
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
+
+        # progress bar
         self.barWidget = QtWidgets.QWidget()
         self.barWidget.setObjectName("barWidget")
         self.barWidget.setSizePolicy(sizePolicy)
+        # layout for the progress bar
         self.gridPLayout = QtWidgets.QGridLayout(self.barWidget)
         self.gridPLayout.setContentsMargins(0, 0, 0, 0)
         self.gridPLayout.setObjectName("gridLayout")
         self.gridPLayout.addWidget(self.progressBar, 0, 0, 1, 1)
         self.topGrid.addWidget(self.barWidget, 0, 5, 1, 1)
+
+        # clear button
         self.clearButton = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -160,6 +175,8 @@ class Ui_MainWindow(object):
         self.clearButton.setObjectName("clearButton")
         self.topGrid.addWidget(self.clearButton, 0, 4, 1, 1)
         self.clearButton.setToolTip("Clear Images")
+
+        # export button
         self.exportButton = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -176,6 +193,8 @@ class Ui_MainWindow(object):
         self.exportButton.setObjectName("exportButton")
         self.exportButton.setToolTip("Export")
         self.topGrid.addWidget(self.exportButton, 0, 2, 1, 1)
+
+        # open images/load button
         self.loadButton = QtWidgets.QPushButton(self.centralwidget)
         self.loadButton.setEnabled(True)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
@@ -195,6 +214,8 @@ class Ui_MainWindow(object):
         self.loadButton.setObjectName("loadButton")
         self.loadButton.setToolTip("Open")
         self.topGrid.addWidget(self.loadButton, 0, 0, 1, 1)
+
+        # start button
         self.startButton = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -212,6 +233,8 @@ class Ui_MainWindow(object):
         self.startButton.setObjectName("startButton")
         self.startButton.setToolTip("Run")
         self.topGrid.addWidget(self.startButton, 0, 1, 1, 1)
+
+        # settings button
         self.settingsButton = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -229,6 +252,8 @@ class Ui_MainWindow(object):
         self.settingsButton.setObjectName("settingsButton")
         self.settingsButton.setToolTip("Settings")
         self.topGrid.addWidget(self.settingsButton, 0, 3, 1, 1)
+
+        # next image button
         self.nextButton = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -243,6 +268,8 @@ class Ui_MainWindow(object):
         self.nextButton.setFont(font)
         self.nextButton.setObjectName("nextButton")
         self.topGrid.addWidget(self.nextButton, 0, 8, 1, 1)
+
+        # previous image button
         self.prevButton = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -256,6 +283,7 @@ class Ui_MainWindow(object):
         font.setPointSize(14)
         self.prevButton.setFont(font)
         self.prevButton.setObjectName("prevButton")
+
         self.topGrid.addWidget(self.prevButton, 0, 7, 1, 1)
         self.gridLayout.addLayout(self.topGrid, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
