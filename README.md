@@ -1,6 +1,5 @@
 ## Overview
-FiberFit is a portable Python application for Mac and Windows. It uses computer vision to analyze 2-D 8-bit images. Code is hosted in a private repository on Bitbucket. The bulk of my work included making a Graphical User Interface (GUI) around an existing algorithm mentioned above. I used an Object-Oriented approach and built the application using the Model-View-Controller architectural pattern.
-
+FiberFit is a portable Python application for Mac and Windows. It uses computer vision to analyze ligament patterns in 2-D 8-bit images. A results summary table (.csv) and image summary documents (.pdf) may be exported by the user. 
 ## Features
 * Processes multiple images
 * Exports result of the analysis in PDF (utilizes open-source Python library) and csv
@@ -20,16 +19,15 @@ their respective sites to get instructions on how to install those libraries (e.
 
 After you've installed required software above, run the following from ```fiberfit``` directory:
  1. export PYTHONPATH='.'
- 1. python src/fiberfit_control/fiberfit.py
+ 2. python src/fiberfit_control/fiberfit.py
+Alternatively to step #1, you can also run a setup.sh script.
 
 ## Get Started
-TODO: include get started documentation from NTM drive
-Please check out a video demostration of FiberFit in action:
-<iframe  title="FiberFit demo" width="480" height="390" src="https://www.youtube.com/watch?v=ZIm1AxTubYo" frameborder="0" allowfullscreen></iframe> 
+Please check out a video demostration of FiberFit in action [HERE](https://www.youtube.com/watch?v=ZIm1AxTubYo)
 
 ## Deployment
 cx_Freeze is a recommended tool for deploying FiberFit as a single cross-platform executable application. 
-Please check out cx_Freeze[here] (http://cx-freeze.sourceforge.net/).
+Please check out cx_Freeze[here] (http://cx-freeze.sourceforge.net/). Note that, working setup.py is included in the root directory.
 
 ## Support
 Primary developer - Aza Tulepbergenov (https://github.com/atulep)
