@@ -131,6 +131,10 @@ Please go back to "Settings" and change some values.
         self.progressBar.hide()
 
     def runner(self):
+        """
+        Starts a thread that does the heavy-lifting computerVision algorithm
+        :return: none
+        """
         pThread = myThread(self.go_process_images, self.send_error, self.progressBar, self.errorBrowser, self.saved_images_dir_name, self.run_counter)
         pThread.update_values(self.u_cut, self.l_cut, self.angle_inc, self.rad_step, self.screenDim, self.dpi, self.selected_files)
         if len(self.selected_files) != 0:
@@ -144,7 +148,7 @@ Please go back to "Settings" and change some values.
         Function that signals to show the report.
         """
         if (self.is_started):
-            self.go_export.emit(self.imgList[self.current_index % self.selected_files.__len__()])
+            self.go_export.emit(self.imgList[self.current_index % len(self.selected_files)])
 
     def coeff_labels_set_text(self, text, num = None):
         if num is not None:
@@ -272,21 +276,25 @@ Please go back to "Settings" and change some values.
         """
         # updates canvases
 
+        # upper-left tile
         self.img_canvas = QtWidgets.QLabel()
         self.img_canvas.setPixmap(QPixmap(self.saved_images_dir_name + "/orgImg_" + img.number.__str__() + ".png").scaled(300, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.img_canvas.setScaledContents(True)
         self.img_canvas.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
 
+        # upper-right tile
         self.log_scl_canvas = QtWidgets.QLabel()
         self.log_scl_canvas.setPixmap(QPixmap(self.saved_images_dir_name + "/logScl_" + img.number.__str__() + ".png").scaled(300, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.log_scl_canvas.setScaledContents(True)
         self.log_scl_canvas.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
 
+        # lower-left tile
         self.ang_dist_canvas = QtWidgets.QLabel()
         self.ang_dist_canvas.setPixmap(QPixmap(self.saved_images_dir_name + "/angDist_" + img.number.__str__() + ".png").scaled(300, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.ang_dist_canvas.setScaledContents(True)
         self.ang_dist_canvas.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
 
+        # lower-right tile
         self.cart_dist_canvas = QtWidgets.QLabel()
         self.cart_dist_canvas.setPixmap(QPixmap(self.saved_images_dir_name + "/cartDist_" + img.number.__str__() + ".png").scaled(300, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.cart_dist_canvas.setScaledContents(True)
@@ -374,10 +382,6 @@ Please go back to "Settings" and change some values.
             self.setupLabels(self.current_index)
             self.selectImgBox.setCurrentIndex(self.current_index)
 
-
-
-    """Stuff I looked at"""
-
     @pyqtSlot(float, float, float, float)
     def updateValues(self, uCut, lCut, angleInc, radStep):
         """Updates settings per user's selection.
@@ -443,11 +447,10 @@ Please go back to "Settings" and change some values.
             if not os.path.exists(directory):
                 os.makedirs(self.saved_images_dir_name)
                 isCreated = True
-                print("directoryu created!")
 
     def receiveDim(self):
         """Calculates dimensions of the screen.
-        :return: void
+        :return: dimension of a screen and DPI
         """
         screenDim = QDesktopWidget().availableGeometry()
         screen = QtWidgets.QApplication.primaryScreen()
@@ -455,10 +458,19 @@ Please go back to "Settings" and change some values.
         return screenDim, dpi
 
     def closeEvent(self, event):
+        """
+        Makes sure to delete the temprorary directory with all the secondary images
+        :param event:
+        :return: none
+        """
         self.delete_dir(self.saved_images_dir_name)
 
-
     def delete_dir(self, dir):
+        """
+        Deletes a given directory. In context of application, it's used when
+        :param dir:
+        :return:
+        """
         import shutil
         try:
             shutil.rmtree(dir)
@@ -468,8 +480,20 @@ Please go back to "Settings" and change some values.
 
 
 class myThread(threading.Thread):
-
+    """
+    Class responsible for heavy lifting of
+    """
     def __init__(self, sig, errorSig, bar, errorBrowser, dir, num):
+        """
+        Initialies attributes used to process the image via computerVision and send it back to the running application.
+        :param sig:
+        :param errorSig:
+        :param bar:
+        :param errorBrowser: reference to instance of fiberfit_
+        :param dir: full path to directory where to put the secondary images in
+        :param num:
+        :return:
+        """
         super(myThread, self).__init__()
         self.uCut = 0
         self.lCut = 0
@@ -511,7 +535,7 @@ class myThread(threading.Thread):
                                                                                                self.dpi,
                                                                                                self.directory,
                                                                                                self.number)
-                print("I made passsed tryed")
+
                 # Starting from Python3, there is a distinctin between bytes and str. Thus, I can't use
                 # methods of str on bytes. However I need to do that in order to properly encode the image
                 # into b64. The main thing is that bytes-way produces some improper characters that mess up
@@ -561,6 +585,8 @@ class myThread(threading.Thread):
             time.sleep(0.5)
             self.bar.setWindowOpacity(0)
             self.bar.hide()
+
+
 def main():
     """
     Enters an event-loop.
