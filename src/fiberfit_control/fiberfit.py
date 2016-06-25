@@ -68,10 +68,14 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     go_run = pyqtSignal()
     # Args: int index of the image in the imgList
     go_update = pyqtSignal(int)
-    # Args:
+    # Args: list of currently processed images, data list from the report.py, list of all the images (both processed
+    # currently and in the past), u_cut, l_cut, rad_step, angle_inc
     send_data_to_report = pyqtSignal(list, list, OrderedSet, float, float, float, float)
-    # Args:
+    # Args: number of images to be processed, the most recent processed image, list of currently processed images,
+    # 1/0 whether processed images was the last one or not, running time, number indicating order of the image.
     go_process_images = pyqtSignal(int, img_model.ImgModel, list, int, int, int)
+    # Args: list of names of the files to be processed, number indicating order of the image (useful when indexing to the
+    # name of the file), 1/0 depending on what type of error occured.
     send_error = pyqtSignal(list, int, int)
 
     def __init__(self, Parent=None):
@@ -135,7 +139,7 @@ Please go back to "Settings" and change some values.
         Starts a thread that does the heavy-lifting computerVision algorithm
         :return: none
         """
-        pThread = myThread(self.go_process_images, self.send_error, self.progressBar, self.errorBrowser, self.saved_images_dir_name, self.run_counter)
+        pThread = myThread(self.go_process_images, self.send_error, self.progressBar, self.saved_images_dir_name, self.run_counter)
         pThread.update_values(self.u_cut, self.l_cut, self.angle_inc, self.rad_step, self.screenDim, self.dpi, self.selected_files)
         if len(self.selected_files) != 0:
             self.progressBar.show()
@@ -481,18 +485,17 @@ Please go back to "Settings" and change some values.
 
 class myThread(threading.Thread):
     """
-    Class responsible for heavy lifting of
+    Class responsible for heavy lifting of computerVision algorithm
     """
-    def __init__(self, sig, errorSig, bar, errorBrowser, dir, num):
+    def __init__(self, sig, errorSig, bar, dir, num):
         """
-        Initialies attributes used to process the image via computerVision and send it back to the running application.
-        :param sig:
-        :param errorSig:
-        :param bar:
-        :param errorBrowser: reference to instance of fiberfit_
+        Initialises attributes used to process the image via computerVision and send it back to the running application.
+        :param sig: signal indicating that UI should be updated
+        :param errorSig: send_error signal from the fft_mainWindow
+        :param bar: the progress bar
         :param dir: full path to directory where to put the secondary images in
-        :param num:
-        :return:
+        :param num: number indicating the order of image being processed (useful in naming the secondary image files.)
+        :return: none
         """
         super(myThread, self).__init__()
         self.uCut = 0
@@ -504,12 +507,22 @@ class myThread(threading.Thread):
         self.sig = sig
         self.filenames = []
         self.bar = bar
-        self.errorBrowser = errorBrowser
         self.errorSig = errorSig
         self.directory = dir
         self.number = num
 
     def update_values(self,uCut,lCut,angleInc,radStep,screenDim,dpi,filenames):
+        """
+        Updated the values that are modified during the run time (i.e. settings)
+        :param uCut: upper cut
+        :param lCut: lower cut
+        :param angleInc: angle increment
+        :param radStep: radial step
+        :param screenDim: dimensions of a screen
+        :param dpi: DPI of a primary screem
+        :param filenames: list of names of files to be processed
+        :return: none
+        """
         self.lCut = lCut
         self.uCut = uCut
         self.angleInc = angleInc
@@ -519,6 +532,10 @@ class myThread(threading.Thread):
         self.filenames = filenames
 
     def run(self):
+        """
+        Processes the images inside of filenames and sends the result of each image back to the fft_mainWindow.
+        :return: none
+        """
         processedImagesList = []
         count = 0
         toContinue = True
@@ -581,6 +598,7 @@ class myThread(threading.Thread):
                     self.sig.emit(count, processedImage, processedImagesList, isLast, runtime, self.number)
                 else:
                     self.errorSig.emit(self.filenames, count, isZeroException)
+        # hides the bar after processing all the images
         if toContinue:
             time.sleep(0.5)
             self.bar.setWindowOpacity(0)

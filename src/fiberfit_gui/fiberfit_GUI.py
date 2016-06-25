@@ -18,10 +18,12 @@ class Ui_MainWindow(object):
 
         """
         MainWindow.setObjectName("MainWindow")
+        # 0.3 and 0.1 were the numbers that I picked based on how it looked.
         MainWindow.resize(0.3*int(width.__str__()), 0.1*int(heigth.__str__()))
         MainWindow.setMinimumSize(QtCore.QSize(0, 0))
         MainWindow.setMaximumSize(QtCore.QSize(10000, 10000))
         MainWindow.setAutoFillBackground(False)
+        # central widget is the widget that contains 4 figures from the FiberFit UI
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -33,6 +35,7 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName("gridLayout")
         self.midGrid = QtWidgets.QGridLayout()
         self.midGrid.setObjectName("midGrid")
+
         self.selectImgBox = QtWidgets.QComboBox(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -43,6 +46,7 @@ class Ui_MainWindow(object):
         self.selectImgBox.setMaximumSize(QtCore.QSize(170, 16777215))
         self.selectImgBox.setObjectName("selectImgBox")
         self.midGrid.addWidget(self.selectImgBox, 0, 0, 1, 1)
+
         # Progress bar
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
                                            QtWidgets.QSizePolicy.MinimumExpanding)
@@ -57,8 +61,11 @@ class Ui_MainWindow(object):
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName("progressBar")
         self.progressBar.hide()
+
         spacerItem0 = QtWidgets.QSpacerItem(0.08*int(width.__str__()), 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.midGrid.addItem(spacerItem0, 0, 3, 1, 1)
+
+        # sigma label
         self.sigLabel = QtWidgets.QLabel(self.centralwidget)
         font = QtGui.QFont()
         font.setFamily("Times New Roman")
@@ -70,6 +77,7 @@ class Ui_MainWindow(object):
 
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.midGrid.addItem(spacerItem, 0, 11, 1, 1)
+
         # R^2 label
         self.RLabel = QtWidgets.QLabel(self.centralwidget)
         font = QtGui.QFont()

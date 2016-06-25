@@ -141,7 +141,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
             found = False
             for j in range(0, len(temp)):
                 # One image from list is at most can equal to one another image from temp
-                if found == False and self.dataList[i][0] == temp[j].filename.stem:
+                if found is False and self.dataList[i][0] == temp[j].filename.stem:
                     self.dataList.remove(self.dataList[i])
                     self.dataList.insert(i, [temp[j].filename.stem,
                                              self.uCut,
