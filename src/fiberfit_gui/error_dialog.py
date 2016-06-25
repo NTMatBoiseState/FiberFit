@@ -17,6 +17,7 @@ class Ui_ErrorDialog(object):
         ErrorDialog.resize(0.3 * screenDim.width(), 0.15 * screenDim.height())
         ErrorDialog.setMinimumSize(QtCore.QSize(0.12 * screenDim.width(), 0.12 * screenDim.height()))
         ErrorDialog.setMaximumSize(QtCore.QSize(0.9 * screenDim.width(), 0.9 * screenDim.height()))
+
         self.gridLayout = QtWidgets.QGridLayout(ErrorDialog)
         self.gridLayout.setObjectName("gridLayout")
         self.scrollArea = QtWidgets.QScrollArea(ErrorDialog)
@@ -33,6 +34,7 @@ class Ui_ErrorDialog(object):
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+
         self.label.setSizePolicy(sizePolicy)
         self.label.setMaximumSize(QtCore.QSize(10000, 10000))
         font = QtGui.QFont()

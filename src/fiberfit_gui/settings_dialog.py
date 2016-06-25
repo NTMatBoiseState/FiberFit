@@ -18,11 +18,15 @@ class Ui_Dialog(object):
         Dialog.resize(0.12 * screenDim.width(), 0.65 * screenDim.height())
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(Dialog)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
+
+        # top most text field in the settings window
         self.topDescr = QtWidgets.QLabel(Dialog)
         self.topDescr.setWordWrap(True)
         self.topDescr.setContentsMargins(0, 0, 0, 0)
         self.topDescr.setObjectName("topDescr")
         self.verticalLayout_3.addWidget(self.topDescr)
+
+        # the upper frame containing text fields
         self.upperFrame = QtWidgets.QFrame(Dialog)
         self.upperFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.upperFrame.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -34,6 +38,8 @@ class Ui_Dialog(object):
         self.upperLabel.setContentsMargins(0, 0, 0, 0)
         self.upperLabel.setObjectName("upperLabel")
         self.horizontalLayout.addWidget(self.upperLabel)
+
+        # inner top frame containing actual text field and input field
         self.tfieldFrame = QtWidgets.QFrame(self.upperFrame)
         self.tfieldFrame.setMinimumSize(QtCore.QSize(70, 80))
         self.tfieldFrame.setMaximumSize(QtCore.QSize(70, 80))
@@ -41,21 +47,29 @@ class Ui_Dialog(object):
         self.tfieldFrame.setObjectName("tfieldFrame")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.tfieldFrame)
         self.verticalLayout.setObjectName("verticalLayout")
+
+        # top field of top most frame in the settings window
         self.ttopField = QtWidgets.QLineEdit(self.tfieldFrame)
         self.ttopField.setMaximumSize(QtCore.QSize(50, 50))
         self.ttopField.setObjectName("ttopField")
         self.verticalLayout.addWidget(self.ttopField)
+
+        # bottom field of the top most frame in the settings window
         self.tbottomField = QtWidgets.QLineEdit(self.tfieldFrame)
         self.tbottomField.setMaximumSize(QtCore.QSize(50, 50))
         self.tbottomField.setObjectName("tbottomField")
+
         self.verticalLayout.addWidget(self.tbottomField)
         self.horizontalLayout.addWidget(self.tfieldFrame)
         self.verticalLayout_3.addWidget(self.upperFrame)
+
         self.bottomDescr = QtWidgets.QLabel(Dialog)
         self.bottomDescr.setWordWrap(True)
         self.bottomDescr.setContentsMargins(0, 0, 0, 0)
         self.bottomDescr.setObjectName("bottomDescr")
         self.verticalLayout_3.addWidget(self.bottomDescr)
+
+        # bottom frame containing text fields
         self.bottomFrame = QtWidgets.QFrame(Dialog)
         self.bottomFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.bottomFrame.setObjectName("bottomFrame")
@@ -66,6 +80,8 @@ class Ui_Dialog(object):
         self.bottomLabel.setContentsMargins(0, 0, 0, 0)
         self.bottomLabel.setObjectName("bottomLabel")
         self.horizontalLayout_2.addWidget(self.bottomLabel)
+
+        # inner bottom frame containing actual text field and input field
         self.bfieldFrame = QtWidgets.QFrame(self.bottomFrame)
         self.bfieldFrame.setMinimumSize(QtCore.QSize(70, 80))
         self.bfieldFrame.setMaximumSize(QtCore.QSize(70, 80))
@@ -74,16 +90,21 @@ class Ui_Dialog(object):
         self.bfieldFrame.setObjectName("bfieldFrame")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.bfieldFrame)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
+
+        # top field of the bottom most frame
         self.btopField = QtWidgets.QLineEdit(self.bfieldFrame)
         self.btopField.setMaximumSize(QtCore.QSize(50, 50))
         self.btopField.setObjectName("btopField")
         self.verticalLayout_2.addWidget(self.btopField)
+
+        # bottom field of the bottom most frame
         self.bbottomField = QtWidgets.QLineEdit(self.bfieldFrame)
         self.bbottomField.setMaximumSize(QtCore.QSize(50, 50))
         self.bbottomField.setObjectName("bbottomField")
         self.verticalLayout_2.addWidget(self.bbottomField)
         self.horizontalLayout_2.addWidget(self.bfieldFrame)
         self.verticalLayout_3.addWidget(self.bottomFrame)
+
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Reset|QtWidgets.QDialogButtonBox.Ok)
