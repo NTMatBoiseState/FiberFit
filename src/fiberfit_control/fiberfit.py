@@ -113,11 +113,19 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.connect_signals_to_slots()
 
     @pyqtSlot(list, int, int)
-    def handleError(self, files, index, identifier):
+    def handle_error(self, files, index, identifier):
+        """
+        Handles erroneous input images.
+        Args:
+            files: list of all processed files.
+            index: index of the item that caused error.
+            identifier: whether division by 0 error occured. possible values are 1 and 0.
+        """
         if identifier == 0:
             self.errorBrowser.label.setText("""ERROR:
             Sorry, unfortunately, this file - {name} can not be processed.
-            Please make sure that the image has 8-bit image depth,or, equivalently, gray color space and verify that you are using one of the approved file formats: pdf, png, tif, gif, or bmp."""
+            Please make sure that the image has 8-bit image depth,or, equivalently, gray color space and verify that you\
+            are using one of the approved file formats: pdf, png, tif, gif, or bmp."""
                                             .format(name=files[index]))
         elif identifier == 1:
             self.errorBrowser.label.setText("""ERROR:
@@ -198,23 +206,31 @@ Please go back to "Settings" and change some values.
         for name in filenames[0]:
             self.selected_files.append(pathlib.Path(name))
         self.progressBar.setMaximum(len(filenames[0]))
-        #self.currentIndex = 0
         self.go_run.emit()
 
     @pyqtSlot(int, img_model.ImgModel, list, int, int, int)
-    def processImages(self, count, processedImage, processedImagesList, isLast, time, number):
+    def process_images(self, count, processed_image, processed_images_list, isLast, time, number):
         """
         Processes selected images. Displays it onto a canvas.
         Technical: Creates img_model objects that encapsulate all of the useful data.
+        Args:
+            count: describes how many images were processed
+            processed_image: image to process
+            processed_images_list: list of all processed images
+            isLast:
+            time: indicates how much algorithm ran
+            number: number is being used to indicate how many images are to process.
         """
+        # Setting value of run_counter to the number of images that need to be processed. This had to be done
+        # because I needed a way to name images
         self.run_counter = number
         # Ordered Set
-        if processedImage in self.imgList:
-            self.imgList.remove(processedImage)
-            self.imgList.add(processedImage)
+        if processed_image in self.imgList:
+            self.imgList.remove(processed_image)
+            self.imgList.add(processed_image)
         else:
-            self.imgList.add(processedImage)
-        self.send_data_to_report.emit(processedImagesList, self.dataList, self.imgList, self.u_cut, self.l_cut, self.rad_step,
+            self.imgList.add(processed_image)
+        self.send_data_to_report.emit(processed_images_list, self.dataList, self.imgList, self.u_cut, self.l_cut, self.rad_step,
                                       self.angle_inc)
 
         if self.is_started:
@@ -226,7 +242,8 @@ Please go back to "Settings" and change some values.
         except IndexError:
             self.current_index -= 1
             self.fillCanvas(self.imgList.__getitem__(self.current_index))
-        if (not self.is_resized):
+
+        if not self.is_resized:
             self.applyResizing()
             self.is_resized = True
         # started
@@ -408,8 +425,8 @@ Please go back to "Settings" and change some values.
         self.go_run.connect(self.runner)
         self.go_update.connect(self.populateComboBox)
         self.go_update.connect(self.setupLabels)
-        self.send_error.connect(self.handleError)
-        self.go_process_images.connect(self.processImages)
+        self.send_error.connect(self.handle_error)
+        self.go_process_images.connect(self.process_images)
         self.settingsBrowser.sendValues.connect(self.updateValues)
 
         self.exportButton.clicked.connect(self.export)
@@ -584,6 +601,7 @@ class myThread(threading.Thread):
                 count += 1
                 if count == len(self.filenames):
                     isLast = 1
+
             except TypeError:
                 toContinue = False
             except ValueError:

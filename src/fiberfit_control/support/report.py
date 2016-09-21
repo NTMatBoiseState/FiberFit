@@ -27,7 +27,7 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
         - dataList is a list representing already exported images
         - screenDim stores a screen dimension
         - document is an instance of QTextDocument that
-        TODO: List the other attributes.
+       TODO: add other attributes.
     """
     do_print = pyqtSignal()
     do_excel = pyqtSignal()
