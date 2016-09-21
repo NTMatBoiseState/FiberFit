@@ -30,6 +30,6 @@ cx_Freeze is a recommended tool for deploying FiberFit as a single cross-platfor
 Please check out cx_Freeze[here] (http://cx-freeze.sourceforge.net/). Note that, working setup.py is included in the root directory.
 
 ## Support
-Primary developer - Aza Tulepbergenov (https://github.com/atulep)
+Primary developer - Aza Tulepbergenov (https://github.com/atulep)\
 Please contact NTM Labs for any questions.
 
