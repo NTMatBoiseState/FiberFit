@@ -85,7 +85,7 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         super(fft_mainWindow, self).__init__()
         self.imgList = OrderedSet()
         # Stuff I looked at
-        self.screenDim, self.dpi = self.receiveDim()
+        self.screenDim, self.dpi = self.receive_dim()
         self.setupUi(self, self.screenDim.height(), self.screenDim.width())
         self.dataList = []
         self.selected_files = []
@@ -164,7 +164,7 @@ Please go back to "Settings" and change some values.
 
     def coeff_labels_set_text(self, text, num = None):
         if num is not None:
-            self.setupLabels(num)
+            self.setup_labels(num)
         else:
             self.kLabel.setText("k = " + text)
             self.muLabel.setText("μ =  " + text)
@@ -178,7 +178,7 @@ Please go back to "Settings" and change some values.
         if (self.is_started):
             self.coeff_labels_set_text(text="", num=None)
             # clears canvas
-            self.cleanCanvas()
+            self.clean_canvas()
             self.progressBar.hide()
             self.selected_files.clear()
             # clears combo-box
@@ -224,6 +224,7 @@ Please go back to "Settings" and change some values.
         # Setting value of run_counter to the number of images that need to be processed. This had to be done
         # because I needed a way to name images
         self.run_counter = number
+
         # Ordered Set
         if processed_image in self.imgList:
             self.imgList.remove(processed_image)
@@ -235,27 +236,29 @@ Please go back to "Settings" and change some values.
 
         if self.is_started:
             # removes/deletes all canvases
-            self.cleanCanvas()
+            self.clean_canvas()
         # fills canvas
         try:
-            self.fillCanvas(self.imgList.__getitem__(self.current_index))
+            self.fill_canvas(self.imgList.__getitem__(self.current_index))
         except IndexError:
             self.current_index -= 1
-            self.fillCanvas(self.imgList.__getitem__(self.current_index))
+            self.fill_canvas(self.imgList.__getitem__(self.current_index))
 
         if not self.is_resized:
-            self.applyResizing()
+            self.apply_resizing()
             self.is_resized = True
+
         # started
         self.is_started = True
         self.go_update.emit(self.current_index)
+
         #  Setting progress bar business
         self.progressBar.setValue(count)
         self.progressBar.valueChanged.emit(self.progressBar.value())
         self.current_index += 1
         self.runtime += time
 
-    def applyResizing(self):
+    def apply_resizing(self):
         """
         Makes so that screen can be resized after the images loaded.
         """
@@ -268,7 +271,7 @@ Please go back to "Settings" and change some values.
         self.figureWidget.setSizePolicy(sizePolicy)
 
     @pyqtSlot()
-    def populateComboBox(self):
+    def populate_combo_box(self):
         """
         Populates combox box with the names.
         """
@@ -277,7 +280,7 @@ Please go back to "Settings" and change some values.
             self.selectImgBox.addItem(element.filename.stem)
         self.selectImgBox.setCurrentIndex(self.current_index)
 
-    def cleanCanvas(self):
+    def clean_canvas(self):
         """
         Deletes the figure widget (i.e. cleans the canvas)
         """
@@ -290,7 +293,7 @@ Please go back to "Settings" and change some values.
         self.img_canvas.deleteLater()
         self.log_scl_canvas.deleteLater()
 
-    def fillCanvas(self, img):
+    def fill_canvas(self, img):
         """
         Fills the canvas with the FFT-processed results based on the img.
         :param img: img to be processed
@@ -331,14 +334,14 @@ Please go back to "Settings" and change some values.
         self.figureLayout.itemAtPosition(1, 0).widget().setToolTip("Red Line = Fiber Orientation")
         self.figureLayout.itemAtPosition(1, 1).widget().setToolTip("Blue Line = Fiber Distribution")
 
-    def processImagesFromComboBox(self, img):
+    def process_images_from_combo_box(self, img):
         """
         Helps to process an image from using a Combo Box.
         :param img: image to be processed
         """
         if self.is_started:
-            self.cleanCanvas()
-        self.fillCanvas(img)
+            self.clean_canvas()
+        self.fill_canvas(img)
 
     def start(self):
         """
@@ -350,7 +353,7 @@ Please go back to "Settings" and change some values.
         self.RLabel.setText(('R' + u"\u00B2") + " = ")
         self.sigLabel.setText("σ = ")
         # clears canvas
-        self.cleanCanvas()
+        self.clean_canvas()
         # clears combo-box
         self.selectImgBox.clear()
         # resets isStarted
@@ -363,7 +366,7 @@ Please go back to "Settings" and change some values.
         self.removeTemp()
 
     @pyqtSlot(int)
-    def setupLabels(self, num):
+    def setup_labels(self, num):
         """
         Sets up appropriate labels depending on which image is selected.
         :param num: index of the image currently displayed in the figure widget.
@@ -373,7 +376,7 @@ Please go back to "Settings" and change some values.
         self.muLabel.setText("μ = " + str(round(self.imgList.__getitem__(num).th, 2)))
         self.RLabel.setText(('R' + u"\u00B2") + " = " + str(round(self.imgList.__getitem__(num).R2, 2)))
 
-    def nextImage(self):
+    def next_image(self):
         """
         Scrolls to next image.
         Uses a circular array as an underlying data structure. Main advantage is
@@ -383,12 +386,12 @@ Please go back to "Settings" and change some values.
             # updates current index
             self.current_index = (self.current_index + 1) % len(self.imgList)
             image = self.imgList.__getitem__(self.current_index)
-            self.cleanCanvas()
-            self.fillCanvas(image)
-            self.setupLabels((self.current_index))
+            self.clean_canvas()
+            self.fill_canvas(image)
+            self.setup_labels((self.current_index))
             self.selectImgBox.setCurrentIndex(self.current_index)
 
-    def prevImage(self):
+    def prev_image(self):
         """
         Scrolls to previous image.
         Uses a circular array as an underlying data structure. Main advantage is
@@ -398,24 +401,24 @@ Please go back to "Settings" and change some values.
             # updates current index
             self.current_index = (self.current_index - 1) % len(self.imgList)
             image = self.imgList.__getitem__(self.current_index)
-            self.cleanCanvas()
-            self.fillCanvas(image)
-            self.setupLabels(self.current_index)
+            self.clean_canvas()
+            self.fill_canvas(image)
+            self.setup_labels(self.current_index)
             self.selectImgBox.setCurrentIndex(self.current_index)
 
     @pyqtSlot(float, float, float, float)
-    def updateValues(self, uCut, lCut, angleInc, radStep):
+    def update_values(self, u_cut, l_cut, angle_inc, rad_step):
         """Updates settings per user's selection.
-        :param uCut: upper cut
-        :param lCut: lower cut
-        :param angleInc: angle increment
-        :param radStep: radial step
-        :return: void
+            Args:
+                u_cut: upper cut
+                l_cut: lower cut
+                angle_inc: angle increment
+                rad_step: radial step
         """
-        self.u_cut = uCut
-        self.l_cut = lCut
-        self.angle_inc = angleInc
-        self.rad_step = radStep
+        self.u_cut = u_cut
+        self.l_cut = l_cut
+        self.angle_inc = angle_inc
+        self.rad_step = rad_step
 
     def connect_signals_to_slots(self):
         """Helper function to connect emitted signals to appropriate slots
@@ -423,30 +426,30 @@ Please go back to "Settings" and change some values.
         self.send_data_to_report.connect(self.report_dialog.receiver)
         self.go_export.connect(self.report_dialog.do_test)
         self.go_run.connect(self.runner)
-        self.go_update.connect(self.populateComboBox)
-        self.go_update.connect(self.setupLabels)
+        self.go_update.connect(self.populate_combo_box)
+        self.go_update.connect(self.setup_labels)
         self.send_error.connect(self.handle_error)
         self.go_process_images.connect(self.process_images)
-        self.settingsBrowser.sendValues.connect(self.updateValues)
+        self.settingsBrowser.sendValues.connect(self.update_values)
 
         self.exportButton.clicked.connect(self.export)
         self.startButton.clicked.connect(self.start)
-        self.nextButton.clicked.connect(self.nextImage)
-        self.prevButton.clicked.connect(self.prevImage)
+        self.nextButton.clicked.connect(self.next_image)
+        self.prevButton.clicked.connect(self.prev_image)
         self.loadButton.clicked.connect(self.launch)
         self.clearButton.clicked.connect(self.clear)
         self.settingsButton.clicked.connect(self.settingsBrowser.do_change)
-        self.selectImgBox.activated[str].connect(self.changeState)
+        self.selectImgBox.activated[str].connect(self.change_state)
 
-    def changeState(self, filename):
+    def change_state(self, filename):
         """Changes image according to user's selection via combo box.
-        :param filename: name of which image to change state to
-        :return: void
+            Args:
+                filename: name of which image to change state to
         """
         # find img
         for image in self.imgList:
             if image.filename.stem == filename:
-                self.processImagesFromComboBox(image)
+                self.process_images_from_combo_box(image)
                 self.sigLabel.setText("σ = " + str(round(image.sig[0], 2)))
                 self.kLabel.setText("k = " + str(round(image.k, 2)))
                 self.muLabel.setText("μ = " + str(round(image.th, 2)))
@@ -469,7 +472,7 @@ Please go back to "Settings" and change some values.
                 os.makedirs(self.saved_images_dir_name)
                 isCreated = True
 
-    def receiveDim(self):
+    def receive_dim(self):
         """Calculates dimensions of the screen.
         :return: dimension of a screen and DPI
         """
@@ -489,8 +492,8 @@ Please go back to "Settings" and change some values.
     def delete_dir(self, dir):
         """
         Deletes a given directory. In context of application, it's used when
-        :param dir:
-        :return:
+            Args:
+                dir:
         """
         import shutil
         try:
@@ -504,15 +507,15 @@ class myThread(threading.Thread):
     """
     Class responsible for heavy lifting of computerVision algorithm
     """
-    def __init__(self, sig, errorSig, bar, dir, num):
+    def __init__(self, sig, error_sig, bar, dir, num):
         """
         Initialises attributes used to process the image via computerVision and send it back to the running application.
-        :param sig: signal indicating that UI should be updated
-        :param errorSig: send_error signal from the fft_mainWindow
-        :param bar: the progress bar
-        :param dir: full path to directory where to put the secondary images in
-        :param num: number indicating the order of image being processed (useful in naming the secondary image files.)
-        :return: none
+        Args:
+            sig: signal indicating that UI should be updated
+            error_sig: send_error signal from the fft_mainWindow
+            bar: the progress bar
+            dir: full path to directory where to put the secondary images in
+            num: number indicating the order of image being processed (useful in naming the secondary image files.)
         """
         super(myThread, self).__init__()
         self.uCut = 0
@@ -524,7 +527,7 @@ class myThread(threading.Thread):
         self.sig = sig
         self.filenames = []
         self.bar = bar
-        self.errorSig = errorSig
+        self.errorSig = error_sig
         self.directory = dir
         self.number = num
 
@@ -629,7 +632,7 @@ def main():
     """
     app = QtWidgets.QApplication(sys.argv)
     fft_app = fft_mainWindow()
-    fft_app.receiveDim()
+    fft_app.receive_dim()
     fft_app.show()
     sys.exit(app.exec_())
 
