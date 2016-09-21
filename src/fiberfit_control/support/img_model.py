@@ -1,3 +1,6 @@
+import sys
+sys.path.append("/fiberfit/")
+
 class ImgModel:
     """
     Class representing an image model, encapsulating th and k.

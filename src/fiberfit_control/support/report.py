@@ -1,3 +1,5 @@
+import sys
+sys.path.append("/fiberfit/")
 from src.fiberfit_gui import export_window
 from src.fiberfit_control.support import img_model
 

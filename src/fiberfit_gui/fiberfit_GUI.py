@@ -1,3 +1,5 @@
+import sys
+sys.path.append("/fiberfit/")
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 import os

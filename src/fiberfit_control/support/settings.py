@@ -1,3 +1,5 @@
+import sys
+sys.path.append("/fiberfit/")
 from PyQt5.QtWidgets import QDialogButtonBox, QDialog
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from src.fiberfit_gui import settings_dialog as SettingsDialog

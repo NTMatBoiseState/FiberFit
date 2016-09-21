@@ -1,3 +1,5 @@
+import sys
+sys.path.append("/fiberfit/")
 from PyQt5.QtWidgets import QDialog
 from src.fiberfit_gui import error_dialog as ErrorDialog
 

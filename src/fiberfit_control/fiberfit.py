@@ -1,7 +1,9 @@
 #!/usr/local/bin/python3
 
 """This is a control part of the GUI application"""
-
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 "3rd party imports: "
 import pathlib
 import sys
@@ -17,7 +19,6 @@ from PyQt5.QtWidgets import QFileDialog  # In order to select a file
 from orderedset import OrderedSet
 import base64
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
-import os
 from PyQt5.QtWidgets import QDesktopWidget
 import random
 from PyQt5.QtGui import QPixmap
