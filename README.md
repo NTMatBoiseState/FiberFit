@@ -16,11 +16,11 @@ their respective sites to get instructions on how to install those libraries (e.
 * [matplotlib] (http://matplotlib.org/)
 * [pandas] (http://pandas.pydata.org/)
 * [Ordered Set] (http://orderedset.readthedocs.io/en/latest/installation.html)
+* [Qt Creater {optional}] (https://www.qt.io/download/)
 
-After you've installed required software above, run the following from ```fiberfit``` directory:
- 1. export PYTHONPATH='.'
- 2. python src/fiberfit_control/fiberfit.py
-Alternatively to step #1, you can also run a setup.sh script.
+After you've installed all of the items above, you can start the application by:
+```python src/fiberfit_control/fiberfit.py```
+**Note**, the above command assumes you are inside of FiberFit/ folder.
 
 ## Get Started
 Please check out a video demostration of FiberFit in action [HERE](https://www.youtube.com/watch?v=ZIm1AxTubYo)

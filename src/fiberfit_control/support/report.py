@@ -24,8 +24,8 @@ class ReportDialog(QDialog, export_window.Ui_Dialog):
         - do_print is a signal sent when either Save or Save All button are pressed.
         - do_excel is a signal starting the process of exporting results into an .csv format
         - sendDataList is a signal that sends a list containing already exported images back to FiberFit.
-        - dataList is a list representing already exported images
-        - screenDim stores a screen dimension
+        - data_list is a list representing already exported images
+        - screen_dim stores a screen dimension
         - document is an instance of QTextDocument that
        TODO: add other attributes.
     """

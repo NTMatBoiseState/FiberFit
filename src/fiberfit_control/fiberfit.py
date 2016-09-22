@@ -50,9 +50,9 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             go_process_iamges: signals to do final touches after image was processed by the computerVision_BP
             send_error: signals that something went wrong
         vars:
-            dataList: contains a list of already processed images. helps src.fiberfit_control.support.report remember
+            data_list: contains a list of already processed images. helps src.fiberfit_control.support.report remember
                 which images have already been processed.
-            screenDim: (w,h) of the screen
+            screen_dim: (w,h) of the screen
             dpi: dots-per-inch of the screen
             selected_files: target files that user selected
             current_index: index of currently selected image
@@ -85,9 +85,9 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         super(fft_mainWindow, self).__init__()
         self.imgList = OrderedSet()
         # Stuff I looked at
-        self.screenDim, self.dpi = self.receive_dim()
-        self.setupUi(self, self.screenDim.height(), self.screenDim.width())
-        self.dataList = []
+        self.screen_dim, self.dpi = self.receive_dim()
+        self.setupUi(self, self.screen_dim.height(), self.screen_dim.width())
+        self.data_list = []
         self.selected_files = []
         self.current_index = 0
         self.runtime = 0
@@ -95,15 +95,15 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
         self.is_started = False
         self.saved_images_dir_name = ''
         self.run_counter = 0  # I need it to be able to process multiple images.
-        self.settingsBrowser = settings.SettingsWindow(self, self.screenDim)
-        self.errorBrowser = error.ErrorDialog(self, self.screenDim)
-        self.report_dialog = report.ReportDialog(self, self, self.screenDim)
+        self.settings_browser = settings.SettingsWindow(self, self.screen_dim)
+        self.error_browser = error.ErrorDialog(self, self.screen_dim)
+        self.report_dialog = report.ReportDialog(self, self, self.screen_dim)
 
         # model settings
-        self.u_cut = float(self.settingsBrowser.ttopField.text())
-        self.l_cut = float(self.settingsBrowser.tbottomField.text())
-        self.angle_inc = float(self.settingsBrowser.btopField.text())
-        self.rad_step = float(self.settingsBrowser.bbottomField.text())
+        self.u_cut = float(self.settings_browser.ttopField.text())
+        self.l_cut = float(self.settings_browser.tbottomField.text())
+        self.angle_inc = float(self.settings_browser.btopField.text())
+        self.rad_step = float(self.settings_browser.bbottomField.text())
 
         self.img_canvas = None
         self.log_scl_canvas = None
@@ -122,24 +122,24 @@ class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
             identifier: whether division by 0 error occured. possible values are 1 and 0.
         """
         if identifier == 0:
-            self.errorBrowser.label.setText("""ERROR:
+            self.error_browser.label.setText("""ERROR:
             Sorry, unfortunately, this file - {name} can not be processed.
             Please make sure that the image has 8-bit image depth,or, equivalently, gray color space and verify that you\
             are using one of the approved file formats: pdf, png, tif, gif, or bmp."""
-                                            .format(name=files[index]))
+                                             .format(name=files[index]))
         elif identifier == 1:
-            self.errorBrowser.label.setText("""ERROR:
+            self.error_browser.label.setText("""ERROR:
 Sorry, unfortunately, the setting you selected are out of input domain for FiberFit.
 Please go back to "Settings" and change some values.
             """
-                                            )
+                                             )
         else:
-            self.errorBrowser.label.setText("""ERROR:
+            self.error_browser.label.setText("""ERROR:
 
             Sorry, unforutnately, this file - {name} can not be processed.
 
             Please make sure that the image is square. """.format(name=files[index]))
-        self.errorBrowser.show()
+        self.error_browser.show()
         self.progressBar.hide()
 
     def runner(self):
@@ -147,8 +147,8 @@ Please go back to "Settings" and change some values.
         Starts a thread that does the heavy-lifting computerVision algorithm
         :return: none
         """
-        pThread = myThread(self.go_process_images, self.send_error, self.progressBar, self.saved_images_dir_name, self.run_counter)
-        pThread.update_values(self.u_cut, self.l_cut, self.angle_inc, self.rad_step, self.screenDim, self.dpi, self.selected_files)
+        pThread = MyThread(self.go_process_images, self.send_error, self.progressBar, self.saved_images_dir_name, self.run_counter)
+        pThread.update_values(self.u_cut, self.l_cut, self.angle_inc, self.rad_step, self.screen_dim, self.dpi, self.selected_files)
         if len(self.selected_files) != 0:
             self.progressBar.show()
             self.progressBar.setValue(0)
@@ -185,7 +185,7 @@ Please go back to "Settings" and change some values.
             self.selectImgBox.clear()
             # resets isStarted
             self.is_started = False
-            self.dataList.clear()
+            self.data_list.clear()
             # empties all images
             self.imgList.clear()
             # resets current index
@@ -231,7 +231,7 @@ Please go back to "Settings" and change some values.
             self.imgList.add(processed_image)
         else:
             self.imgList.add(processed_image)
-        self.send_data_to_report.emit(processed_images_list, self.dataList, self.imgList, self.u_cut, self.l_cut, self.rad_step,
+        self.send_data_to_report.emit(processed_images_list, self.data_list, self.imgList, self.u_cut, self.l_cut, self.rad_step,
                                       self.angle_inc)
 
         if self.is_started:
@@ -262,7 +262,7 @@ Please go back to "Settings" and change some values.
         """
         Makes so that screen can be resized after the images loaded.
         """
-        self.resize(0.7 * self.screenDim.height(), 0.8 *self.screenDim.height())
+        self.resize(0.7 * self.screen_dim.height(), 0.8 * self.screen_dim.height())
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
                                            QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -430,7 +430,7 @@ Please go back to "Settings" and change some values.
         self.go_update.connect(self.setup_labels)
         self.send_error.connect(self.handle_error)
         self.go_process_images.connect(self.process_images)
-        self.settingsBrowser.sendValues.connect(self.update_values)
+        self.settings_browser.sendValues.connect(self.update_values)
 
         self.exportButton.clicked.connect(self.export)
         self.startButton.clicked.connect(self.start)
@@ -438,7 +438,7 @@ Please go back to "Settings" and change some values.
         self.prevButton.clicked.connect(self.prev_image)
         self.loadButton.clicked.connect(self.launch)
         self.clearButton.clicked.connect(self.clear)
-        self.settingsButton.clicked.connect(self.settingsBrowser.do_change)
+        self.settingsButton.clicked.connect(self.settings_browser.do_change)
         self.selectImgBox.activated[str].connect(self.change_state)
 
     def change_state(self, filename):
@@ -503,7 +503,8 @@ Please go back to "Settings" and change some values.
             # means directory has not been created. if usre opens an app and then immediately closes it.
 
 
-class myThread(threading.Thread):
+class MyThread(threading.Thread):
+    # TODO(atulep): fix the logic here. code is quite dirty.
     """
     Class responsible for heavy lifting of computerVision algorithm
     """
@@ -517,37 +518,37 @@ class myThread(threading.Thread):
             dir: full path to directory where to put the secondary images in
             num: number indicating the order of image being processed (useful in naming the secondary image files.)
         """
-        super(myThread, self).__init__()
-        self.uCut = 0
-        self.lCut = 0
-        self.angleInc = 0
-        self.radStep = 0
-        self.screenDim = 0
+        super(MyThread, self).__init__()
+        self.u_cut = 0
+        self.l_cut = 0
+        self.angle_inc = 0
+        self.rad_step = 0
+        self.screen_dim = 0
         self.dpi = 0
         self.sig = sig
         self.filenames = []
         self.bar = bar
-        self.errorSig = error_sig
+        self.error_sig = error_sig
         self.directory = dir
         self.number = num
 
-    def update_values(self,uCut,lCut,angleInc,radStep,screenDim,dpi,filenames):
+    def update_values(self, u_cut, l_cut, angle_inc, rad_step, screen_dim, dpi, filenames):
         """
         Updated the values that are modified during the run time (i.e. settings)
-        :param uCut: upper cut
-        :param lCut: lower cut
-        :param angleInc: angle increment
-        :param radStep: radial step
-        :param screenDim: dimensions of a screen
-        :param dpi: DPI of a primary screem
-        :param filenames: list of names of files to be processed
-        :return: none
+        Args:
+            u_cut: upper cut
+            l_cut: lower cut
+            angle_inc: angle increment
+            rad_step: radial step
+            screen_dim: dimensions of a screen
+            dpi: DPI of a primary screem
+            filenames: list of names of files to be processed
         """
-        self.lCut = lCut
-        self.uCut = uCut
-        self.angleInc = angleInc
-        self.radStep = radStep
-        self.screenDim = screenDim
+        self.l_cut = l_cut
+        self.u_cut = u_cut
+        self.angle_inc = angle_inc
+        self.rad_step = rad_step
+        self.screen_dim = screen_dim
         self.dpi = dpi
         self.filenames = filenames
 
@@ -565,15 +566,11 @@ class myThread(threading.Thread):
             toContinue = True
             # Retrieve Figures from data analysis code
             try:
-                sig, k, th, R2, angDist,  cartDist, logScl,  orgImg,  figWidth, figHeigth, runtime = computerVision_BP.process_image(filename,
-                                                                                               self.uCut,
-                                                                                               self.lCut, self.angleInc,
-                                                                                               self.radStep, self.screenDim,
-                                                                                               self.dpi,
-                                                                                               self.directory,
-                                                                                               self.number)
+                sig, k, th, R2, angDist,  cartDist, logScl,  orgImg,  figWidth, figHeigth, runtime = \
+                    computerVision_BP.process_image(filename, self.u_cut, self.l_cut, self.angle_inc, self.rad_step,
+                                                    self.screen_dim, self.dpi, self.directory, self.number)
 
-                # Starting from Python3, there is a distinctin between bytes and str. Thus, I can't use
+                # Starting from Python3, there is a distinction between bytes and str. Thus, I can't use
                 # methods of str on bytes. However I need to do that in order to properly encode the image
                 # into b64. The main thing is that bytes-way produces some improper characters that mess up
                 # the decoding process. Hence, decode(utf-8) translates bytes into str.
@@ -614,11 +611,12 @@ class myThread(threading.Thread):
             except ZeroDivisionError:
                 toContinue = False
                 isZeroException = 1
+
             finally:
                 if (toContinue):
                     self.sig.emit(count, processedImage, processedImagesList, isLast, runtime, self.number)
                 else:
-                    self.errorSig.emit(self.filenames, count, isZeroException)
+                    self.error_sig.emit(self.filenames, count, isZeroException)
         # hides the bar after processing all the images
         if toContinue:
             time.sleep(0.5)
