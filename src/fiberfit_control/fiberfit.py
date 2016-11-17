@@ -16,7 +16,6 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from PyQt5 import QtWidgets
 from PyQt5.Qt import *
 from PyQt5.QtWidgets import QFileDialog  # In order to select a file
-from orderedset import OrderedSet
 import base64
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QDesktopWidget
@@ -32,6 +31,10 @@ from src.fiberfit_control.support import img_model
 from src.fiberfit_control.support import settings
 from src.fiberfit_control.support import error
 from src.fiberfit_control.support import report
+
+class OrderedSet(set):
+    def __init__(self):
+        super(OrderedSet, self).__init__()
 
 class fft_mainWindow(fiberfit_GUI.Ui_MainWindow, QtWidgets.QMainWindow):
     """Controller part of the application.

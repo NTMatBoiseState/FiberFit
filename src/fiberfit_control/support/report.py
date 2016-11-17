@@ -10,9 +10,12 @@ from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyPDF2 import PdfFileMerger as merger
 from PyQt5 import QtWebKitWidgets
 import csv
-from orderedset import OrderedSet
 import pathlib
 import os
+
+class OrderedSet(set):
+    def __init__(self):
+        super(OrderedSet, self).__init__()
 
 class ReportDialog(QDialog, export_window.Ui_Dialog):
     """ Summary of ReportDialog.
