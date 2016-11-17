@@ -18,10 +18,10 @@ their respective sites to get instructions on how to install those libraries (e.
 * [Ordered Set] (http://orderedset.readthedocs.io/en/latest/installation.html)
 * [Qt Creater {optional}] (https://www.qt.io/download/)
 
-**Note** If you're a Windows user, the easiest way to get all of the dependencies is to install Anaconda by [Continuum Analytics](https://www.continuum.io/downloads). You will still have to install pyPDF2, though. You can do it by first installing pip (```conda install pip```) and then using pip as usual. \
+**Note** If you're a Windows user, the easiest way to get all of the dependencies is to install Anaconda by [Continuum Analytics](https://www.continuum.io/downloads). You will still have to install pyPDF2, though. You can do it by first installing pip (```conda install pip```) and then using pip as usual.
 
 After you've installed all of the items above, you can start the application by:
-```python src/fiberfit_control/fiberfit.py``` \
+```python src/fiberfit_control/fiberfit.py``` 
 **Note**, the above command assumes you are inside of FiberFit/ folder.
 
 ## Get Started
