@@ -6,4 +6,4 @@ scipy
 #os
 #os.path
 opencv
-enriquesmarquez cv2 
+
