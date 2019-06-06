@@ -7,5 +7,9 @@ scipy
 #os.path
 opencv-python
 matplotlib
-
+pathlib
+sys
+threading
+random
+shutil
 
