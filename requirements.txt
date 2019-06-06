@@ -3,7 +3,6 @@ seaborn
 pandas
 numpy
 scipy
-pylab
 os
 os.path
 cv2
