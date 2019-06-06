@@ -1,4 +1,3 @@
-skimage.io
 skimage 
 seaborn
 pandas
