@@ -1,6 +1,5 @@
 skimage.io
 skimage 
-__future__
 seaborn
 pandas
 numpy
