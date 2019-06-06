@@ -5,4 +5,5 @@ numpy
 scipy
 #os
 #os.path
-#cv2
+opencv
+enriquesmarquez cv2 
