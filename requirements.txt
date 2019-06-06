@@ -8,7 +8,4 @@ scipy
 opencv-python
 matplotlib
 pathlib
-threading
-random
-shutil
 csv
