@@ -5,5 +5,5 @@ numpy
 scipy
 #os
 #os.path
-opencv
+opencv-python
 
