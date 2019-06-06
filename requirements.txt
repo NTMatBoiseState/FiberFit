@@ -6,4 +6,6 @@ scipy
 #os
 #os.path
 opencv-python
+matplotlib
+
 
