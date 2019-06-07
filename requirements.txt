@@ -8,4 +8,7 @@ scipy
 opencv-python
 matplotlib
 pathlib
-
+PyQt5
+os-win
+os-sys
+syspath
