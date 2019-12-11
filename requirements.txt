@@ -10,6 +10,6 @@ matplotlib
 pathlib
 PyQt5
 #os-win
-os-sys
+#os-sys
 syspath
-#PyQt5
+PyQt5
