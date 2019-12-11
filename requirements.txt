@@ -9,7 +9,7 @@ opencv-python
 matplotlib
 pathlib
 PyQt5
-os-win
+#os-win
 os-sys
 syspath
 PyQt5
