@@ -12,4 +12,4 @@ PyQt5
 #os-win
 os-sys
 syspath
-PyQt5
+#PyQt5
