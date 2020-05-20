@@ -3,6 +3,7 @@ seaborn
 pandas
 numpy
 scipy
+smop
 #os
 #os.path
 opencv-python
