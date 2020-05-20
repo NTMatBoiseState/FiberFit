@@ -4,7 +4,7 @@ pandas
 numpy
 scipy
 smop
-runtime-0.1.4
+runtime
 #os
 #os.path
 opencv-python
