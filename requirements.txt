@@ -39,7 +39,7 @@ mpl-utils
 #orderedet
 parso
 PIMS
-prometheus
+#prometheus
 prompt_toolkit
 Pygments
 pylab-sdk
