@@ -21,3 +21,9 @@ cv_utils
 cv2studio
 Cycler
 
+imageio
+ipykernel
+ipython_genutils
+ipython
+ipywidgets
+isapi_wsgi
