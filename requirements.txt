@@ -14,7 +14,7 @@ PyQt5
 #os-win
 #os-sys
 syspath
-
+esmre
 cv
 cv_utils
 cv2studio
