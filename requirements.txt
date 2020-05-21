@@ -33,7 +33,7 @@ decorator
 ffmpy
 imageio
 more-itertools
-mpl-toolkits.clifford
+#mpl-toolkits.clifford
 mpl4qt
 mpl-tools
 mpl-utils
