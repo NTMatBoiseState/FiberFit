@@ -27,3 +27,16 @@ ipython_genutils
 ipython
 ipywidgets
 isapi_wsgi
+
+
+jedi
+#Jinja
+py-dateutil
+decorator
+ffmpy
+imageio
+more-itertools
+#mpl-toolkits.clifford
+mpl4qt
+mpl-tools
+mpl-utils
