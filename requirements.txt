@@ -36,7 +36,7 @@ mpl-toolkits.clifford
 mpl4qt
 mpl-tools
 mpl-utils
-orderedet
+#orderedet
 parso
 PIMS
 prometheus
