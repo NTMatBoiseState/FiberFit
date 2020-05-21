@@ -65,7 +65,7 @@ wcwidth
 webencodings
 wheel
 widgetsnbextension
-zmq
+#zmq
 #pyzmq
 pyrsistent
 cycler
