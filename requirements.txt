@@ -69,11 +69,11 @@ zmq
 pyzmq
 pyrsistent
 cycler
-decorator
+#decorator
 #pipping-easy-install
 #entrypoints
 #ipykernal
-mistune
+#mistune
 pandocfilters
 pickleshare
 pylab-sdk
