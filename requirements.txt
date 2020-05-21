@@ -52,7 +52,7 @@ pywinpty
 six
 Send2Trash
 setuptools
-skimage
+#skimage
 slicerator
 terminado
 testpath
