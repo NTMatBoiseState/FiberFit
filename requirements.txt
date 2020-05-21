@@ -47,7 +47,7 @@ pyswip
 pytz
 ply
 PyVISA
-pywin32
+#pywin32
 pywinpty
 six
 Send2Trash
