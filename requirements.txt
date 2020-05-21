@@ -70,8 +70,8 @@ pyzmq
 pyrsistent
 cycler
 decorator
-pipping-easy-install
-entrypoints
+#pipping-easy-install
+#entrypoints
 #ipykernal
 mistune
 pandocfilters
