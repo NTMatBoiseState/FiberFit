@@ -40,3 +40,4 @@ more-itertools
 mpl4qt
 mpl-tools
 mpl-utils
+greenlet
