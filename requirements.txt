@@ -1,5 +1,4 @@
 #numba
-git996
 scikit-image
 seaborn
 pandas
