@@ -1,4 +1,6 @@
 #numba
+pip==0.5.1
+quanfima
 scikit-image
 seaborn
 pandas
