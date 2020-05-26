@@ -1,0 +1,44 @@
+name: test-environment
+
+dependencies:
+  - python==3.4
+  - cv
+  - cv_utils
+  - cv2studio
+  - Cycler
+  - decorator
+  - ffmpy
+  - greenlet
+  - PyQt5
+  - GitPython
+  - statsmodels
+  - imageio
+  - ipykernel
+  - ipython_genutils
+  - ipython
+  - ipywidgets
+  - isapi_wsgi
+  - jedi
+  - matplotlib
+  - more-itertools
+  - mpl4qt
+  - mpl-tools
+  - mpl-utils
+  - numpy
+  - opencv-python
+  - pandas
+  - pathlib
+  - pip==19.3.1
+  - py-dateutil
+  - PyQt5
+  - scikit-image
+  - scipy
+  - seaborn
+  - smop
+  - syspath
+  - runtime
+  - pip:
+    - git+https://github.com/rshkarin/quanfima.git
+    - jupyterlab
+
+
