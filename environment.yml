@@ -15,7 +15,6 @@ dependencies:
   - jedi
   - matplotlib
   - more-itertools
-  - mpl-tools
   - numpy
   - pandas
   - pathlib
@@ -32,6 +31,7 @@ dependencies:
     - opencv-python
     - mpl-utils
     - mpl4qt
+    - mpl-tools
     - PyQt5
     - py-dateutil
     - runtime
