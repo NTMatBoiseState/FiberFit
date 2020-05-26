@@ -1,15 +1,10 @@
 name: test-environment
-
+channels:
+  - conda-forge
 dependencies:
-  - python==3.4
-  - cv
-  - cv_utils
-  - cv2studio
   - Cycler
   - decorator
-  - ffmpy
   - greenlet
-  - PyQt5
   - GitPython
   - statsmodels
   - imageio
@@ -17,28 +12,32 @@ dependencies:
   - ipython_genutils
   - ipython
   - ipywidgets
-  - isapi_wsgi
   - jedi
   - matplotlib
   - more-itertools
-  - mpl4qt
   - mpl-tools
-  - mpl-utils
   - numpy
-  - opencv-python
   - pandas
   - pathlib
   - pip==19.3.1
-  - py-dateutil
-  - PyQt5
   - scikit-image
   - scipy
   - seaborn
-  - smop
-  - syspath
-  - runtime
   - pip:
     - git+https://github.com/rshkarin/quanfima.git
+    - ffmpy
+    - isapi_wsgi
     - jupyterlab
+    - cv
+    - opencv-python
+    - mpl-utils
+    - mpl4qt
+    - PyQt5
+    - py-dateutil
+    - runtime
+    - cv_utils
+    - cv2studio
+    - smop
+    - syspath
 
 
