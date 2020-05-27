@@ -23,6 +23,7 @@ dependencies:
   - scikit-image
   - scipy
   - seaborn
+  - vigra=1.11.1
   - pip:
     - ffmpy
     - isapi_wsgi
