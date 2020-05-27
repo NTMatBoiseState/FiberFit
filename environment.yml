@@ -2,8 +2,9 @@ name: test-environment
 channels:
   - conda-forge
   - defaults
+  - !!python/unicode
 dependencies:
-  - python = 2.7
+  - python = 3.7.7
   - Cycler
   - decorator
   - greenlet
@@ -26,6 +27,7 @@ dependencies:
   - seaborn
   - pip:
     - ffmpy
+    - git+https://github.com/rshkarin/quanfima.git
     - isapi_wsgi
     - jupyterlab
     - opencv-python
