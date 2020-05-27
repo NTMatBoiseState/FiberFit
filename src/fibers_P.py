@@ -494,4 +494,16 @@ def fiber_analysisD(mypath,savepath, CO_lower,CO_upper,angleInc,radStep):
         plt.close('all')
         #index=index+1
         #print(index,'Index')
+## export of cartesian coordinate data
+    arr = numpy.array(MirnormPower_plot) 
+    arr2 = numpy.array(Mirtheta1RadFinal1_plot)
+    arr3 = numpy.array(normPower1_plot)
+    arr4 = numpy.array(theta1RadFinal1*180/pi)
+    a = numpy.transpose(arr3)
+    b = numpy.transpose(arr4)
+    b[b> 100] = 0
+    b[b<-100] = 0
+    export_data=np.hstack(((b[:,None]),a))
+    numpy.savetxt(savepath+"data_export.csv", export_data, delimiter=",")
+    return export_data
 
