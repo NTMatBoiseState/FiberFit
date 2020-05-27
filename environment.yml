@@ -3,7 +3,6 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python = 3.4.0
   - Cycler
   - decorator
   - greenlet
@@ -24,7 +23,6 @@ dependencies:
   - scikit-image
   - scipy
   - seaborn
-  - git+https://github.com/rshkarin/quanfima.git
   - pip:
     - ffmpy
     - isapi_wsgi
