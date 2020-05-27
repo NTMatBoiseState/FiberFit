@@ -11,7 +11,7 @@ from scipy.spatial import distance
 import vigra
 import pandas as pd
 from multiprocessing import Pool
-from quanfima import cuda_available
+from quanfima.quanfima import cuda_available
 
 if cuda_available:
     import pycuda.autoinit
