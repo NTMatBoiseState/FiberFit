@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - defaults
 packages:
-  - package: libgl1-mesa-dev
+  - package: libgl1-mesa-glx
 dependencies:
   - Cycler
   - decorator
