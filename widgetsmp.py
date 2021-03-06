@@ -122,14 +122,14 @@ def clear(_):
               # what happens when we press the button
             clear_output()
             print('Program executing. Files in Data and output folder will be cleared')
-            files = glob.glob('../FiberFit/Data/*',recursive=True)
+            files = glob.glob('Data/*',recursive=True)
             for f in files:
                 try:
                     os.remove(f)
                 except OSError as e:
                     print("Error: %s : %s" % (f, e.strerror))
 
-            files = glob.glob('../FiberFit/output/*',recursive=True)
+            files = glob.glob('output/*',recursive=True)
 
             for f in files:
                 try:
