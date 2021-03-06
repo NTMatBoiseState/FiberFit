@@ -24,6 +24,7 @@ dependencies:
   - scipy
   - seaborn
   - vigra=1.11.1
+  - libgl1-mesa-glx
   - pip:
     - ffmpy
     - isapi_wsgi
