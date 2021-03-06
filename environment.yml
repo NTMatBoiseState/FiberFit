@@ -2,6 +2,8 @@ name: test-environment
 channels:
   - conda-forge
   - defaults
+packages:
+  - package: libgl1-mesa-dev
 dependencies:
   - Cycler
   - decorator
@@ -24,7 +26,6 @@ dependencies:
   - scipy
   - seaborn
   - vigra=1.11.1
-  - libgl1-mesa-glx
   - pip:
     - ffmpy
     - isapi_wsgi
