@@ -31,7 +31,7 @@ dependencies:
     - ffmpy
     - isapi_wsgi
     - jupyterlab
-    - opencv-python--headless
+    - opencv-python
     - mpl-utils
     - mpl4qt
     - mpl-tools
