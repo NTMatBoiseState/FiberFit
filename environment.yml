@@ -4,6 +4,7 @@ channels:
   - defaults
 packages:
   - package: libgl1-mesa-glx
+  - package: libgl1-mesa-dev
 dependencies:
   - Cycler
   - decorator
