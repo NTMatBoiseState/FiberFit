@@ -28,7 +28,8 @@ from IPython.display import display
 import skimage.io as io
 from skimage import data
 from skimage.filters import sobel 
-from skimage.morphology import watershed
+from skimage.segmentation import watershed
+#from skimage.morphology import watershed
 from skimage import feature
 from skimage.color import rgb2gray
 from skimage.feature import corner_harris,corner_peaks
