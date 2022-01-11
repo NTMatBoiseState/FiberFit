@@ -23,7 +23,7 @@ dependencies:
   - pandas
   - pathlib
   - pip==19.3.1
-  - dateutil ==2.7
+  - python-dateutil
   - scikit-image
   - scipy
   - seaborn
