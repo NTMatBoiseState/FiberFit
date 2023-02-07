@@ -2,9 +2,6 @@ name: test-environment
 channels:
   - conda-forge
   - defaults
-packages:
-  - package: libgl1-mesa-glx
-  - package: libgl1-mesa-dev
 dependencies:
   - Cycler
   - decorator
@@ -22,7 +19,7 @@ dependencies:
   - numpy
   - pandas
   - pathlib
-  - pip==19.3.1
+  - pip
   - python-dateutil>=2.7
   - scikit-image
   - scipy
