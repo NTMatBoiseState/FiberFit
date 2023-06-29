@@ -3,7 +3,6 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - DATA_UPLOAD_MAX_MEMORY_SIZE = None
   - Cycler
   - decorator
   - greenlet
