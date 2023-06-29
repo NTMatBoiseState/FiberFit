@@ -3,7 +3,6 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - conda clean -a
   - Cycler
   - decorator
   - greenlet
@@ -20,7 +19,6 @@ dependencies:
   - numpy
   - pandas
   - pathlib
-  - pip
   - python-dateutil>=2.7
   - scikit-image
   - scipy
